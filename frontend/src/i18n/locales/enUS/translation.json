@@ -1375,10 +1375,6 @@
   "volumeMounts.fileTab": "File",
   "volumeMounts.mountPathDescription": "You can modify the mount path inside the container",
   "volumeMounts.mountPoint": "Mount Point {{index}}",
-<<<<<<< feat/datasetmountcount
-  "volumeMounts.mountSource": "Mount Source {{index}}"
-}
-=======
   "volumeMounts.mountSource": "Mount Source {{index}}",
   "分享对象类别错误，请联系管理员！": "Share target type error. Contact the administrator.",
   "删除访问权限成功!": "Access permission removed successfully!",
@@ -1394,4 +1390,3 @@
   "请输入": "Please enter",
   "账户": "Account"
 }
->>>>>>> main

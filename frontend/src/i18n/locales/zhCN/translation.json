@@ -1375,10 +1375,6 @@
   "volumeMounts.fileTab": "文件",
   "volumeMounts.mountPathDescription": "可修改容器内的挂载路径",
   "volumeMounts.mountPoint": "挂载点 {{index}}",
-<<<<<<< feat/datasetmountcount
-  "volumeMounts.mountSource": "挂载源 {{index}}"
-}
-=======
   "volumeMounts.mountSource": "挂载源 {{index}}",
   "分享对象类别错误，请联系管理员！": "分享对象类别错误，请联系管理员！",
   "删除访问权限成功!": "删除访问权限成功!",
@@ -1394,4 +1390,3 @@
   "请输入": "请输入",
   "账户": "账户"
 }
->>>>>>> main
