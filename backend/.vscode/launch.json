@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/cmd/crater/main.go",
+            "program": "${workspaceFolder}/cmd/orbit/main.go",
             "cwd": "${workspaceFolder}",
             "args": [
                 "--config-file",
@@ -25,7 +25,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/cmd/crater/main.go",
+            "program": "${workspaceFolder}/cmd/orbit/main.go",
             "cwd": "${workspaceFolder}",
             "args": [
                 "--config-file",
@@ -40,7 +40,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/cmd/crater/main.go",
+            "program": "${workspaceFolder}/cmd/orbit/main.go",
             "cwd": "${workspaceFolder}",
             "args": [
                 "--config-file",
@@ -55,7 +55,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/cmd/crater/main.go",
+            "program": "${workspaceFolder}/cmd/orbit/main.go",
             "cwd": "${workspaceFolder}",
             "args": [
                 "--config-file",

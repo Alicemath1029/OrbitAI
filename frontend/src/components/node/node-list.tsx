@@ -366,7 +366,7 @@ export const getNodeColumns = (
         let accountInfo = null
         if (status === NodeStatus.Occupied && getNicknameByName) {
           const occupiedAccount = taints.find((t: IClusterNodeTaint) =>
-            t.key.startsWith('crater.raids.io/account')
+            t.key.startsWith('orbit.raids.io/account')
           )?.value
 
           if (occupiedAccount) {
@@ -380,7 +380,7 @@ export const getNodeColumns = (
         const displayTaints =
           status === NodeStatus.Occupied
             ? taints.filter((taint: IClusterNodeTaint) =>
-                taint.key.includes('crater.raids.io/account')
+                taint.key.includes('orbit.raids.io/account')
               )
             : taints
         return (
@@ -425,10 +425,10 @@ export const getNodeColumns = (
         const status = row.getValue<string>('status')
         const taints = row.original.taints || []
         const annotations = row.original.annotations || {}
-        const unschedulableReason = annotations['crater.raids.io/unschedulable-reason']
-        const unschedulableOperator = annotations['crater.raids.io/unschedulable-operator']
-        const occupiedReason = annotations['crater.raids.io/taint-reason-occupied']
-        const occupiedOperator = annotations['crater.raids.io/taint-operator-occupied']
+        const unschedulableReason = annotations['orbit.raids.io/unschedulable-reason']
+        const unschedulableOperator = annotations['orbit.raids.io/unschedulable-operator']
+        const occupiedReason = annotations['orbit.raids.io/taint-reason-occupied']
+        const occupiedOperator = annotations['orbit.raids.io/taint-operator-occupied']
 
         // 判断是否为不可调度（基于 taint 或 status 文本）
         const isUnschedulable =
@@ -442,7 +442,7 @@ export const getNodeColumns = (
         let timeAdded: string | undefined
         if (status === NodeStatus.Occupied) {
           const occupiedTaint = taints.find(
-            (t: IClusterNodeTaint) => t.key === 'crater.raids.io/account'
+            (t: IClusterNodeTaint) => t.key === 'orbit.raids.io/account'
           )
           timeAdded = occupiedTaint?.timeAdded
         } else if (isUnschedulable) {

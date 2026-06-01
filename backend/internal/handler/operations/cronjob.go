@@ -10,9 +10,9 @@ import (
 	"k8s.io/klog/v2"
 	"k8s.io/utils/ptr"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/pkg/patrol"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/pkg/patrol"
 )
 
 // UpdateCronjobConfig godoc

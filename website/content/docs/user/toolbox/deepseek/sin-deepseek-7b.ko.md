@@ -79,7 +79,7 @@ curl http://localhost:8000/v1/chat/completions \
 
 ![](./img/sin-deepseek-7b/openweb-submit.webp)
 
-**DeepSeek R1 단일 머신 추론** 작업 템플릿을 사용하여 Crater 플랫폼에서 대규모 모델 추론 서비스를 시작한 후, 환경 변수의 첫 줄을 수정하여 OpenAI 서비스 주소를 설정해야 합니다.
+**DeepSeek R1 단일 머신 추론** 작업 템플릿을 사용하여 Orbit 플랫폼에서 대규모 모델 추론 서비스를 시작한 후, 환경 변수의 첫 줄을 수정하여 OpenAI 서비스 주소를 설정해야 합니다.
 
 단일 머신에서 모델을 배포한 경우, 작업의 **「기본 정보」섹션의「내부 IP」**에 해당합니다.
 

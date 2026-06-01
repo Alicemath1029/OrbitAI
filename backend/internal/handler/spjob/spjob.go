@@ -14,17 +14,17 @@ import (
 	"k8s.io/utils/ptr"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/handler"
-	"github.com/raids-lab/crater/internal/handler/vcjob"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/util"
-	recommenddljobapi "github.com/raids-lab/crater/pkg/apis/recommenddljob/v1"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/crclient"
-	utils "github.com/raids-lab/crater/pkg/util"
-	craterUtils "github.com/raids-lab/crater/pkg/utils"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/handler"
+	"github.com/raids-lab/orbit/internal/handler/vcjob"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/util"
+	recommenddljobapi "github.com/raids-lab/orbit/pkg/apis/recommenddljob/v1"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/crclient"
+	utils "github.com/raids-lab/orbit/pkg/util"
+	orbitUtils "github.com/raids-lab/orbit/pkg/utils"
 )
 
 //nolint:gochecknoinits // This is the standard way to register a gin handler.
@@ -35,7 +35,7 @@ func init() {
 }
 
 const (
-	AnnotationKeyTaskName = "crater.raids.io/task-name"
+	AnnotationKeyTaskName = "orbit.raids.io/task-name"
 )
 
 var dlNamespace = config.GetConfig().Namespaces.Job
@@ -129,7 +129,7 @@ func (mgr *SparseJobMgr) Create(c *gin.Context) {
 	}
 
 	// Generate job name with type prefix (RFC 1035 compliant)
-	jobName := craterUtils.GenerateJobName("sp", token.Username)
+	jobName := orbitUtils.GenerateJobName("sp", token.Username)
 
 	annotations := map[string]string{
 		AnnotationKeyTaskName: req.Name,
@@ -376,7 +376,7 @@ func (mgr *SparseJobMgr) GetJobPods(c *gin.Context) {
 	for _, pod := range pods {
 		// assume one pod running one container
 
-		resources := craterUtils.CalculateRequsetsByContainers(pod.Spec.Containers)
+		resources := orbitUtils.CalculateRequsetsByContainers(pod.Spec.Containers)
 
 		portStr := ""
 		for _, port := range pod.Spec.Containers[0].Ports {

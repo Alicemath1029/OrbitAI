@@ -10,8 +10,8 @@ import (
 	"gorm.io/gorm"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
 )
 
 func increaseDatasetMountCount(ctx context.Context, job *batch.Job) error {

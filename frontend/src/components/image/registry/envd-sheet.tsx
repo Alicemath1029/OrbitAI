@@ -499,8 +499,8 @@ def build():
     install.python(version="${pythonVersion}")
     install.apt_packages([${aptPackages.map((item) => `"${item}"`).join(', ')}])
     config.repo(
-        url="https://github.com/raids-lab/crater",
-        description="Crater",
+        url="https://github.com/raids-lab/orbit",
+        description="Orbit",
     )
     config.pip_index(url="https://pypi.tuna.tsinghua.edu.cn/simple")`
 

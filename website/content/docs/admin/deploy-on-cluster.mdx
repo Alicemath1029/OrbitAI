@@ -1,6 +1,6 @@
 ---
-title: Crater 集群部署指南
-description: 本指南描述了 Crater 平台在生产级 Kubernetes 集群中的标准化部署流程，包含环境准备、依赖组件安装、核心服务部署及常见问题排查。
+title: Orbit 集群部署指南
+description: 本指南描述了 Orbit 平台在生产级 Kubernetes 集群中的标准化部署流程，包含环境准备、依赖组件安装、核心服务部署及常见问题排查。
 ---
 
 ## 1. 环境与基础要求
@@ -32,7 +32,7 @@ node-3     Ready    <none>          v1.31.2   <your-node-ip>  Ubuntu 22.04.5 LTS
 
 ## 2. 集群依赖组件安装
 
-Crater 平台依赖以下基础组件完成调度、监控、网络与存储功能。  
+Orbit 平台依赖以下基础组件完成调度、监控、网络与存储功能。  
 本节包含各组件的安装命令及镜像信息。
 
 ### 2.1 Metrics Server
@@ -124,7 +124,7 @@ cat <<EOF | kubectl apply -f -
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: crater-postgresql
+  name: orbit-postgresql
   namespace: cnpg-system
 spec:
   instances: 3
@@ -305,7 +305,7 @@ EOF
 
 ### 2.8 ingress-nginx (Ingress Controller)
 
-**功能：** 为 Crater 前端与 API 提供外部访问入口。
+**功能：** 为 Orbit 前端与 API 提供外部访问入口。
 
 ```bash
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -380,17 +380,17 @@ http://<your-node-ip>:30002
 
 ---
 
-## 4. Crater 平台部署
+## 4. Orbit 平台部署
 
 拉取 Chart：
 
-<CraterChartVersionNotice />
+<OrbitChartVersionNotice />
 
 ```bash
-helm pull oci://ghcr.io/raids-lab/crater --version <chart-version> --untar
+helm pull oci://ghcr.io/raids-lab/orbit --version <chart-version> --untar
 ```
 
-Crater 平台的核心配置文件为 `values.yaml`。  
+Orbit 平台的核心配置文件为 `values.yaml`。  
 该文件用于定义集群域名、数据库连接、监控服务地址、存储 PVC、以及 Harbor 等外部依赖的连接参数。
 
 在执行 `helm install` 之前，应根据以下说明修改相应字段。
@@ -401,18 +401,18 @@ Crater 平台的核心配置文件为 `values.yaml`。
 
 ```yaml
 # 平台访问域名
-host: crater.example.com
+host: orbit.example.com
 
 # 协议类型，可选 "http" 或 "https"
 protocol: http
 
 # 初始化管理员账号
 firstUser:
-  username: crater-admin
+  username: orbit-admin
   password: <MUSTEDIT>
 ````
 
-如已配置 Ingress 与域名解析，可使用真实域名（如 `crater.mycluster.local`）；  
+如已配置 Ingress 与域名解析，可使用真实域名（如 `orbit.mycluster.local`）；  
 若仅测试环境，可填写控制节点 IP。
 
 ---
@@ -426,22 +426,22 @@ storage:
   create: true
   request: 10Gi
   storageClass: "nfs"          # 使用前面创建的 NFS StorageClass
-  pvcName: "crater-rw-storage" # 后端挂载的共享 PVC 名称
+  pvcName: "orbit-rw-storage" # 后端挂载的共享 PVC 名称
 ```
 
-Crater 后端会自动挂载该 PVC 用于用户空间与公共目录（`users/`, `accounts/`, `public/`）。
+Orbit 后端会自动挂载该 PVC 用于用户空间与公共目录（`users/`, `accounts/`, `public/`）。
 
 ---
 
 ### 4.3 PostgreSQL 数据库配置（CloudNativePG）
 
-Crater 使用 CloudNativePG 部署的数据库集群。  
+Orbit 使用 CloudNativePG 部署的数据库集群。  
 需要将数据库连接参数指向对应的服务：
 
 ```yaml
 backendConfig:
   postgres:
-    host: crater-postgresql.cnpg-system.svc.cluster.local  # CloudNativePG Cluster 的 Service 名称
+    host: orbit-postgresql.cnpg-system.svc.cluster.local  # CloudNativePG Cluster 的 Service 名称
     port: 5432
     dbname: postgres
     user: postgres
@@ -454,15 +454,15 @@ backendConfig:
 > 
 > - `host` 可通过 `kubectl get svc -n cnpg-system` 查询。
 >     
-> - 如果使用 CloudNativePG 的默认集群名为 `crater-postgresql`，则服务名应为：  
->     `crater-postgresql-rw.cnpg-system.svc.cluster.local`。
+> - 如果使用 CloudNativePG 的默认集群名为 `orbit-postgresql`，则服务名应为：  
+>     `orbit-postgresql-rw.cnpg-system.svc.cluster.local`。
 >     
 
 ---
 
 ### 4.4 监控系统配置（Prometheus Stack）
 
-Crater 后端通过 Prometheus API 获取 GPU 与作业指标。  
+Orbit 后端通过 Prometheus API 获取 GPU 与作业指标。  
 应将 `backendConfig.prometheusAPI` 指向 `kube-prometheus-stack` 中的 Prometheus Service 地址：
 
 ```yaml
@@ -491,7 +491,7 @@ grafanaProxy:
 ### 4.5 Harbor 镜像仓库配置（Registry）
 
 若集群内已部署 Harbor，可启用 Registry 集成功能。  
-启用后，Crater 可自动推送构建镜像到 Harbor 仓库。
+启用后，Orbit 可自动推送构建镜像到 Harbor 仓库。
 
 ```yaml
 backendConfig:
@@ -514,22 +514,22 @@ backendConfig:
 
 ### 4.6 Ingress 与 TLS 配置（ingress-nginx + cert-manager）
 
-Crater 默认通过 Ingress 暴露服务。  
+Orbit 默认通过 Ingress 暴露服务。  
 如集群启用了 `ingress-nginx` 并准备了证书，可在 `backendConfig.secrets` 中指定：
 
 ```yaml
 backendConfig:
   secrets:
-    tlsSecretName: crater-tls-secret
-    tlsForwardSecretName: crater-tls-forward-secret
+    tlsSecretName: orbit-tls-secret
+    tlsForwardSecretName: orbit-tls-forward-secret
     imagePullSecretName: ""
 ```
 
 对应的证书可通过以下命令创建：
 
 ```bash
-kubectl create secret tls crater-tls-secret \
-  --cert=tls.crt --key=tls.key -n crater-system
+kubectl create secret tls orbit-tls-secret \
+  --cert=tls.crt --key=tls.key -n orbit-system
 ```
 
 如未启用 HTTPS，可保持默认值，协议仍为 HTTP。
@@ -538,7 +538,7 @@ kubectl create secret tls crater-tls-secret \
 
 ### 4.7 LDAP 配置
 
-如果您的组织已拥有现有的 LDAP 目录服务（如 OpenLDAP 或 Active Directory），可以配置 Crater 接入该服务实现统一身份认证。
+如果您的组织已拥有现有的 LDAP 目录服务（如 OpenLDAP 或 Active Directory），可以配置 Orbit 接入该服务实现统一身份认证。
 
 启用 LDAP 后，系统会在用户首次登录时自动完成账号注册，并持续同步 LDAP 中的昵称、邮箱等信息。
 
@@ -599,25 +599,25 @@ backendConfig:
 确认修改完成后执行：
 
 ```bash
-helm install crater oci://ghcr.io/raids-lab/crater \
+helm install orbit oci://ghcr.io/raids-lab/orbit \
   --version <chart-version> \
-  -n crater-system \
+  -n orbit-system \
   -f values.yaml
 ```
 
 验证：
 
 ```bash
-kubectl get pods -n crater-system
-kubectl get ingress -n crater-system
+kubectl get pods -n orbit-system
+kubectl get ingress -n orbit-system
 ```
 
 访问地址：
 
 ```
-http://crater.example.com
+http://orbit.example.com
 ```
 
 ---
 
-本文档版本适用于 Crater v0.1.0 及以上版本。
+本文档版本适用于 Orbit v0.1.0 及以上版本。

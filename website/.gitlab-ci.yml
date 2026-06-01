@@ -1,4 +1,4 @@
-# Copyright 2025 Crater
+# Copyright 2025 Orbit
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,19 +19,19 @@ stages:
 
 variables:
   HUSKY: "0"
-  HARBOR_REGISTRY_IMAGE: "${HARBOR_REGISTRY}/crater/document"
+  HARBOR_REGISTRY_IMAGE: "${HARBOR_REGISTRY}/orbit/document"
 
 # 构建阶段：生成静态文件
 build_frontend_main:
   stage: build_frontend
-  image: harbor.act.buaa.edu.cn/crater/node-pnpm:21
+  image: harbor.act.buaa.edu.cn/orbit/node-pnpm:21
   script:
     - pnpm config set store-dir .pnpm-store
     - pnpm config set registry https://registry.npmmirror.com
     - pnpm install
     - pnpm build
   cache:
-    key: "crater-nextjs-cache"
+    key: "orbit-nextjs-cache"
     paths:
       - .pnpm-store/
       - node_modules/
@@ -45,7 +45,7 @@ build_frontend_main:
 build_image_main:
   stage: build_image
   image:
-    name: harbor.act.buaa.edu.cn/crater/kaniko-executor:debug
+    name: harbor.act.buaa.edu.cn/orbit/kaniko-executor:debug
     entrypoint: [""]
   script:
     - mkdir -p /kaniko/.docker
@@ -64,11 +64,11 @@ build_image_main:
 deploy_testing:
   stage: deploy
   image:
-    name: harbor.act.buaa.edu.cn/crater/bitnami-kubectl:240302
+    name: harbor.act.buaa.edu.cn/orbit/bitnami-kubectl:240302
     entrypoint: [""]
   script:
-    - kubectl config use-context raids/resource-scheduling/crater/web-frontend:crater-cluster
-    - kubectl set image deployment/website website-container=${HARBOR_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} -n crater
+    - kubectl config use-context raids/resource-scheduling/orbit/web-frontend:orbit-cluster
+    - kubectl set image deployment/website website-container=${HARBOR_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} -n orbit
   only:
     - main
   dependencies:
@@ -77,11 +77,11 @@ deploy_testing:
 deploy_main:
   stage: deploy
   image:
-    name: harbor.act.buaa.edu.cn/crater/bitnami-kubectl:240302
+    name: harbor.act.buaa.edu.cn/orbit/bitnami-kubectl:240302
     entrypoint: [""]
   script:
-    - kubectl config use-context raids/resource-scheduling/crater/web-frontend:actgpu-cluster
-    - kubectl set image deployment/website website-container=${HARBOR_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} -n crater
+    - kubectl config use-context raids/resource-scheduling/orbit/web-frontend:actgpu-cluster
+    - kubectl set image deployment/website website-container=${HARBOR_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} -n orbit
   only:
     - main
   dependencies:

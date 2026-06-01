@@ -15,9 +15,9 @@ import (
 	"k8s.io/client-go/tools/remotecommand"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/raids-lab/crater/internal/handler"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/pkg/config"
+	"github.com/raids-lab/orbit/internal/handler"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/pkg/config"
 )
 
 //nolint:gochecknoinits // This is the standard way to register a gin handler.

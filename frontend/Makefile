@@ -1,4 +1,4 @@
-# Makefile for Crater Frontend Development
+# Makefile for Orbit Frontend Development
 
 # 颜色定义
 RED := \033[31m
@@ -16,7 +16,7 @@ PYTHON ?= $(shell if command -v python3 >/dev/null 2>&1 && python3 -c "import sy
 PORT := $(shell if [ -f .env.development ]; then grep PORT .env.development | cut -d '=' -f2; else echo "5180"; fi)
 .PHONY: help
 help: ## 💡 Display this help message
-	@echo "$(CYAN)🌋 Crater Frontend Development Commands$(RESET)"
+	@echo "$(CYAN)🌋 Orbit Frontend Development Commands$(RESET)"
 	@echo ""
 	@echo "$(YELLOW)📋 Prerequisites:$(RESET)"
 	@echo "  • Backend API server should be running on http://localhost:8088/"

@@ -4,4 +4,4 @@
  */
 import { atomWithStorage } from 'jotai/utils'
 
-export const atomPrivacyAccepted = atomWithStorage<boolean>('crater.privacyAccepted', false)
+export const atomPrivacyAccepted = atomWithStorage<boolean>('orbit.privacyAccepted', false)

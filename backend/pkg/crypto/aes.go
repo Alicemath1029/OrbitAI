@@ -13,7 +13,7 @@ import (
 const aesKeyLength = 32
 
 // 默认密钥：由于 AES 校验严格，这里凑齐了 32 位字符
-const defaultSecretKey = "CRATER_SYSTEM_SECRET_KEY_DEFAULT" // #nosec G101
+const defaultSecretKey = "ORBIT_SYSTEM_SECRET_KEY_DEFAULT" // #nosec G101
 
 // 通过匿名函数初始化变量，避免使用 init 函数 (gochecknoinits)
 var secretKey = func() []byte {

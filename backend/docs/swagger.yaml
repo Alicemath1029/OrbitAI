@@ -1,11 +1,11 @@
 definitions:
   datatypes.JSONType-array_string:
     type: object
-  datatypes.JSONType-github_com_raids-lab_crater_dao_model_QueueQuota:
+  datatypes.JSONType-github_com_raids-lab_orbit_dao_model_QueueQuota:
     type: object
   datatypes.JSONType-v1_ResourceList:
     type: object
-  github_com_raids-lab_crater_dao_model.AccessMode:
+  github_com_raids-lab_orbit_dao_model.AccessMode:
     enum:
     - 0
     - 1
@@ -31,7 +31,7 @@ definitions:
     - AccessModeRO
     - AccessModeRW
     - AccessModeAO
-  github_com_raids-lab_crater_dao_model.ApprovalOrderContent:
+  github_com_raids-lab_orbit_dao_model.ApprovalOrderContent:
     properties:
       approvalorderExtensionHours:
         description: 延长小时数
@@ -42,7 +42,7 @@ definitions:
       approvalorderTypeID:
         type: integer
     type: object
-  github_com_raids-lab_crater_dao_model.ApprovalOrderStatus:
+  github_com_raids-lab_orbit_dao_model.ApprovalOrderStatus:
     enum:
     - Pending
     - Approved
@@ -64,7 +64,7 @@ definitions:
     - ApprovalOrderStatusApproved
     - ApprovalOrderStatusRejected
     - ApprovalOrderStatusCancelled
-  github_com_raids-lab_crater_dao_model.ApprovalOrderType:
+  github_com_raids-lab_orbit_dao_model.ApprovalOrderType:
     enum:
     - dataset
     - job
@@ -78,7 +78,7 @@ definitions:
     x-enum-varnames:
     - ApprovalOrderTypeDataset
     - ApprovalOrderTypeJob
-  github_com_raids-lab_crater_dao_model.BuildSource:
+  github_com_raids-lab_orbit_dao_model.BuildSource:
     enum:
     - Dockerfile
     - PipApt
@@ -92,7 +92,7 @@ definitions:
     - Snapshot
     - EnvdAdvanced
     - EnvdRaw
-  github_com_raids-lab_crater_dao_model.CraterResourceType:
+  github_com_raids-lab_orbit_dao_model.OrbitResourceType:
     enum:
     - gpu
     - rdma
@@ -102,7 +102,7 @@ definitions:
     - ResourceTypeGPU
     - ResourceTypeRDMA
     - ResourceTypeVGPU
-  github_com_raids-lab_crater_dao_model.CronJobConfig:
+  github_com_raids-lab_orbit_dao_model.CronJobConfig:
     properties:
       config:
         items:
@@ -121,13 +121,13 @@ definitions:
       spec:
         type: string
       status:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.CronJobConfigStatus'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.CronJobConfigStatus'
       type:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.CronJobType'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.CronJobType'
       updatedAt:
         type: string
     type: object
-  github_com_raids-lab_crater_dao_model.CronJobConfigStatus:
+  github_com_raids-lab_orbit_dao_model.CronJobConfigStatus:
     enum:
     - unknown
     - suspended
@@ -139,7 +139,7 @@ definitions:
     - CronJobConfigStatusSuspended
     - CronJobConfigStatusIdle
     - CronJobConfigStatusRunning
-  github_com_raids-lab_crater_dao_model.CronJobType:
+  github_com_raids-lab_orbit_dao_model.CronJobType:
     enum:
     - cleaner_function
     - patrol_function
@@ -147,7 +147,7 @@ definitions:
     x-enum-varnames:
     - CronJobTypeCleanerFunc
     - CronJobTypePatrolFunc
-  github_com_raids-lab_crater_dao_model.DataType:
+  github_com_raids-lab_orbit_dao_model.DataType:
     enum:
     - dataset
     - model
@@ -157,7 +157,7 @@ definitions:
     - DataTypeDataset
     - DataTypeModel
     - DataTypeShareFile
-  github_com_raids-lab_crater_dao_model.GpuAnalysis:
+  github_com_raids-lab_orbit_dao_model.GpuAnalysis:
     properties:
       command:
         description: 采集到的原始数据
@@ -193,14 +193,14 @@ definitions:
         type: string
       reviewStatus:
         allOf:
-        - $ref: '#/definitions/github_com_raids-lab_crater_dao_model.ReviewStatus'
+        - $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.ReviewStatus'
         description: 管理状态
       userID:
         type: integer
       userName:
         type: string
     type: object
-  github_com_raids-lab_crater_dao_model.JobType:
+  github_com_raids-lab_orbit_dao_model.JobType:
     enum:
     - all
     - jupyter
@@ -222,7 +222,7 @@ definitions:
     - JobTypeDeepSpeed
     - JobTypeOpenMPI
     - JobTypeCustom
-  github_com_raids-lab_crater_dao_model.ReviewStatus:
+  github_com_raids-lab_orbit_dao_model.ReviewStatus:
     enum:
     - 0
     - 1
@@ -245,7 +245,7 @@ definitions:
     - ReviewStatusPending
     - ReviewStatusConfirmed
     - ReviewStatusIgnored
-  github_com_raids-lab_crater_dao_model.Role:
+  github_com_raids-lab_orbit_dao_model.Role:
     enum:
     - 0
     - 1
@@ -258,7 +258,7 @@ definitions:
     - RoleGuest
     - RoleUser
     - RoleAdmin
-  github_com_raids-lab_crater_dao_model.ScheduleType:
+  github_com_raids-lab_orbit_dao_model.ScheduleType:
     enum:
     - 0
     - 1
@@ -266,7 +266,7 @@ definitions:
     x-enum-varnames:
     - ScheduleTypeBackfill
     - ScheduleTypeNormal
-  github_com_raids-lab_crater_dao_model.Status:
+  github_com_raids-lab_orbit_dao_model.Status:
     enum:
     - 0
     - 1
@@ -288,7 +288,7 @@ definitions:
     - StatusPending
     - StatusActive
     - StatusInactive
-  github_com_raids-lab_crater_dao_model.UserAttribute:
+  github_com_raids-lab_orbit_dao_model.UserAttribute:
     properties:
       avatar:
         description: 头像
@@ -324,14 +324,14 @@ definitions:
         description: UID and GID are used for Filesystem
         type: string
     type: object
-  github_com_raids-lab_crater_dao_model.UserInfo:
+  github_com_raids-lab_orbit_dao_model.UserInfo:
     properties:
       nickname:
         type: string
       username:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_payload.Order:
+  github_com_raids-lab_orbit_internal_payload.Order:
     enum:
     - asc
     - desc
@@ -339,7 +339,7 @@ definitions:
     x-enum-varnames:
     - Asc
     - Desc
-  github_com_raids-lab_crater_internal_payload.ResourceDetail:
+  github_com_raids-lab_orbit_internal_payload.ResourceDetail:
     properties:
       label:
         description: 显示名称 (例如 "NVIDIA V100", "CPU", "内存")
@@ -351,21 +351,21 @@ definitions:
         description: 用量 (核时/卡时/GiB时)
         type: number
     type: object
-  github_com_raids-lab_crater_internal_payload.StatisticsResp:
+  github_com_raids-lab_orbit_internal_payload.StatisticsResp:
     properties:
       series:
         items:
-          $ref: '#/definitions/github_com_raids-lab_crater_internal_payload.TimePointData'
+          $ref: '#/definitions/github_com_raids-lab_orbit_internal_payload.TimePointData'
         type: array
       totalUsage:
         additionalProperties:
-          $ref: '#/definitions/github_com_raids-lab_crater_internal_payload.ResourceDetail'
+          $ref: '#/definitions/github_com_raids-lab_orbit_internal_payload.ResourceDetail'
         description: |-
           TotalUsage Key: ResourceName (如 nvidia.com/v100)
           Value: 包含 Label 和 Type 的详细对象
         type: object
     type: object
-  github_com_raids-lab_crater_internal_payload.TimePointData:
+  github_com_raids-lab_orbit_internal_payload.TimePointData:
     properties:
       timestamp:
         type: string
@@ -376,7 +376,7 @@ definitions:
         description: 'Key: ResourceName, Value: Usage'
         type: object
     type: object
-  github_com_raids-lab_crater_internal_resputil.ErrorCode:
+  github_com_raids-lab_orbit_internal_resputil.ErrorCode:
     enum:
     - 0
     - 40001
@@ -414,7 +414,7 @@ definitions:
     - ServiceSshdNotFound
     - ServiceError
     - NotSpecified
-  github_com_raids-lab_crater_internal_resputil.List-internal_handler_operations_OperationLogResp:
+  github_com_raids-lab_orbit_internal_resputil.List-internal_handler_operations_OperationLogResp:
     properties:
       items:
         items:
@@ -423,29 +423,29 @@ definitions:
       total:
         type: integer
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-any:
+  github_com_raids-lab_orbit_internal_resputil.Response-any:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data: {}
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-array_github_com_raids-lab_crater_pkg_crclient_Pod:
+  github_com_raids-lab_orbit_internal_resputil.Response-array_github_com_raids-lab_orbit_pkg_crclient_Pod:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         items:
-          $ref: '#/definitions/github_com_raids-lab_crater_pkg_crclient.Pod'
+          $ref: '#/definitions/github_com_raids-lab_orbit_pkg_crclient.Pod'
         type: array
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_AccountResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_AccountResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         items:
           $ref: '#/definitions/internal_handler.AccountResp'
@@ -453,10 +453,10 @@ definitions:
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_ApprovalOrderResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_ApprovalOrderResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         items:
           $ref: '#/definitions/internal_handler.ApprovalOrderResp'
@@ -464,10 +464,10 @@ definitions:
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_GpuAnalysisWithJobInfo:
+  github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_GpuAnalysisWithJobInfo:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         items:
           $ref: '#/definitions/internal_handler.GpuAnalysisWithJobInfo'
@@ -475,10 +475,10 @@ definitions:
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_ModelDownloadResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_ModelDownloadResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         items:
           $ref: '#/definitions/internal_handler.ModelDownloadResp'
@@ -486,315 +486,315 @@ definitions:
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_dao_model_GpuAnalysis:
+  github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_dao_model_GpuAnalysis:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.GpuAnalysis'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.GpuAnalysis'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_internal_payload_StatisticsResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_internal_payload_StatisticsResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_payload.StatisticsResp'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_payload.StatisticsResp'
       msg:
         type: string
     type: object
-  ? github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_internal_resputil_List-internal_handler_operations_OperationLogResp
+  ? github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_internal_resputil_List-internal_handler_operations_OperationLogResp
   : properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.List-internal_handler_operations_OperationLogResp'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.List-internal_handler_operations_OperationLogResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_internal_service_ResourceLimitCheckResult:
+  github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_internal_service_ResourceLimitCheckResult:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_service.ResourceLimitCheckResult'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_service.ResourceLimitCheckResult'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_pkg_crclient_ClusterNodeDetail:
+  github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_pkg_crclient_ClusterNodeDetail:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
-        $ref: '#/definitions/github_com_raids-lab_crater_pkg_crclient.ClusterNodeDetail'
+        $ref: '#/definitions/github_com_raids-lab_orbit_pkg_crclient.ClusterNodeDetail'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_pkg_crclient_GPUInfo:
+  github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_pkg_crclient_GPUInfo:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
-        $ref: '#/definitions/github_com_raids-lab_crater_pkg_crclient.GPUInfo'
+        $ref: '#/definitions/github_com_raids-lab_orbit_pkg_crclient.GPUInfo'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_AdjustUserExtraBalanceResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_AdjustUserExtraBalanceResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.AdjustUserExtraBalanceResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ApprovalOrderResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ApprovalOrderResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.ApprovalOrderResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_AuthModeResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_AuthModeResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.AuthModeResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_CheckResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_CheckResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.CheckResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_DeleteProjectResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_DeleteProjectResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.DeleteProjectResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_GpuAnalysisStatusResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_GpuAnalysisStatusResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.GpuAnalysisStatusResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_JobResourceSummaryResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_JobResourceSummaryResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.JobResourceSummaryResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_LLMConfigResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_LLMConfigResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.LLMConfigResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_LoginResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_LoginResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.LoginResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ModelDownloadResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ModelDownloadResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.ModelDownloadResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_NodeMark:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_NodeMark:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.NodeMark'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PrequeueConfigResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PrequeueConfigResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.PrequeueConfigResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PrequeueFeatureStatusResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PrequeueFeatureStatusResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.PrequeueFeatureStatusResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ProjectCreateResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ProjectCreateResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.ProjectCreateResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PutUserInProjectResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PutUserInProjectResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.PutUserInProjectResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_QueueQuotaConfigItemResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_QueueQuotaConfigItemResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.QueueQuotaConfigItemResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_QueueQuotaResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_QueueQuotaResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.QueueQuotaResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_TokenReq:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_TokenReq:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.TokenReq'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_TriggerAllJobsAnalysisResponse:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_TriggerAllJobsAnalysisResponse:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.TriggerAllJobsAnalysisResponse'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_UserDetailResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_UserDetailResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler.UserDetailResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodIngress:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodIngress:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler_tool.PodIngress'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodIngressResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodIngressResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler_tool.PodIngressResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodNodeport:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodNodeport:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler_tool.PodNodeport'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodNodeportResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodNodeportResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler_tool.PodNodeportResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp:
+  github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/internal_handler_vcjob.JupyterTokenResp'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-map_string_string:
+  github_com_raids-lab_orbit_internal_resputil.Response-map_string_string:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         $ref: '#/definitions/map_string_string'
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_resputil.Response-string:
+  github_com_raids-lab_orbit_internal_resputil.Response-string:
     properties:
       code:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode'
       data:
         type: string
       msg:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_service.ResourceLimitCheckResult:
+  github_com_raids-lab_orbit_internal_service.ResourceLimitCheckResult:
     properties:
       details:
         items:
-          $ref: '#/definitions/github_com_raids-lab_crater_internal_service.ResourceLimitDetail'
+          $ref: '#/definitions/github_com_raids-lab_orbit_internal_service.ResourceLimitDetail'
         type: array
       enabled:
         type: boolean
       exceeded:
         type: boolean
     type: object
-  github_com_raids-lab_crater_internal_service.ResourceLimitDetail:
+  github_com_raids-lab_orbit_internal_service.ResourceLimitDetail:
     properties:
       exceeded:
         type: boolean
@@ -805,7 +805,7 @@ definitions:
       used:
         type: string
     type: object
-  github_com_raids-lab_crater_internal_service_vcjob.ForwardType:
+  github_com_raids-lab_orbit_internal_service_vcjob.ForwardType:
     enum:
     - 0
     - 1
@@ -815,7 +815,7 @@ definitions:
     - _
     - IngressType
     - NodePortType
-  github_com_raids-lab_crater_internal_util.VolumeMount:
+  github_com_raids-lab_orbit_internal_util.VolumeMount:
     properties:
       datasetID:
         type: integer
@@ -824,9 +824,9 @@ definitions:
       subPath:
         type: string
       type:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_util.VolumeType'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_util.VolumeType'
     type: object
-  github_com_raids-lab_crater_internal_util.VolumeType:
+  github_com_raids-lab_orbit_internal_util.VolumeType:
     enum:
     - 0
     - 1
@@ -836,7 +836,7 @@ definitions:
     - _
     - FileType
     - DataType
-  github_com_raids-lab_crater_pkg_crclient.ClusterNodeDetail:
+  github_com_raids-lab_orbit_pkg_crclient.ClusterNodeDetail:
     properties:
       address:
         type: string
@@ -877,7 +877,7 @@ definitions:
       used:
         $ref: '#/definitions/v1.ResourceList'
     type: object
-  github_com_raids-lab_crater_pkg_crclient.GPUDeviceInfo:
+  github_com_raids-lab_orbit_pkg_crclient.GPUDeviceInfo:
     properties:
       arch:
         description: 架构
@@ -907,7 +907,7 @@ definitions:
         description: 供应商域名，如 "nvidia.com"
         type: string
     type: object
-  github_com_raids-lab_crater_pkg_crclient.GPUInfo:
+  github_com_raids-lab_orbit_pkg_crclient.GPUInfo:
     properties:
       cudaVersion:
         type: string
@@ -919,7 +919,7 @@ definitions:
       gpuDevices:
         description: 多种类型的 GPU 设备列表
         items:
-          $ref: '#/definitions/github_com_raids-lab_crater_pkg_crclient.GPUDeviceInfo'
+          $ref: '#/definitions/github_com_raids-lab_orbit_pkg_crclient.GPUDeviceInfo'
         type: array
       gpuDriver:
         type: string
@@ -944,7 +944,7 @@ definitions:
           type: array
         type: object
     type: object
-  github_com_raids-lab_crater_pkg_crclient.Pod:
+  github_com_raids-lab_orbit_pkg_crclient.Pod:
     properties:
       accountID:
         description: 账户ID（用于跳转）
@@ -1005,22 +1005,22 @@ definitions:
     properties:
       accessPublic:
         allOf:
-        - $ref: '#/definitions/github_com_raids-lab_crater_dao_model.AccessMode'
+        - $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.AccessMode'
         description: User access mode of the platform
       accessQueue:
         allOf:
-        - $ref: '#/definitions/github_com_raids-lab_crater_dao_model.AccessMode'
+        - $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.AccessMode'
         description: User access mode of the queue
       queue:
         description: Current Queue Name
         type: string
       rolePlatform:
         allOf:
-        - $ref: '#/definitions/github_com_raids-lab_crater_dao_model.Role'
+        - $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.Role'
         description: User role of the platform
       roleQueue:
         allOf:
-        - $ref: '#/definitions/github_com_raids-lab_crater_dao_model.Role'
+        - $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.Role'
         description: User role of the queue
       space:
         description: User pvc subpath the platform
@@ -1029,7 +1029,7 @@ definitions:
   internal_handler.AccountResp:
     properties:
       access:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.AccessMode'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.AccessMode'
       expiredAt:
         type: string
       name:
@@ -1037,7 +1037,7 @@ definitions:
       nickname:
         type: string
       role:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.Role'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.Role'
     type: object
   internal_handler.AdjustUserExtraBalanceReq:
     properties:
@@ -1064,11 +1064,11 @@ definitions:
   internal_handler.ApprovalOrderResp:
     properties:
       content:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderContent'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderContent'
       createdAt:
         type: string
       creator:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.UserInfo'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.UserInfo'
       creatorID:
         type: integer
       id:
@@ -1078,13 +1078,13 @@ definitions:
       reviewNotes:
         type: string
       reviewer:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.UserInfo'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.UserInfo'
       reviewerID:
         type: integer
       status:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderStatus'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderStatus'
       type:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderType'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderType'
     type: object
   internal_handler.ApprovalOrderreq:
     properties:
@@ -1100,9 +1100,9 @@ definitions:
       name:
         type: string
       status:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderStatus'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderStatus'
       type:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderType'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderType'
     required:
     - name
     - type
@@ -1133,7 +1133,7 @@ definitions:
       context:
         $ref: '#/definitions/internal_handler.AccountContext'
       user:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.UserAttribute'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.UserAttribute'
       version:
         $ref: '#/definitions/internal_handler.VersionInfo'
     type: object
@@ -1169,7 +1169,7 @@ definitions:
           type: string
         type: array
       type:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.DataType'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.DataType'
       url:
         type: string
       weburl:
@@ -1224,7 +1224,7 @@ definitions:
       jobName:
         type: string
       jobType:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.JobType'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.JobType'
       llmversion:
         type: string
       lockedTimestamp:
@@ -1251,7 +1251,7 @@ definitions:
         $ref: '#/definitions/datatypes.JSONType-v1_ResourceList'
       reviewStatus:
         allOf:
-        - $ref: '#/definitions/github_com_raids-lab_crater_dao_model.ReviewStatus'
+        - $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.ReviewStatus'
         description: 管理状态
       status:
         $ref: '#/definitions/volcano_sh_apis_pkg_apis_batch_v1alpha1.JobPhase'
@@ -1369,7 +1369,7 @@ definitions:
       refreshToken:
         type: string
       user:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.UserAttribute'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.UserAttribute'
     type: object
   internal_handler.ModelDownloadResp:
     properties:
@@ -1479,7 +1479,7 @@ definitions:
       accessmode:
         type: string
       quota:
-        $ref: '#/definitions/datatypes.JSONType-github_com_raids-lab_crater_dao_model_QueueQuota'
+        $ref: '#/definitions/datatypes.JSONType-github_com_raids-lab_orbit_dao_model_QueueQuota'
       role:
         type: string
       uid:
@@ -1620,9 +1620,9 @@ definitions:
         description: 审批人ID
         type: integer
       status:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderStatus'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderStatus'
       type:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderType'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderType'
     required:
     - name
     - type
@@ -1719,13 +1719,13 @@ definitions:
       label:
         type: string
       type:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.CraterResourceType'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.OrbitResourceType'
     type: object
   internal_handler.UpdateReviewStatusReq:
     properties:
       reviewStatus:
         allOf:
-        - $ref: '#/definitions/github_com_raids-lab_crater_dao_model.ReviewStatus'
+        - $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.ReviewStatus'
         minimum: 1
     required:
     - reviewStatus
@@ -1733,7 +1733,7 @@ definitions:
   internal_handler.UpdateRoleReq:
     properties:
       role:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.Role'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.Role'
     required:
     - role
     type: object
@@ -1762,11 +1762,11 @@ definitions:
         type: string
       role:
         allOf:
-        - $ref: '#/definitions/github_com_raids-lab_crater_dao_model.Role'
+        - $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.Role'
         description: 用户角色
       status:
         allOf:
-        - $ref: '#/definitions/github_com_raids-lab_crater_dao_model.Status'
+        - $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.Status'
         description: 用户状态
       teacher:
         description: 导师
@@ -1777,7 +1777,7 @@ definitions:
       accessmode:
         type: string
       quota:
-        $ref: '#/definitions/datatypes.JSONType-github_com_raids-lab_crater_dao_model_QueueQuota'
+        $ref: '#/definitions/datatypes.JSONType-github_com_raids-lab_orbit_dao_model_QueueQuota'
       role:
         type: string
     type: object
@@ -1845,7 +1845,7 @@ definitions:
         type: string
       volumeMounts:
         items:
-          $ref: '#/definitions/github_com_raids-lab_crater_internal_util.VolumeMount'
+          $ref: '#/definitions/github_com_raids-lab_orbit_internal_util.VolumeMount'
         type: array
     type: object
   internal_handler_image.CreateByEnvdRequest:
@@ -1857,7 +1857,7 @@ definitions:
       base:
         type: string
       buildSource:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.BuildSource'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.BuildSource'
       description:
         type: string
       envd:
@@ -1947,7 +1947,7 @@ definitions:
           type: string
         type: array
       taskType:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.JobType'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.JobType'
     type: object
   internal_handler_operations.OperationLogResp:
     properties:
@@ -2073,7 +2073,7 @@ definitions:
       resource:
         $ref: '#/definitions/v1.ResourceList'
       scheduleType:
-        $ref: '#/definitions/github_com_raids-lab_crater_dao_model.ScheduleType'
+        $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.ScheduleType'
       selectors:
         items:
           $ref: '#/definitions/v1.NodeSelectorRequirement'
@@ -2082,7 +2082,7 @@ definitions:
         type: string
       volumeMounts:
         items:
-          $ref: '#/definitions/github_com_raids-lab_crater_internal_util.VolumeMount'
+          $ref: '#/definitions/github_com_raids-lab_orbit_internal_util.VolumeMount'
         type: array
     required:
     - image
@@ -2102,7 +2102,7 @@ definitions:
       port:
         type: integer
       type:
-        $ref: '#/definitions/github_com_raids-lab_crater_internal_service_vcjob.ForwardType'
+        $ref: '#/definitions/github_com_raids-lab_orbit_internal_service_vcjob.ForwardType'
     type: object
   internal_handler_vcjob.ImageBaseInfo:
     properties:
@@ -2416,9 +2416,9 @@ definitions:
     - Failed
 info:
   contact: {}
-  description: This is the API server for Crater, a Multi-tenant AI Model Training
+  description: This is the API server for Orbit, a Multi-tenant AI Model Training
     Platform based on Kubernetes.
-  title: Crater API
+  title: Orbit API
   version: 1.0.0
 paths:
   /admin/nodes/{name}/pods:
@@ -2438,15 +2438,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-array_github_com_raids-lab_crater_pkg_crclient_Pod'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-array_github_com_raids-lab_orbit_pkg_crclient_Pod'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取节点Pod信息（管理员）
@@ -2463,15 +2463,15 @@ paths:
         "200":
           description: token验证成功，返回用户信息、上下文和版本信息
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_CheckResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_CheckResp'
         "401":
           description: token无效或已过期
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 服务器内部错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 验证用户token并返回用户信息
@@ -2494,19 +2494,19 @@ paths:
         "200":
           description: 登录成功，返回 JWT Token 和默认个人项目
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_LoginResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_LoginResp'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "401":
           description: 用户名或密码错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 数据库交互错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       summary: 用户登录
       tags:
       - Auth
@@ -2521,11 +2521,11 @@ paths:
         "200":
           description: 启用认证类型及注册配置
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_AuthModeResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_AuthModeResp'
         "500":
           description: 获取相关配置时错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       summary: 获取后端用户认证模式
       tags:
       - Auth
@@ -2541,16 +2541,16 @@ paths:
           description: 成功返回
           schema:
             items:
-              $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+              $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
             type: array
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取系统中每种Status的Job的数量
@@ -2568,15 +2568,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_AccountResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_AccountResp'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get all accounts for user
@@ -2599,19 +2599,19 @@ paths:
         "200":
           description: User account entries
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "403":
           description: Forbidden - user not in account
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get users in account
@@ -2639,19 +2639,19 @@ paths:
         "200":
           description: Returns removed username and account name
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "403":
           description: Forbidden - not account admin
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Remove user from account (account admin)
@@ -2683,19 +2683,19 @@ paths:
         "200":
           description: Returns added username and account name
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "403":
           description: Forbidden - not account admin
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Add user to account (account admin)
@@ -2729,19 +2729,19 @@ paths:
         "200":
           description: Update result
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PutUserInProjectResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PutUserInProjectResp'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "403":
           description: Forbidden - not account admin
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Batch update user-account relationship (account admin)
@@ -2774,19 +2774,19 @@ paths:
         "200":
           description: Returns updated username and account name
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "403":
           description: Forbidden - not account admin
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Update user in account (account admin)
@@ -2809,19 +2809,19 @@ paths:
         "200":
           description: User account entries
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "403":
           description: Forbidden - user not in account
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get users not in account
@@ -2843,15 +2843,15 @@ paths:
         "200":
           description: 账户信息
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取指定账户
@@ -2873,15 +2873,15 @@ paths:
         "200":
           description: 账户信息
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取指定账户
@@ -2898,15 +2898,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 展示所有审批订单
@@ -2929,19 +2929,19 @@ paths:
         "200":
           description: 成功返回工单详情
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ApprovalOrderResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ApprovalOrderResp'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: 工单不存在
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 管理员获取审批工单详情
@@ -2958,11 +2958,11 @@ paths:
         "200":
           description: 成功返回检查结果消息
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 检查待审批作业工单有效性
@@ -2979,15 +2979,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取所有数据集
@@ -3011,15 +3011,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 管理员取消数据共享队列
@@ -3043,15 +3043,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 管理员取消数据集共享用户
@@ -3075,15 +3075,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 管理员对队列分享数据集
@@ -3107,15 +3107,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 管理员对用户分享数据集
@@ -3130,11 +3130,11 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_GpuAnalysisWithJobInfo'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_GpuAnalysisWithJobInfo'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 列出所有 GPU 分析记录（包含作业信息）
@@ -3157,15 +3157,15 @@ paths:
         "200":
           description: 操作成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 操作失败
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 确认占卡并停止作业
@@ -3194,15 +3194,15 @@ paths:
         "200":
           description: 更新成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 更新管理员对分析记录的审核状态
@@ -3226,15 +3226,15 @@ paths:
         "200":
           description: 分析成功，返回创建的分析记录
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_dao_model_GpuAnalysis'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_dao_model_GpuAnalysis'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 分析过程中发生错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 手动触发对单个 Pod 的 GPU 分析
@@ -3249,11 +3249,11 @@ paths:
         "200":
           description: 成功，返回入队的 Job 数量
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_TriggerAllJobsAnalysisResponse'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_TriggerAllJobsAnalysisResponse'
         "500":
           description: 服务器错误或队列已满
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 触发对所有运行中 Job 的异步 GPU 分析
@@ -3277,15 +3277,15 @@ paths:
         "200":
           description: 分析成功，返回创建或更新后的分析记录
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_dao_model_GpuAnalysis'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_dao_model_GpuAnalysis'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 分析过程中发生错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 手动触发对单个 Job 的 GPU 分析
@@ -3428,7 +3428,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_ModelDownloadResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_ModelDownloadResp'
       security:
       - Bearer: []
       summary: 管理员获取所有模型下载任务
@@ -3451,7 +3451,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
       security:
       - Bearer: []
       summary: 管理员删除模型下载任务
@@ -3474,15 +3474,15 @@ paths:
         "200":
           description: 成功排空节点
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 排空节点失败
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 排空节点
@@ -3499,11 +3499,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-map_string_string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-map_string_string'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 清空操作日志
@@ -3552,15 +3552,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_internal_resputil_List-internal_handler_operations_OperationLogResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_internal_resputil_List-internal_handler_operations_OperationLogResp'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取操作日志列表
@@ -3607,15 +3607,15 @@ paths:
         "200":
           description: 账户列表
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get all accounts
@@ -3637,15 +3637,15 @@ paths:
         "200":
           description: 删除的队列名
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_DeleteProjectResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_DeleteProjectResp'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 删除账户
@@ -3671,15 +3671,15 @@ paths:
         "200":
           description: 成功更新配额
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 更新配额
@@ -3701,15 +3701,15 @@ paths:
         "200":
           description: 重置成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 立即重置账户免费额度
@@ -3742,15 +3742,15 @@ paths:
         "200":
           description: Returns added username and account name
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Add user to account
@@ -3778,15 +3778,15 @@ paths:
         "200":
           description: 返回添加的用户名和队列名
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Remove user from account
@@ -3818,15 +3818,15 @@ paths:
         "200":
           description: Returns added username and account name
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Update user in account
@@ -3849,15 +3849,15 @@ paths:
         "200":
           description: User account entries
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get users in account
@@ -3885,15 +3885,15 @@ paths:
         "200":
           description: 更新结果
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PutUserInProjectResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PutUserInProjectResp'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Batch update user-account relationship
@@ -3916,15 +3916,15 @@ paths:
         "200":
           description: User account entries
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get users not in account
@@ -3939,11 +3939,11 @@ paths:
         "200":
           description: 配置信息
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_QueueQuotaResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_QueueQuotaResp'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取队列内资源限制
@@ -3966,15 +3966,15 @@ paths:
         "200":
           description: 创建成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_QueueQuotaConfigItemResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_QueueQuotaConfigItemResp'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "409":
           description: 名称冲突
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 创建队列内资源限制
@@ -3995,15 +3995,15 @@ paths:
         "200":
           description: 删除成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: 配置不存在
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 删除队列内资源限制
@@ -4031,19 +4031,19 @@ paths:
         "200":
           description: 更新成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_QueueQuotaConfigItemResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_QueueQuotaConfigItemResp'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: 配置不存在
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "409":
           description: 名称冲突
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 更新队列内资源限制
@@ -4066,15 +4066,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Delete a resource
@@ -4103,15 +4103,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Update a resource's attributes
@@ -4140,15 +4140,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Delete the link between a GPU resource and an RDMA resource
@@ -4172,15 +4172,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get all VGPU resources linked to a GPU resource
@@ -4209,15 +4209,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Link a GPU resource to a VGPU resource
@@ -4246,15 +4246,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Delete a GPU-VGPU resource relationship
@@ -4288,15 +4288,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Update a GPU-VGPU resource relationship
@@ -4321,15 +4321,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Link a GPU resource to an RDMA resource
@@ -4347,15 +4347,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get allocatable resources from the Kubernetes cluster and update the
@@ -4371,7 +4371,7 @@ paths:
         "200":
           description: 开关状态
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_GpuAnalysisStatusResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_GpuAnalysisStatusResp'
       security:
       - Bearer: []
       summary: 获取 GPU 分析功能开关状态
@@ -4394,11 +4394,11 @@ paths:
         "200":
           description: 设置成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: LLM连接检查失败，无法开启
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 设置 GPU 分析功能开关
@@ -4413,11 +4413,11 @@ paths:
         "200":
           description: 重置成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 重置 LLM 配置
@@ -4431,11 +4431,11 @@ paths:
         "200":
           description: 配置信息
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_LLMConfigResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_LLMConfigResp'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取 LLM 配置信息
@@ -4458,11 +4458,11 @@ paths:
         "200":
           description: 更新成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 参数错误或校验失败
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 更新 LLM 配置
@@ -4470,18 +4470,18 @@ paths:
       - SystemConfig
   /v1/admin/system-config/prequeue:
     get:
-      description: 获取当前回填提交开关、Crater 队内资源配额开关、普通作业等待忍耐时间和 watcher 运行参数
+      description: 获取当前回填提交开关、Orbit 队内资源配额开关、普通作业等待忍耐时间和 watcher 运行参数
       produces:
       - application/json
       responses:
         "200":
           description: 配置
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PrequeueConfigResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PrequeueConfigResp'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取新版排队配置
@@ -4490,7 +4490,7 @@ paths:
     put:
       consumes:
       - application/json
-      description: 更新回填提交开关、Crater 队内资源配额开关、普通作业等待忍耐时间和 watcher 运行参数
+      description: 更新回填提交开关、Orbit 队内资源配额开关、普通作业等待忍耐时间和 watcher 运行参数
       parameters:
       - description: 配置
         in: body
@@ -4504,15 +4504,15 @@ paths:
         "200":
           description: 更新成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 更新新版排队配置
@@ -4529,15 +4529,15 @@ paths:
         "200":
           description: 成功获取用户信息
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 列出用户信息
@@ -4560,15 +4560,15 @@ paths:
         "200":
           description: 删除成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 删除用户
@@ -4590,22 +4590,22 @@ paths:
         name: attributes
         required: true
         schema:
-          $ref: '#/definitions/github_com_raids-lab_crater_dao_model.UserAttribute'
+          $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.UserAttribute'
       produces:
       - application/json
       responses:
         "200":
           description: 用户属性更新成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 管理员更新用户属性
@@ -4634,15 +4634,15 @@ paths:
         "200":
           description: 调整成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_AdjustUserExtraBalanceResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_AdjustUserExtraBalanceResp'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 调整用户额外点数
@@ -4670,15 +4670,15 @@ paths:
         "200":
           description: 更新角色成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 更新角色
@@ -4695,15 +4695,15 @@ paths:
         "200":
           description: 成功获取用户信息
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 列出用户基本信息
@@ -4726,15 +4726,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Admin delete the job
@@ -4751,15 +4751,15 @@ paths:
         "200":
           description: AI Job ListUserJob
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: ListUserJob AI jobs
@@ -4782,15 +4782,15 @@ paths:
         "200":
           description: Delete AI Job Response
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Delete an AI job
@@ -4813,15 +4813,15 @@ paths:
         "200":
           description: AI Job Details
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: GetDetail AI job details
@@ -4844,15 +4844,15 @@ paths:
         "200":
           description: 事件列表
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取AI任务的事件
@@ -4875,15 +4875,15 @@ paths:
         "200":
           description: 任务yaml
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取vcjob Yaml详情
@@ -4900,15 +4900,15 @@ paths:
         "200":
           description: Quota Information
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get the quota of the queue
@@ -4931,15 +4931,15 @@ paths:
         "200":
           description: CreateCustom AI Job Response
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: CreateCustom a new AI job
@@ -4978,15 +4978,15 @@ paths:
         "200":
           description: 成功返回工单列表
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取我的审批工单
@@ -5009,15 +5009,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 创建审批工单
@@ -5040,15 +5040,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 删除审批工单
@@ -5070,23 +5070,23 @@ paths:
         "200":
           description: 成功返回工单详情
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ApprovalOrderResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ApprovalOrderResp'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "403":
           description: 权限不足
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: 工单不存在
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取审批工单详情
@@ -5109,15 +5109,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 更新审批工单
@@ -5140,19 +5140,19 @@ paths:
         "200":
           description: 成功返回工单列表
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_ApprovalOrderResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_ApprovalOrderResp'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: 工单不存在
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 通过名称获取审批工单
@@ -5176,15 +5176,15 @@ paths:
         "200":
           description: 用户上下文
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_LoginResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_LoginResp'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 类似登录，切换项目并返回新的 JWT Token
@@ -5201,22 +5201,22 @@ paths:
         name: attributes
         required: true
         schema:
-          $ref: '#/definitions/github_com_raids-lab_crater_dao_model.UserAttribute'
+          $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.UserAttribute'
       produces:
       - application/json
       responses:
         "200":
           description: User attributes updated
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Update user attributes
@@ -5233,15 +5233,15 @@ paths:
         "200":
           description: Successfully send email verification code to user
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Send User Verification Code for email
@@ -5258,15 +5258,15 @@ paths:
         "200":
           description: User email updated successfully
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Update after judging Verification Code for email
@@ -5283,15 +5283,15 @@ paths:
         "200":
           description: 当前作业资源占用汇总
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_JobResourceSummaryResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_JobResourceSummaryResp'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取当前资源占用汇总
@@ -5306,11 +5306,11 @@ paths:
         "200":
           description: 当前状态
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PrequeueFeatureStatusResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PrequeueFeatureStatusResp'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取回填提交开关状态
@@ -5327,15 +5327,15 @@ paths:
         "200":
           description: Volcano Queue Quota
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get the queue information
@@ -5358,11 +5358,11 @@ paths:
         "200":
           description: 检查结果
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_internal_service_ResourceLimitCheckResult'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_internal_service_ResourceLimitCheckResult'
         "500":
           description: 服务器错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 检查用户资源使用是否超限
@@ -5384,15 +5384,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 数据集的共享队列
@@ -5414,15 +5414,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 没有该数据集权限的队列列表
@@ -5444,15 +5444,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取该数据集共享用户
@@ -5474,15 +5474,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 没有该数据集权限的用户列表
@@ -5506,15 +5506,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 普通用户取消数据共享队列
@@ -5538,15 +5538,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 普通用户取消数据集共享用户
@@ -5570,15 +5570,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 创建数据集
@@ -5600,15 +5600,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 删除数据集
@@ -5630,15 +5630,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 通过数据集id获取数据集信息
@@ -5655,15 +5655,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取数据集
@@ -5687,15 +5687,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 跟队列共享数据集
@@ -5718,15 +5718,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 跟用户共享数据集
@@ -5750,15 +5750,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 更新数据集
@@ -6309,15 +6309,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取作业模板
@@ -6341,15 +6341,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 创建作业模板
@@ -6372,15 +6372,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 删除作业模板
@@ -6397,15 +6397,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 展示所有作业模板
@@ -6429,15 +6429,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 更新作业模板
@@ -6461,7 +6461,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ModelDownloadResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ModelDownloadResp'
       security:
       - Bearer: []
       summary: 创建模型下载任务
@@ -6483,7 +6483,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_ModelDownloadResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_ModelDownloadResp'
       security:
       - Bearer: []
       summary: 获取用户的模型下载任务列表
@@ -6506,7 +6506,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
       security:
       - Bearer: []
       summary: 删除模型下载任务
@@ -6528,7 +6528,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ModelDownloadResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ModelDownloadResp'
       security:
       - Bearer: []
       summary: 获取单个模型下载任务详情
@@ -6551,7 +6551,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
       security:
       - Bearer: []
       summary: 获取模型下载任务的 Pod 日志
@@ -6574,7 +6574,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ModelDownloadResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ModelDownloadResp'
       security:
       - Bearer: []
       summary: 暂停下载任务
@@ -6597,7 +6597,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ModelDownloadResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ModelDownloadResp'
       security:
       - Bearer: []
       summary: 恢复下载任务
@@ -6620,7 +6620,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ModelDownloadResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ModelDownloadResp'
       security:
       - Bearer: []
       summary: 重试失败的下载任务
@@ -6648,15 +6648,15 @@ paths:
         "200":
           description: Pod容器列表
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取Pod的容器列表
@@ -6699,15 +6699,15 @@ paths:
         "200":
           description: Pod容器日志
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取Pod容器日志
@@ -6724,15 +6724,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       summary: edit pod's resources(cpu, mem)
       tags:
       - Operations
@@ -6758,19 +6758,19 @@ paths:
         "200":
           description: Pod事件列表
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: 任务未找到
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取Pod的事件
@@ -6804,19 +6804,19 @@ paths:
         "200":
           description: Ingress规则删除成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误或Ingress规则未找到
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: Pod未找到
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 删除Pod的Ingress规则
@@ -6843,19 +6843,19 @@ paths:
         "200":
           description: Pod Ingress规则列表
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodIngressResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodIngressResp'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: Pod未找到
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取Pod的Ingress规则
@@ -6888,19 +6888,19 @@ paths:
         "200":
           description: 成功创建的Ingress规则
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodIngress'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodIngress'
         "400":
           description: 请求参数错误或规则冲突
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: Pod未找到
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 创建新的Pod Ingress规则
@@ -6934,19 +6934,19 @@ paths:
         "200":
           description: NodePort规则删除成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误或NodePort规则未找到
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: Pod未找到
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 删除Pod的NodePort规则
@@ -6973,19 +6973,19 @@ paths:
         "200":
           description: Pod NodePort规则列表
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodNodeportResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodNodeportResp'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: Pod未找到
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取Pod的NodePort规则
@@ -7018,19 +7018,19 @@ paths:
         "200":
           description: 成功创建的NodePort规则
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodNodeport'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodNodeport'
         "400":
           description: 请求参数错误或规则冲突
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: Pod未找到
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 创建新的Pod NodePort规则
@@ -7047,15 +7047,15 @@ paths:
         "200":
           description: 成功返回值描述，注意这里返回Json字符串，swagger无法准确解析
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取节点基本信息
@@ -7078,15 +7078,15 @@ paths:
         "200":
           description: 成功返回值
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_pkg_crclient_ClusterNodeDetail'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_pkg_crclient_ClusterNodeDetail'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取节点详细信息
@@ -7114,15 +7114,15 @@ paths:
         "200":
           description: 成功返回值
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 更新节点调度状态
@@ -7151,15 +7151,15 @@ paths:
         "200":
           description: 成功删除注解
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 删除节点注解
@@ -7187,15 +7187,15 @@ paths:
         "200":
           description: 成功添加注解
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 添加节点注解
@@ -7217,15 +7217,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_pkg_crclient_GPUInfo'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_pkg_crclient_GPUInfo'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取GPU各节点的利用率
@@ -7254,15 +7254,15 @@ paths:
         "200":
           description: 成功删除标签
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 删除节点标签
@@ -7290,15 +7290,15 @@ paths:
         "200":
           description: 成功添加标签
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 添加节点标签
@@ -7321,15 +7321,15 @@ paths:
         "200":
           description: 成功返回节点标记信息
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_NodeMark'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_NodeMark'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取节点标记信息
@@ -7351,15 +7351,15 @@ paths:
         "200":
           description: 成功返回值描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取节点Pod信息
@@ -7388,15 +7388,15 @@ paths:
         "200":
           description: 成功删除污点
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 删除节点污点
@@ -7424,15 +7424,15 @@ paths:
         "200":
           description: 成功添加污点
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 添加节点污点
@@ -7449,15 +7449,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       summary: set LockTime of the job
       tags:
       - Operations
@@ -7472,15 +7472,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       summary: clear LockTime of the job
       tags:
       - Operations
@@ -7495,15 +7495,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get all cronjob configs
@@ -7519,22 +7519,22 @@ paths:
         name: use
         required: true
         schema:
-          $ref: '#/definitions/github_com_raids-lab_crater_dao_model.CronJobConfig'
+          $ref: '#/definitions/github_com_raids-lab_orbit_dao_model.CronJobConfig'
       produces:
       - application/json
       responses:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Update cronjob config
@@ -7551,15 +7551,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       summary: set KeepWhenLowResourceUsage of the job to the opposite value
       tags:
       - Operations
@@ -7574,15 +7574,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       summary: Get job white list
       tags:
       - Operations
@@ -7603,15 +7603,15 @@ paths:
         "200":
           description: 成功创建账户，返回账户ID
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ProjectCreateResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ProjectCreateResp'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 账户创建失败，返回错误信息
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 创建团队账户
@@ -7634,15 +7634,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get a list of resources based on the specified parameters
@@ -7666,15 +7666,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get all RDMA resources linked to a GPU resource
@@ -7697,15 +7697,15 @@ paths:
         "200":
           description: 事件列表
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取稀疏推荐作业的事件
@@ -7747,7 +7747,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_internal_payload_StatisticsResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_internal_payload_StatisticsResp'
       security:
       - Bearer: []
       summary: 获取资源统计信息
@@ -7764,15 +7764,15 @@ paths:
         "200":
           description: Token 鉴权
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_TokenReq'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_TokenReq'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 通过token鉴权
@@ -7795,15 +7795,15 @@ paths:
         "200":
           description: 成功获取用户信息
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_UserDetailResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_UserDetailResp'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取单个用户信息
@@ -7820,15 +7820,15 @@ paths:
         "200":
           description: 成功获取用户信息
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: 请求参数错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: 其他错误
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 检查邮箱是否已验证
@@ -7845,15 +7845,15 @@ paths:
         "200":
           description: Volcano Job List
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get the jobs of the user
@@ -7876,15 +7876,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Delete the job
@@ -7901,15 +7901,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       summary: set AlertEnabled of the job to the opposite value
       tags:
       - VolcanoJob
@@ -7930,15 +7930,15 @@ paths:
         "200":
           description: 任务描述
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取jupyter详情
@@ -7961,15 +7961,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取任务的事件
@@ -7992,15 +7992,15 @@ paths:
         "200":
           description: Pod列表
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取任务的Pod列表
@@ -8024,15 +8024,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get the password of the WebIDE job
@@ -8056,15 +8056,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Create a snapshot of the job container
@@ -8087,15 +8087,15 @@ paths:
         "200":
           description: SSH开启成功
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 开启 SSH
@@ -8118,15 +8118,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取任务的 template
@@ -8149,15 +8149,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get the ingress base url and jupyter token of the job
@@ -8180,15 +8180,15 @@ paths:
         "200":
           description: 任务yaml
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: 获取vcjob Yaml详情
@@ -8211,15 +8211,15 @@ paths:
         "200":
           description: admin get Volcano Job List
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: admin Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get all of the jobs
@@ -8243,15 +8243,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Create a Jupyter job
@@ -8274,15 +8274,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Create a training job
@@ -8305,15 +8305,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Create a training job
@@ -8342,23 +8342,23 @@ paths:
         "200":
           description: User's Job List
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "403":
           description: Forbidden - insufficient permissions
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Get jobs of a specific user within days
@@ -8382,15 +8382,15 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "400":
           description: Request parameter error
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
         "500":
           description: Other errors
           schema:
-            $ref: '#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any'
+            $ref: '#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any'
       security:
       - Bearer: []
       summary: Create a WebIDE job

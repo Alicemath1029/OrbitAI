@@ -49,7 +49,7 @@ export function usePagefindSearch(search: string, options?: PagefindOptions) {
       setQuery((prev) => ({ ...prev, isLoading: true }));
 
       try {
-        const basePath = '/crater'; 
+        const basePath = '/orbit'; 
         const pagefind = await import(/* webpackIgnore: true */ `${basePath}/pagefind/pagefind.js`);
 
         if (lastLang && lastLang !== options?.lang) {

@@ -1,6 +1,6 @@
 ---
 title: 存储架构
-description: Crater 使用混合存储架构来应对高吞吐量的本地工作负载以及跨 Pod 和节点的持久共享数据访问。本文档概述了集群中使用的存储解决方案。
+description: Orbit 使用混合存储架构来应对高吞吐量的本地工作负载以及跨 Pod 和节点的持久共享数据访问。本文档概述了集群中使用的存储解决方案。
 ---
 
 ## 1. 本地持久卷（通过 OpenEBS 的 LocalPV）
@@ -11,7 +11,7 @@ description: Crater 使用混合存储架构来应对高吞吐量的本地工作
 
 - **基于 CRD 的管理**：允许使用 Kubernetes 原生的声明式管理本地磁盘。
 - **性能**：数据保留在同一节点上，从而减少网络开销。
-- **Crater 中的应用场景**：
+- **Orbit 中的应用场景**：
   - 作业缓存目录
   - 本地数据集暂存区
   - 每个节点的推理或训练临时空间
@@ -28,13 +28,13 @@ description: Crater 使用混合存储架构来应对高吞吐量的本地工作
 
 ## 2. 共享块存储（通过 Rook 的 Ceph RBD）
 
-对于需要跨多个节点访问的持久化卷，Crater 使用 [Rook-Ceph RBD](https://rook.io/docs/rook/latest/ceph-block.html)。RBD 卷动态分配并支持：
+对于需要跨多个节点访问的持久化卷，Orbit 使用 [Rook-Ceph RBD](https://rook.io/docs/rook/latest/ceph-block.html)。RBD 卷动态分配并支持：
 
 - 支持迁移的 ReadWriteOnce 访问
 - 复制和故障恢复
 - 适用于：
   - Prometheus TSDB 存储
-  - 需要持久化的 Crater 内部服务
+  - 需要持久化的 Orbit 内部服务
   - 跨节点共享的数据集
 
 选择 Ceph 的原因包括：
@@ -51,7 +51,7 @@ description: Crater 使用混合存储架构来应对高吞吐量的本地工作
 
 | 组件             | 类型               | 存储后端         | 说明                                  |
 |------------------|--------------------|------------------|----------------------------------------|
-| PostgreSQL (Crater DB) | 持久化         | LocalPV (OpenEBS) | 高速，节点专用                         |
+| PostgreSQL (Orbit DB) | 持久化         | LocalPV (OpenEBS) | 高速，节点专用                         |
 | Prometheus TSDB        | 持久化         | Ceph RBD (Rook)   | 多节点，高度耐用                      |
 | 用户作业             | 临时 / 持久化     | LocalPV / Ceph RBD | 依据配置决定                           |
 | Grafana 仪表盘     | 临时 / 持久化     | Ceph RBD           | 可选，取决于仪表盘配置                |
@@ -75,6 +75,6 @@ description: Crater 使用混合存储架构来应对高吞吐量的本地工作
 
 ## 安装
 
-我们建议使用 NFS 作为存储提供程序，并使用带有 Crater 预配置值的官方 Helm 图表。
+我们建议使用 NFS 作为存储提供程序，并使用带有 Orbit 预配置值的官方 Helm 图表。
 
 📖 详细指南：[`deployments/nfs/README.md`](../deployments/nfs/README.md)

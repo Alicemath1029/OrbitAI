@@ -11,11 +11,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	scheduling "volcano.sh/apis/pkg/apis/scheduling/v1beta1"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/constants"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/constants"
 )
 
 var queueLocks sync.Map // map[queueName]*sync.Mutex

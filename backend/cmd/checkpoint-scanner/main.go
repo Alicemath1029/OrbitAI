@@ -11,7 +11,7 @@ import (
 
 	"k8s.io/klog/v2"
 
-	checkpointsvc "github.com/raids-lab/crater/internal/service/vcjob/checkpoint"
+	checkpointsvc "github.com/raids-lab/orbit/internal/service/vcjob/checkpoint"
 )
 
 var (
@@ -29,15 +29,15 @@ type scanServer struct {
 func main() {
 	initVersionInfo()
 
-	root := firstNonEmptyEnv("CRATER_CHECKPOINT_SCANNER_ROOT", "CRATER_STORAGE_ROOT", "ROOTDIR")
+	root := firstNonEmptyEnv("ORBIT_CHECKPOINT_SCANNER_ROOT", "ORBIT_STORAGE_ROOT", "ROOTDIR")
 	if root == "" {
 		root = checkpointsvc.DefaultScannerMountPath
 	}
-	port := firstNonEmptyEnv("CRATER_CHECKPOINT_SCANNER_PORT", "PORT")
+	port := firstNonEmptyEnv("ORBIT_CHECKPOINT_SCANNER_PORT", "PORT")
 	if port == "" {
 		port = checkpointsvc.DefaultScannerPort
 	}
-	concurrency := positiveIntEnv("CRATER_CHECKPOINT_SCANNER_CONCURRENCY", 4)
+	concurrency := positiveIntEnv("ORBIT_CHECKPOINT_SCANNER_CONCURRENCY", 4)
 
 	server := &scanServer{
 		scanner: checkpointsvc.NewFileSystemScanner(root),

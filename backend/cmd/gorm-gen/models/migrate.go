@@ -13,9 +13,9 @@ import (
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/utils/ptr"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/pkg/monitor"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/pkg/monitor"
 )
 
 //nolint:gocyclo // ignore cyclomatic complexity
@@ -255,7 +255,7 @@ func main() {
 			Migrate: func(tx *gorm.DB) error {
 				type Resource struct {
 					// Resource relationship
-					Type *model.CraterResourceType `gorm:"type:varchar(32);comment:资源类型" json:"type"`
+					Type *model.OrbitResourceType `gorm:"type:varchar(32);comment:资源类型" json:"type"`
 				}
 
 				// Add the Type and Networks columns to the Resource tableturn err
@@ -268,7 +268,7 @@ func main() {
 			Rollback: func(tx *gorm.DB) error {
 				type Resource struct {
 					// Resource relationship
-					Type *model.CraterResourceType `gorm:"type:varchar(32);comment:资源类型" json:"type"`
+					Type *model.OrbitResourceType `gorm:"type:varchar(32);comment:资源类型" json:"type"`
 				}
 
 				// Drop the Type and Networks columns from the Resource table
@@ -1217,10 +1217,10 @@ func main() {
 		// 1. generate a random name and password
 		var name, password string
 		var ok bool
-		if name, ok = os.LookupEnv("CRATER_ADMIN_USERNAME"); !ok {
+		if name, ok = os.LookupEnv("ORBIT_ADMIN_USERNAME"); !ok {
 			return fmt.Errorf("ADMIN_NAME is required for initial admin user")
 		}
-		if password, ok = os.LookupEnv("CRATER_ADMIN_PASSWORD"); !ok {
+		if password, ok = os.LookupEnv("ORBIT_ADMIN_PASSWORD"); !ok {
 			return fmt.Errorf("ADMIN_PASSWORD is required for initial admin user")
 		}
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -1239,7 +1239,7 @@ func main() {
 				ID:       1,
 				Name:     name,
 				Nickname: "管理员",
-				Email:    ptr.To("admin@crater.io"),
+				Email:    ptr.To("admin@orbit.io"),
 				Teacher:  ptr.To("管理员"),
 				Group:    ptr.To("管理员"),
 				UID:      ptr.To("1001"),

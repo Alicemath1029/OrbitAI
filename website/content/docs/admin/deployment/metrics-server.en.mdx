@@ -1,17 +1,17 @@
 ---
 title: Metrics Server Deployment Guide
-description: metrics-server provides real-time CPU and memory usage data for monitoring, scheduling, and frontend visualization in Crater.
+description: metrics-server provides real-time CPU and memory usage data for monitoring, scheduling, and frontend visualization in Orbit.
 ---
 
 ## Overview
 
-`metrics-server` is a lightweight and scalable resource usage metrics aggregator for Kubernetes. In the Crater platform, it provides **real-time CPU and memory usage data** for:
+`metrics-server` is a lightweight and scalable resource usage metrics aggregator for Kubernetes. In the Orbit platform, it provides **real-time CPU and memory usage data** for:
 
 - Pod and Node resource monitoring
 - Job scheduling decisions
 - Frontend visualization (e.g., dashboards, usage stats)
 
-Metrics Server is **required** by Kubernetes components such as `kubectl top`, Horizontal Pod Autoscalers (HPA), and Crater's job management UI.
+Metrics Server is **required** by Kubernetes components such as `kubectl top`, Horizontal Pod Autoscalers (HPA), and Orbit's job management UI.
 
 ---
 
@@ -26,9 +26,9 @@ No external dependencies are required, but make sure:
 
 ---
 
-## Crater-Specific Notes
+## Orbit-Specific Notes
 
-- Crater uses `metrics-server` as part of its **real-time resource display** on the UI.
+- Orbit uses `metrics-server` as part of its **real-time resource display** on the UI.
 - Job submission and resource prediction modules may also read these values to improve scheduling accuracy.
 - The metrics are complementary to Prometheus but provide faster sampling for short-lived pods.
 
@@ -36,7 +36,7 @@ No external dependencies are required, but make sure:
 
 ## Installation
 
-We recommend using the official Helm chart with Crater's values.
+We recommend using the official Helm chart with Orbit's values.
 
 📦 Helm values: [`deployments/metrics-server/values.yaml`](../deployments/metrics-server/values.yaml)  
 📖 Detailed guide: [`deployments/metrics-server/README.md`](../deployments/metrics-server/README.md)

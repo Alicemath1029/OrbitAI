@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: orbit-frontend-ingress
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    {{- if eq .Values.protocol "https" }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    {{- end }}
+spec:
+  ingressClassName: nginx
+  {{- if eq .Values.protocol "https" }}
+  tls:
+    - hosts:
+        - {{ .Values.host }}
+      secretName: orbit-tls-secret
+  {{- end }}
+  rules:
+    - host: {{ .Values.host }}
+      http:
+        paths:
+          - path: /website
+            pathType: Prefix
+            backend:
+              service:
+                name: website-svc
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: orbit-frontend-svc
+                port:
+                  number: 80

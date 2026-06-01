@@ -3,7 +3,7 @@ package monitor
 import (
 	"testing"
 
-	"github.com/raids-lab/crater/pkg/config"
+	"github.com/raids-lab/orbit/pkg/config"
 )
 
 func TestQueryPodUtilMetric(t *testing.T) {

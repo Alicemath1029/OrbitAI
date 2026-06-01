@@ -1,4 +1,4 @@
-# Makefile for Crater Website
+# Makefile for Orbit Website
 
 .PHONY: help
 help: ## Display this help message

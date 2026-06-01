@@ -380,7 +380,7 @@ export const cudaImageLabelRegex = /^(?=.{1,128}$)(?![-.])([a-zA-Z0-9_.+-]*)(?<!
 
 // value 是完整的镜像链接，包含registry地址、镜像名称和标签
 // 格式: [registry_host[:port]/]namespace/repository:tag
-// 例如: crater-harbor.act.buaa.edu.cn/nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04
+// 例如: orbit-harbor.act.buaa.edu.cn/nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04
 export const cudaImageValueRegex =
   /^[a-zA-Z0-9.-]+(?::[0-9]+)?(?:\/[a-zA-Z0-9_.-]+)+:[a-zA-Z0-9_](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9_])?$/
 

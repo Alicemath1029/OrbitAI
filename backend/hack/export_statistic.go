@@ -1,4 +1,4 @@
-// Usage: CRATER_DEBUG_CONFIG_PATH=${PWD}/etc/debug-config-actgpu.yaml go run hack/export_statistic.go
+// Usage: ORBIT_DEBUG_CONFIG_PATH=${PWD}/etc/debug-config-actgpu.yaml go run hack/export_statistic.go
 package main
 
 import (
@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/pkg/monitor"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/pkg/monitor"
 )
 
 func main() {

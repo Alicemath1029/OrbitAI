@@ -1,6 +1,6 @@
 ---
 title: Ingress-NGINX 部署指南
-description: Crater 使用 Ingress-NGINX 控制器来管理服务的外部访问，作为 HTTP 和 HTTPS 流量的主要入口点。
+description: Orbit 使用 Ingress-NGINX 控制器来管理服务的外部访问，作为 HTTP 和 HTTPS 流量的主要入口点。
 ---
 
 ## 部署
@@ -18,8 +18,8 @@ helm upgrade --install ingress-nginx ingress-nginx \
   --namespace ingress-nginx \
   --create-namespace \
   --version 4.11.3 \
-  --set controller.image.registry="crater-harbor.act.buaa.edu.cn/registry.k8s.io" \
-  --set controller.admissionWebhooks.patch.image.registry="crater-harbor.act.buaa.edu.cn/registry.k8s.io" \
+  --set controller.image.registry="orbit-harbor.act.buaa.edu.cn/registry.k8s.io" \
+  --set controller.admissionWebhooks.patch.image.registry="orbit-harbor.act.buaa.edu.cn/registry.k8s.io" \
   --set controller.hostNetwork=true \
   --set controller.dnsPolicy=ClusterFirstWithHostNet \
   --set controller.healthCheckHost="10.109.80.4" \
@@ -29,16 +29,16 @@ helm upgrade --install ingress-nginx ingress-nginx \
 
 🔧 根据你的集群节点配置调整节点选择器、容忍度和 healthCheckHost。
 
-选项 2：使用 MetalLB（Crater 推荐）
-在我们的生产集群中，Crater 使用 MetalLB 在 Layer 2 模式下分配内部 IP。Ingress 控制器作为 LoadBalancer 服务部署，获得一个内部 IP。
+选项 2：使用 MetalLB（Orbit 推荐）
+在我们的生产集群中，Orbit 使用 MetalLB 在 Layer 2 模式下分配内部 IP。Ingress 控制器作为 LoadBalancer 服务部署，获得一个内部 IP。
 
 ```bash
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
   --namespace ingress-nginx \
   --create-namespace \
   --version 4.11.3 \
-  --set controller.image.registry="crater-harbor.act.buaa.edu.cn/registry.k8s.io" \
-  --set controller.admissionWebhooks.patch.image.registry="crater-harbor.act.buaa.edu.cn/registry.k8s.io" \
+  --set controller.image.registry="orbit-harbor.act.buaa.edu.cn/registry.k8s.io" \
+  --set controller.admissionWebhooks.patch.image.registry="orbit-harbor.act.buaa.edu.cn/registry.k8s.io" \
   --set controller.allowSnippetAnnotations=true
 ```
 
@@ -57,7 +57,7 @@ ingress-nginx-controller   LoadBalancer   192.168.100.243   80:31234/TCP,443:312
 ```
 
 # 版本兼容性说明
-我们目前 **将 Ingress-NGINX 版本固定为 `4.11.3`**，因为 Crater 的 Ingress 注解尚未与版本 ≥ `4.12.0` 兼容。尝试使用新版本将导致路由重写错误。
+我们目前 **将 Ingress-NGINX 版本固定为 `4.11.3`**，因为 Orbit 的 Ingress 注解尚未与版本 ≥ `4.12.0` 兼容。尝试使用新版本将导致路由重写错误。
 
 # 卸载
 要移除 Ingress 控制器：
@@ -69,4 +69,4 @@ helm uninstall ingress-nginx -n ingress-nginx
 
 * [Ingress-NGINX Helm Chart](https://github.com/kubernetes/ingress-nginx)
 
-* [Crater 兼容性说明](../README.md)
+* [Orbit 兼容性说明](../README.md)

@@ -8,7 +8,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	apiresource "k8s.io/apimachinery/pkg/api/resource"
 
-	"github.com/raids-lab/crater/dao/model"
+	"github.com/raids-lab/orbit/dao/model"
 )
 
 const boolFalseString = "false"

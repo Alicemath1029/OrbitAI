@@ -8,7 +8,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/pkg/config"
+	"github.com/raids-lab/orbit/pkg/config"
 )
 
 func (p *PrometheusClient) QueryPodProfileMetric(namespace, podname string) (PodUtil, error) {

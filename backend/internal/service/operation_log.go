@@ -7,8 +7,8 @@ import (
 	"gorm.io/datatypes"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
 )
 
 //nolint:gochecknoinits // Operation logs need schema migration during service registration.

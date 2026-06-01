@@ -1,11 +1,11 @@
 ---
 title: "CloudNativePG 部署指南"
-description: "使用 CloudNativePG Operator 和 OpenEBS 存储将 PostgreSQL 集成到 Crater 中。"
+description: "使用 CloudNativePG Operator 和 OpenEBS 存储将 PostgreSQL 集成到 Orbit 中。"
 ---
 
 ## 概述
 
-Crater 使用 **PostgreSQL** 作为其后端数据库，用于管理用户会话、任务元数据、调度状态和平台配置。
+Orbit 使用 **PostgreSQL** 作为其后端数据库，用于管理用户会话、任务元数据、调度状态和平台配置。
 
 为了实现生产级、原生 Kubernetes 的 PostgreSQL 管理，我们采用了 [CloudNativePG Operator](https://cloudnative-pg.io/)，它提供了以下功能：
 
@@ -23,7 +23,7 @@ Crater 使用 **PostgreSQL** 作为其后端数据库，用于管理用户会话
 - 它在 **PostgreSQL 配置** 和 **Kubernetes 原生编排** 之间提供了清晰的分离。  
 - 它简化了 PostgreSQL 的部署，同时保持对高级调优的灵活性。
 
-在 Crater 栈中，每个 PostgreSQL 集群都作为自定义的 `Cluster` 资源进行定义，并由操作符控制。
+在 Orbit 栈中，每个 PostgreSQL 集群都作为自定义的 `Cluster` 资源进行定义，并由操作符控制。
 
 ## 存储配置
 

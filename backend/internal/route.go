@@ -7,10 +7,10 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	docs "github.com/raids-lab/crater/docs"
-	"github.com/raids-lab/crater/internal/handler"
-	"github.com/raids-lab/crater/internal/middleware"
-	"github.com/raids-lab/crater/pkg/constants"
+	docs "github.com/raids-lab/orbit/docs"
+	"github.com/raids-lab/orbit/internal/handler"
+	"github.com/raids-lab/orbit/internal/middleware"
+	"github.com/raids-lab/orbit/pkg/constants"
 )
 
 type Backend struct {

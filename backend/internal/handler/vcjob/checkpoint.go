@@ -3,8 +3,8 @@ package vcjob
 import (
 	v1 "k8s.io/api/core/v1"
 
-	checkpointsvc "github.com/raids-lab/crater/internal/service/vcjob/checkpoint"
-	"github.com/raids-lab/crater/internal/util"
+	checkpointsvc "github.com/raids-lab/orbit/internal/service/vcjob/checkpoint"
+	"github.com/raids-lab/orbit/internal/util"
 )
 
 type CheckpointConfig = checkpointsvc.Config

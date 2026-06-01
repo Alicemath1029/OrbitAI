@@ -7,10 +7,10 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/util"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/util"
 )
 
 // UserListKaniko godoc

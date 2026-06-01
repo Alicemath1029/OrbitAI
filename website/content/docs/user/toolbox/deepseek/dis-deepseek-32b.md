@@ -46,7 +46,7 @@ NCCL_DEBUG=TRACE python3 -m vllm.entrypoints.openai.api_server \
 
 > 问题 2：如何预估需要申请多少算力？
 
-回答 2：显存用量（最少） >= 模型参数量 \* 部署位宽（bit）/ 8，例如实例中使用 32b 的模型采用 16bit 进行部署，则最少需要 64GB 显存，crater 中一张 v100 的显存为 32GB，实际上 3-4 张 v100 就有可能跑起来，不用这块为了测试多机便用了 8 张卡
+回答 2：显存用量（最少） >= 模型参数量 \* 部署位宽（bit）/ 8，例如实例中使用 32b 的模型采用 16bit 进行部署，则最少需要 64GB 显存，orbit 中一张 v100 的显存为 32GB，实际上 3-4 张 v100 就有可能跑起来，不用这块为了测试多机便用了 8 张卡
 
 > 问题 3：可以用 sglang 吗？
 
@@ -66,7 +66,7 @@ NCCL_DEBUG=TRACE python3 -m vllm.entrypoints.openai.api_server \
 
 ![](./img/dis-deepseek-32b/openweb-submit.webp)
 
-使用 **DeepSeek R1 分布式推理** 的任务模板在 Crater 平台启动大模型推理服务后，您需要修改环境变量第一条，OpenAI 服务的地址：
+使用 **DeepSeek R1 分布式推理** 的任务模板在 Orbit 平台启动大模型推理服务后，您需要修改环境变量第一条，OpenAI 服务的地址：
 
 对于多机部署模型的情况，对应于作业的「基本信息」处，**Ray Head 节点的「内网 IP」**
 

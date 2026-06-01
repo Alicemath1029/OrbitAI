@@ -15,14 +15,14 @@ import (
 	"k8s.io/utils/ptr"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/service"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/alert"
-	"github.com/raids-lab/crater/pkg/utils"
-	"github.com/raids-lab/crater/pkg/vcqueue"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/service"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/alert"
+	"github.com/raids-lab/orbit/pkg/utils"
+	"github.com/raids-lab/orbit/pkg/vcqueue"
 )
 
 // 邮箱验证码缓存

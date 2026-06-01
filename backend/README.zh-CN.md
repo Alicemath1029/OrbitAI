@@ -1,37 +1,39 @@
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-# Crater Backend
+# Orbit Backend
 
-Crater 是一个基于 Kubernetes 的异构集群管理系统，支持英伟达 GPU 等多种异构硬件。
+Orbit 是一个基于 Kubernetes 的异构集群管理系统，支持英伟达 GPU 等多种异构硬件。
 
-Crater Backend 是 Crater 的子系统，包含作业提交、作业生命周期管理、深度学习环境管理等功能。
+Orbit 基于 RAIDS Lab 开源的 [Crater](https://github.com/raids-lab/crater) 项目演进而来。后端保留原有架构作为基础，并将包名、配置、API 与部署资产适配为 Orbit。
+
+Orbit Backend 是 Orbit 的子系统，包含作业提交、作业生命周期管理、深度学习环境管理等功能。
 
 <table>
   <tr>
     <td align="center" width="45%">
-      <img src="https://github.com/raids-lab/crater-frontend/blob/main/docs/images/jupyter.gif"><br>
+      <img src="https://github.com/raids-lab/orbit-frontend/blob/main/docs/images/jupyter.gif"><br>
       <em>Jupyter Lab</em>
     </td>
     <td align="center" width="45%">
-      <img src="https://github.com/raids-lab/crater-frontend/blob/main/docs/images/ray.gif"><br>
+      <img src="https://github.com/raids-lab/orbit-frontend/blob/main/docs/images/ray.gif"><br>
       <em>Ray 任务</em>
     </td>
   </tr>
   <tr>
     <td align="center" width="45%">
-      <img src="https://github.com/raids-lab/crater-frontend/blob/main/docs/images/monitor.gif"><br>
+      <img src="https://github.com/raids-lab/orbit-frontend/blob/main/docs/images/monitor.gif"><br>
       <em>监控</em>
     </td>
     <td align="center" width="45%">
-      <img src="https://github.com/raids-lab/crater-frontend/blob/main/docs/images/datasets.gif"><br>
+      <img src="https://github.com/raids-lab/orbit-frontend/blob/main/docs/images/datasets.gif"><br>
       <em>模型</em>
     </td>
   </tr>
 </table>
 
-本文档为 Crater Backend 的开发指南，如果您希望安装或使用完整的 Crater 项目，您可以访问 [Crater 官方文档](https://raids-lab.github.io/crater/en/docs/admin/) 以了解更多。
+本文档为 Orbit Backend 的开发指南，如果您希望安装或使用完整的 Orbit 项目，您可以访问 [Orbit 官方文档](https://raids-lab.github.io/orbit/en/docs/admin/) 以了解更多。
 
-## 🚀 在本地运行 Crater Backend
+## 🚀 在本地运行 Orbit Backend
 
 ### 安装必要软件
 
@@ -40,7 +42,7 @@ Crater Backend 是 Crater 的子系统，包含作业提交、作业生命周期
 - **gvm**: 非必需，推荐版本 `v1.0.22`: [gvm - GitHub](https://github.com/moovweb/gvm)
 - **Kubectl**: 必需，推荐版本 `v1.33`: [Kubectl 安装指南](https://kubernetes.io/docs/tasks/tools/)
 
-gvm 用于方便快捷地安装多个 Go 版本，并在它们之间灵活切换。使用 gvm 能够让您快速安装 Crater 所使用的 Go，并在 Go 版本升级时快速切换。
+gvm 用于方便快捷地安装多个 Go 版本，并在它们之间灵活切换。使用 gvm 能够让您快速安装 Orbit 所使用的 Go，并在 Go 版本升级时快速切换。
 
 您可以使用以下命令安装 gvm：
 
@@ -92,7 +94,7 @@ go env -w GOPROXY=https://goproxy.cn,direct
 
 `kubeconfig` 是 Kubernetes 客户端和工具用来访问和管理 Kubernetes 集群的配置文件。它包含集群连接详细信息、用户凭据和上下文信息。
 
-Crater Backend 将优先尝试读取 `KUBECONFIG` 环境变量对应的 `kubeconfig`，如果不存在，则读取当前目录下的 `kubeconfig` 文件。
+Orbit Backend 将优先尝试读取 `KUBECONFIG` 环境变量对应的 `kubeconfig`，如果不存在，则读取当前目录下的 `kubeconfig` 文件。
 
 ```makefile
 # Makefile
@@ -101,7 +103,7 @@ KUBECONFIG_PATH := $(if $(KUBECONFIG),$(KUBECONFIG),${PWD}/kubeconfig)
 
 #### `./etc/debug-config.yaml`
 
-`etc/debug-config.yaml` 文件包含 Crater 后端服务的应用程序配置。此配置文件定义了各种设置，包括：
+`etc/debug-config.yaml` 文件包含 Orbit 后端服务的应用程序配置。此配置文件定义了各种设置，包括：
 
 - **服务配置**: 服务器端口、指标端点和性能分析设置
 - **数据库连接**: PostgreSQL 连接参数和凭据
@@ -109,7 +111,7 @@ KUBECONFIG_PATH := $(if $(KUBECONFIG),$(KUBECONFIG),${PWD}/kubeconfig)
 - **外部集成**: Raids Lab 系统认证（非 Raids Lab 环境不需要）、镜像仓库、SMTP 邮件通知服务等
 - **功能标志**: 调度器和作业类型启用设置
 
-你可以在 [`etc/example-config.yaml`](https://github.com/raids-lab/crater-backend/blob/main/etc/example-config.yaml) 中找到示例文件和对应的说明。
+你可以在 [`etc/example-config.yaml`](https://github.com/raids-lab/orbit-backend/blob/main/etc/example-config.yaml) 中找到示例文件和对应的说明。
 
 #### `.debug.env`
 
@@ -118,12 +120,12 @@ KUBECONFIG_PATH := $(if $(KUBECONFIG),$(KUBECONFIG),${PWD}/kubeconfig)
 目前内部只有一条配置，用于指定服务使用的端口号。如果你的团队在同一节点上进行开发，可以通过它协调，以避免端口冲突。
 
 ```env
-CRATER_BE_PORT=:8088  # 后端端口
+ORBIT_BE_PORT=:8088  # 后端端口
 ```
 
-在开发模式下，我们通过 Crater Frontend 的 Vite Server 进行服务的代理，因此您并不需要关心 CORS 等问题。
+在开发模式下，我们通过 Orbit Frontend 的 Vite Server 进行服务的代理，因此您并不需要关心 CORS 等问题。
 
-### 运行 Crater Backend
+### 运行 Orbit Backend
 
 完成上述设置后，你可以使用 `make` 命令运行项目。如果尚未安装 `make`，建议安装它。
 
@@ -142,7 +144,7 @@ http://localhost:<你的后端端口>/swagger/index.html#/
 你可以运行 `make help` 命令，查看相关的完整命令：
 
 ```bash
-➜  crater-backend git:(main) ✗ make help 
+➜  orbit-backend git:(main) ✗ make help 
 
 Usage:
   make <target>
@@ -217,7 +219,7 @@ Git Hooks
 
 ### 生产环境部署
 
-如果您是通过 Helm 安装的 Crater，部署新版本后将自动进行数据库迁移，相关的逻辑可以在 InitContainer 中找到。
+如果您是通过 Helm 安装的 Orbit，部署新版本后将自动进行数据库迁移，相关的逻辑可以在 InitContainer 中找到。
 
 ### 相关文档
 
@@ -231,7 +233,7 @@ Git Hooks
 
 项目已在根目录 `.vscode/launch.json` 中提供了预配置的调试启动配置。你只需要：
 
-1. 在 VSCode 中打开项目根目录（`crater`，包含 `backend` 和 `frontend` 的根目录）
+1. 在 VSCode 中打开项目根目录（`orbit`，包含 `backend` 和 `frontend` 的根目录）
 2. 设置断点（在代码行号左侧点击）
 3. 按 `F5` 开始调试，选择 "Backend Debug Server" 配置
 
@@ -250,7 +252,7 @@ Git Hooks
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/backend/cmd/crater/main.go",
+            "program": "${workspaceFolder}/backend/cmd/orbit/main.go",
             "cwd": "${workspaceFolder}/backend",
             "env": {
                 "KUBECONFIG": "${workspaceFolder}/backend/kubeconfig",
@@ -263,7 +265,7 @@ Git Hooks
 
 其中：
 - **`cwd`**: 设置为 `${workspaceFolder}/backend`，这确保程序能正确找到相对路径的配置文件（如 `./etc/debug-config.yaml`）
-- **`program`**: 主程序入口文件，指向 `backend/cmd/crater/main.go`
+- **`program`**: 主程序入口文件，指向 `backend/cmd/orbit/main.go`
 - **配置文件自动查找**：程序在 debug 模式下会自动查找 `./etc/debug-config.yaml`（相对于 `cwd`），**无需**通过 `args` 传递 `--config-file` 参数
 - **`KUBECONFIG`**: 使用后端仓库中的 `kubeconfig` 配置文件连接集群
 
@@ -280,7 +282,7 @@ make build-storage
 
 运行时环境变量：
 
-- `CRATER_STORAGE_PORT`（优先，回退 `PORT`，默认 `7320`）
-- `CRATER_STORAGE_ROOT`（优先，回退 `ROOTDIR`，默认 `/crater`）
+- `ORBIT_STORAGE_PORT`（优先，回退 `PORT`，默认 `7320`）
+- `ORBIT_STORAGE_ROOT`（优先，回退 `ROOTDIR`，默认 `/orbit`）
 
 本地调试建议把这些变量写到 `backend/.debug.env`，然后执行 `make run-storage`。

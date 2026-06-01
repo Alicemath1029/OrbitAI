@@ -406,7 +406,7 @@ function Overview() {
       <div className="grid gap-4 lg:grid-cols-2">
         <PageTitle
           title={`欢迎回来，${userInfo?.nickname} 👋`}
-          description="使用异构集群管理平台 Crater 加速您的科研工作"
+          description="使用异构集群管理平台 Orbit 加速您的科研工作"
           className="lg:col-span-2"
         >
           <div className="flex flex-wrap items-center justify-end gap-2">

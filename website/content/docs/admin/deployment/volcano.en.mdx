@@ -1,19 +1,19 @@
 ---
 title: Volcano Integration Guide
-description: How Crater uses Volcano batch scheduler for multi-lab GPU resource management and distributed workloads.
+description: How Orbit uses Volcano batch scheduler for multi-lab GPU resource management and distributed workloads.
 ---
 
 ## Overview
 
-[Volcano](https://volcano.sh/en/) is a batch scheduling system designed for high-performance workloads such as AI/ML training, big data, and scientific computing. In Crater, Volcano is used to manage GPU scheduling across multiple labs and users in a fair and preemptive way.
+[Volcano](https://volcano.sh/en/) is a batch scheduling system designed for high-performance workloads such as AI/ML training, big data, and scientific computing. In Orbit, Volcano is used to manage GPU scheduling across multiple labs and users in a fair and preemptive way.
 
 ---
 
 ## Why Volcano?
 
-We chose Volcano for Crater due to its rich scheduling capabilities, extensible plugin system, and native support for **distributed training**, **fair resource sharing**, and **job-level control**.
+We chose Volcano for Orbit due to its rich scheduling capabilities, extensible plugin system, and native support for **distributed training**, **fair resource sharing**, and **job-level control**.
 
-Crater leverages the following Volcano components:
+Orbit leverages the following Volcano components:
 
 - **Queue & Quota CRDs** – Fine-grained GPU resource allocation across labs
 - **Preemption (Capacity Plugin)** – Preemptive scheduling among labs and users
@@ -24,7 +24,7 @@ Crater leverages the following Volcano components:
 
 ## Lab-Oriented Queue Design
 
-Crater serves on an academic multi-tenant senario, where GPU clusters are shared by various research labs. To manage resource fairness:
+Orbit serves on an academic multi-tenant senario, where GPU clusters are shared by various research labs. To manage resource fairness:
 
 - We create a **`Queue`** per lab (e.g., `lab-a`, `lab-b`)
 - Each user is assigned to their respective lab's queue
@@ -41,7 +41,7 @@ This design allows:
 
 ## Support for Distributed Jobs
 
-Crater uses Volcano’s [Job CRD](https://volcano.sh/en/docs/job-tutorial/) to support:
+Orbit uses Volcano’s [Job CRD](https://volcano.sh/en/docs/job-tutorial/) to support:
 
 - Distributed PyTorch, TensorFlow, or MPI workloads
 - Gang scheduling and job dependencies
@@ -70,7 +70,7 @@ We are also actively extending support for [LLaMA Factory](https://github.com/hi
 
 ## Installation Notes
 
-We recommend installing Volcano via Helm with Crater’s preconfigured values.
+We recommend installing Volcano via Helm with Orbit’s preconfigured values.
 
 📦 Helm values: [`deployments/volcano/values.yaml`](../deployments/volcano/values.yaml)  
 📖 Detailed guide: [`deployments/volcano/README.md`](../deployments/volcano/README.md)

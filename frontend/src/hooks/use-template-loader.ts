@@ -98,7 +98,7 @@ export function useTemplateLoader<T extends FieldValues>({
     mutationFn: (jobName: string) => apiJobTemplate(jobName),
     onSuccess: (response) => {
       try {
-        // replace /home/${CRATER_USERNAME} with /home/${username}
+        // replace /home/${ORBIT_USERNAME} with /home/${username}
         // Import the template data
         let jobInfo = importFromJsonString<T>(metadata, response.data)
 
@@ -137,7 +137,7 @@ export function useTemplateLoader<T extends FieldValues>({
     onSuccess: (response) => {
       try {
         const template = response.data.template.replace(
-          /\/home\/\${CRATER_USERNAME}/g,
+          /\/home\/\${ORBIT_USERNAME}/g,
           `/home/${user?.name}`
         )
         // Import the template data

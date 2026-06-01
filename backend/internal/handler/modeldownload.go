@@ -19,11 +19,11 @@ import (
 
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/config"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/config"
 )
 
 const (
@@ -931,7 +931,7 @@ func (mgr *ModelDownloadMgr) submitDownloadJob(c *gin.Context, download *model.M
 							},
 							VolumeMounts: []corev1.VolumeMount{
 								{
-									Name:      "crater-storage",
+									Name:      "orbit-storage",
 									MountPath: "/data",
 									SubPath:   subPath,
 								},
@@ -940,7 +940,7 @@ func (mgr *ModelDownloadMgr) submitDownloadJob(c *gin.Context, download *model.M
 					},
 					Volumes: []corev1.Volume{
 						{
-							Name: "crater-storage",
+							Name: "orbit-storage",
 							VolumeSource: corev1.VolumeSource{
 								PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
 									ClaimName: config.GetConfig().Storage.PVC.ReadWriteMany,

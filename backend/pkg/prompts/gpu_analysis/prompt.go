@@ -3,7 +3,7 @@ package gpu_analysis
 import (
 	"embed"
 
-	"github.com/raids-lab/crater/pkg/prompts"
+	"github.com/raids-lab/orbit/pkg/prompts"
 )
 
 //go:embed *.prompt

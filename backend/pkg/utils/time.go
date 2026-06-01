@@ -6,7 +6,7 @@ import (
 
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/pkg/config"
+	"github.com/raids-lab/orbit/pkg/config"
 )
 
 const twoDigitYearDivisor = 100

@@ -46,7 +46,7 @@ Answer 1: Add the vLLM launch parameter --dtype=half. The main reason for this i
 
 > Issue 2: How to estimate how much computing power is needed?
 
-Answer 2: The minimum memory usage is >= number of model parameters * deployment bit width (bit) / 8. For example, if a 32b model is deployed using 16bit, the minimum required memory is 64GB. A single v100 in crater has 32GB of memory, so in practice, 3-4 v100s may be sufficient. We didn't use that many cards for testing multi-machine setups and instead used 8 cards.
+Answer 2: The minimum memory usage is >= number of model parameters * deployment bit width (bit) / 8. For example, if a 32b model is deployed using 16bit, the minimum required memory is 64GB. A single v100 in orbit has 32GB of memory, so in practice, 3-4 v100s may be sufficient. We didn't use that many cards for testing multi-machine setups and instead used 8 cards.
 
 > Issue 3: Can we use sglang?
 
@@ -66,7 +66,7 @@ After selection, you will be redirected to the new custom job interface, where y
 
 ![](./img/dis-deepseek-32b/openweb-submit.webp)
 
-After launching the large model inference service on the Crater platform using the **DeepSeek R1 distributed inference** task template, you need to modify the first environmental variable, the OpenAI service address:
+After launching the large model inference service on the Orbit platform using the **DeepSeek R1 distributed inference** task template, you need to modify the first environmental variable, the OpenAI service address:
 
 For multi-machine deployment of the model, it corresponds to the **internal IP** of the **Ray Head node** in the job's **basic information**:
 

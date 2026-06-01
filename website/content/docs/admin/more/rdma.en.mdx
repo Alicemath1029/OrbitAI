@@ -370,7 +370,7 @@ kind: HostDeviceNetwork
 metadata:
   name: hostdevice-net
 spec:
-  networkNamespace: "crater-workspace" # Namespace where workloads are located
+  networkNamespace: "orbit-workspace" # Namespace where workloads are located
   resourceName: "hostdev"
   ipam: |
     {
@@ -411,7 +411,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: testpod1
-  namespace: crater-workspace. # The namespace specified earlier
+  namespace: orbit-workspace. # The namespace specified earlier
   annotations:
     k8s.v1.cni.cncf.io/networks: hostdevice-net
 spec:
@@ -661,7 +661,7 @@ apiVersion: batch.volcano.sh/v1alpha1
 kind: Job
 metadata:
   name: vllm-rdma-test
-  namespace: crater-workspace
+  namespace: orbit-workspace
 spec:
   maxRetry: 3
   minAvailable: 2
@@ -724,9 +724,9 @@ spec:
               terminationMessagePolicy: File
               volumeMounts:
                 - mountPath: /dev/shm
-                  name: crater-cache
+                  name: orbit-cache
                 - mountPath: /models/DeepSeek-R1-Distill-Qwen-32B
-                  name: crater-ro-storage
+                  name: orbit-ro-storage
                   readOnly: true
                   subPath: LLM/deepseek/DeepSeek-R1-Distill-Qwen-32B
               workingDir: /models
@@ -734,10 +734,10 @@ spec:
           volumes:
             - emptyDir:
                 medium: Memory
-              name: crater-cache
-            - name: crater-ro-storage
+              name: orbit-cache
+            - name: orbit-ro-storage
               persistentVolumeClaim:
-                claimName: crater-ro-storage
+                claimName: orbit-ro-storage
     - maxRetry: 3
       minAvailable: 1
       name: worker
@@ -770,9 +770,9 @@ spec:
               terminationMessagePolicy: File
               volumeMounts:
                 - mountPath: /dev/shm
-                  name: crater-cache
+                  name: orbit-cache
                 - mountPath: /models/DeepSeek-R1-Distill-Qwen-32B
-                  name: crater-ro-storage
+                  name: orbit-ro-storage
                   readOnly: true
                   subPath: LLM/deepseek/DeepSeek-R1-Distill-Qwen-32B
               workingDir: /models
@@ -780,10 +780,10 @@ spec:
           volumes:
             - emptyDir:
                 medium: Memory
-              name: crater-cache
-            - name: crater-ro-storage
+              name: orbit-cache
+            - name: orbit-ro-storage
               persistentVolumeClaim:
-                claimName: crater-ro-storage
+                claimName: orbit-ro-storage
   ttlSecondsAfterFinished: 259200
 ```
 
@@ -832,7 +832,7 @@ Failed to create MR
  Couldn't create IB resources
 ```
 
-When performing RDMA bandwidth testing, small data volume (e.g., 1024 bytes) transmission is normal, but 1M and above data volume transmission fails. The specific error message is similar to above, see [Issue #339](https://github.com/raids-lab/crater/issues/339).
+When performing RDMA bandwidth testing, small data volume (e.g., 1024 bytes) transmission is normal, but 1M and above data volume transmission fails. The specific error message is similar to above, see [Issue #339](https://github.com/raids-lab/orbit/issues/339).
 
 Directly using `ulimit -l` to view the limit, what we get is 64KB, which is the system's default memory lock limit.
 
@@ -844,7 +844,7 @@ The core of RDMA is letting the hardware (network card HCA) bypass the CPU and d
 
 So, to ensure the address is absolutely stable, RDMA must perform "Memory Registration" (MR) before transmission. This action "locks" the specified virtual memory pages into physical memory at the kernel level, prohibiting the kernel from moving or swapping them to disk.
 
-Crater has already allowed jobs to perform memory locking operations by setting `CAP_IPC_LOCK`, but it hasn't modified the limit on the allowed locking amount. Also, since the container isn't given the `CAP_SYS_RESOURCE` privilege, operations inside the container cannot modify this limit either.
+Orbit has already allowed jobs to perform memory locking operations by setting `CAP_IPC_LOCK`, but it hasn't modified the limit on the allowed locking amount. Also, since the container isn't given the `CAP_SYS_RESOURCE` privilege, operations inside the container cannot modify this limit either.
 
 Currently, Kubernetes officially doesn't provide a `ulimit` setting in the Pod Spec, see [Issue #3595](https://github.com/kubernetes/kubernetes/issues/3595). Therefore, it's necessary to handle it from the container runtime perspective.
 
@@ -1003,7 +1003,7 @@ As can be seen, the memory lock limit inside the Pod has been lifted, and normal
 Note that if the node kernel or related components are updated, it may be necessary to lift the memory lock limit again.
 </Callout>
 
-## Tolerance of RDMA Tools Pods to Crater Taints
+## Tolerance of RDMA Tools Pods to Orbit Taints
 
 ### 0. Problem Description
 
@@ -1019,7 +1019,7 @@ In normal circumstances, the NVIDIA Network Operator automatically manages the n
 
 1.  **Status Monitoring and Change Locking (Network Operator)**: The Operator monitors the host's kernel version in real-time. Once a kernel change is detected, it immediately sets the node's `network.nvidia.com/operator.mofed.wait` label to `true`. This action "locks" the resource discovery path to prevent allocating incorrect resources before the driver compatibility is confirmed.
 2.  **Driver Environment Verification and Reporting (MOFED Driver Pod)**: The Operator attempts to schedule and run the `mofed-driver` Pod on each node. This Pod is responsible for checking, installing, or updating the host's Mellanox driver. Only after this Pod successfully runs on the corresponding node and returns a readiness signal will the Operator update the `mofed.wait` label to `false`.
-    *   **Core Blocking Point**: If the node has **custom business taints** (e.g., `crater.raids.io/account` exclusive) or is in **maintenance mode** (Cordoned, with the `node.kubernetes.io/unschedulable` taint), and the `NicClusterPolicy` does not have the corresponding **Tolerations** configured, the driver Pod will be intercepted by the scheduler. This causes the flow to get stuck at this step, with the node label staying permanently at `true`, thereby locking resource discovery.
+    *   **Core Blocking Point**: If the node has **custom business taints** (e.g., `orbit.raids.io/account` exclusive) or is in **maintenance mode** (Cordoned, with the `node.kubernetes.io/unschedulable` taint), and the `NicClusterPolicy` does not have the corresponding **Tolerations** configured, the driver Pod will be intercepted by the scheduler. This causes the flow to get stuck at this step, with the node label staying permanently at `true`, thereby locking resource discovery.
 3.  **Plugin Activation and Resource Exposure (RDMA Shared Device Plugin Pod)**: Once `mofed.wait` becomes `false`, the locked RDMA Shared Device Plugin Pod will start its detection logic, identify physical network cards, and report resources such as `rdma/rdma_v100` to the Kubelet.
 
 #### Driver Self-healing Mechanism (DKMS)
@@ -1059,7 +1059,7 @@ kubectl patch nicclusterpolicy nic-cluster-policy --type='merge' -p '{
   "spec": {
     "tolerations": [
       {
-        "key": "crater.raids.io/account",
+        "key": "orbit.raids.io/account",
         "operator": "Exists",
         "effect": "NoSchedule"
       },

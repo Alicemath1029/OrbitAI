@@ -26,7 +26,7 @@ localpv-provisioner:
     image:
       # Make sure that registry name end with a '/'.
       # For example : quay.io/ is a correct value here and quay.io is incorrect
-      registry: crater-harbor.act.buaa.edu.cn/docker.io/
+      registry: orbit-harbor.act.buaa.edu.cn/docker.io/
     nodeSelector:
       node-role.kubernetes.io/control-plane: ""
     tolerations:
@@ -35,7 +35,7 @@ localpv-provisioner:
         effect: NoSchedule
   helperPod:
     image:
-      registry: crater-harbor.act.buaa.edu.cn/docker.io/
+      registry: orbit-harbor.act.buaa.edu.cn/docker.io/
 
 # Refer to https://github.com/openebs/zfs-localpv/blob/v2.6.2/deploy/helm/charts/values.yaml for complete set of values.
 zfs-localpv:
@@ -63,7 +63,7 @@ mayastor:
         enabled: true
         containers:
         - name: nvme-tcp-probe
-          image: crater-harbor.act.buaa.edu.cn/docker.io/busybox:latest
+          image: orbit-harbor.act.buaa.edu.cn/docker.io/busybox:latest
           command: ['sh', '-c', 'trap "exit 1" TERM; until $(lsmod | grep nvme_tcp &>/dev/null); do [ -z "$WARNED" ] && echo "nvme_tcp module not loaded..."; WARNED=1; sleep 60; done;']
   etcd:
     # -- Kubernetes Cluster Domain
@@ -77,7 +77,7 @@ mayastor:
 preUpgradeHook:
   image:
     # -- The container image registry URL for the hook job
-    registry: crater-harbor.act.buaa.edu.cn/docker.io
+    registry: orbit-harbor.act.buaa.edu.cn/docker.io
     # -- The container repository for the hook job
     repo: bitnami/kubectl
     # -- The container image tag for the hook job
@@ -96,7 +96,7 @@ engines:
       enabled: false
 ```
 
-### 3. Install OpenEBS with Crater Configuration：
+### 3. Install OpenEBS with Orbit Configuration：
 
 ```shell
 helm upgrade --install openebs --namespace openebs openebs/openebs --create-namespace -f values.yaml
@@ -138,7 +138,7 @@ spec:
       claimName: local-hostpath-pvc
   containers:
   - name: hello-container
-    image: crater-harbor.act.buaa.edu.cn/docker.io/library/busybox:1.37.0-glibc
+    image: orbit-harbor.act.buaa.edu.cn/docker.io/library/busybox:1.37.0-glibc
     command:
        - sh
        - -c
@@ -156,7 +156,7 @@ You should see a StorageClass named local-hostpath, and pods hello-local-hostpat
 ## Additional Notes
 * This configuration is designed for single-node local disks per pod. If you're using multi-disk setups or RAID, consider customizing the path selector rules.
 
-* Crater's internal logic (e.g. job-to-node binding) will leverage the StorageClass defined here.
+* Orbit's internal logic (e.g. job-to-node binding) will leverage the StorageClass defined here.
 
 ## References
 * [OpenEBS Docs](https://openebs.io/docs/next/)

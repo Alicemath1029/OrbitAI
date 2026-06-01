@@ -61,7 +61,7 @@ export function DataTableToolbar<TData>({
     (globalSearch?.enabled && Boolean(table.getState().globalFilter))
 
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div className="tech-panel border-border/65 bg-card/58 flex flex-col gap-3 rounded-md border p-3 shadow-xs backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
       <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
         {children}
         {(globalSearch?.enabled || filterInput) && (

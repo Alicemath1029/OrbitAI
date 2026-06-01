@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
-	"github.com/raids-lab/crater/dao/model"
+	"github.com/raids-lab/orbit/dao/model"
 )
 
 func TestPrepareAppliesPolicyDefaults(t *testing.T) {
@@ -61,11 +61,11 @@ func TestPrepareRejectsReadOnlyMount(t *testing.T) {
 	}
 }
 
-func TestAppendEnvsOverridesCraterNamespace(t *testing.T) {
+func TestAppendEnvsOverridesOrbitNamespace(t *testing.T) {
 	t.Parallel()
 
 	envs := AppendEnvs([]v1.EnvVar{
-		{Name: "CRATER_CHECKPOINT_DIR", Value: "/tmp"},
+		{Name: "ORBIT_CHECKPOINT_DIR", Value: "/tmp"},
 		{Name: "USER_ENV", Value: "kept"},
 	}, &Config{
 		Enabled:        true,
@@ -81,15 +81,15 @@ func TestAppendEnvsOverridesCraterNamespace(t *testing.T) {
 
 	foundUserEnv := false
 	for _, env := range envs {
-		if env.Name == "CRATER_CHECKPOINT_DIR" && env.Value != "/workspace/ckpt" {
-			t.Fatalf("CRATER_CHECKPOINT_DIR = %q, want platform value", env.Value)
+		if env.Name == "ORBIT_CHECKPOINT_DIR" && env.Value != "/workspace/ckpt" {
+			t.Fatalf("ORBIT_CHECKPOINT_DIR = %q, want platform value", env.Value)
 		}
 		if env.Name == "USER_ENV" {
 			foundUserEnv = true
 		}
 	}
 	if !foundUserEnv {
-		t.Fatal("AppendEnvs() dropped non-CRATER user env")
+		t.Fatal("AppendEnvs() dropped non-ORBIT user env")
 	}
 }
 
@@ -264,8 +264,8 @@ func TestFileSystemScannerScansFrameworkLayouts(t *testing.T) {
 }
 
 func TestScanJobWithKubernetesDoesNotCreateFallbackPod(t *testing.T) {
-	t.Setenv("CRATER_CHECKPOINT_SCANNER_ENDPOINT", "http://127.0.0.1:1")
-	t.Setenv("CRATER_CHECKPOINT_SCANNER_TIMEOUT_SECONDS", "1")
+	t.Setenv("ORBIT_CHECKPOINT_SCANNER_ENDPOINT", "http://127.0.0.1:1")
+	t.Setenv("ORBIT_CHECKPOINT_SCANNER_TIMEOUT_SECONDS", "1")
 
 	record := &model.Job{
 		JobName: "scan-service-required",
@@ -275,7 +275,7 @@ func TestScanJobWithKubernetesDoesNotCreateFallbackPod(t *testing.T) {
 			CheckpointDir: "/workspace/checkpoints",
 		}),
 		Attributes: datatypes.NewJSONType(&batch.Job{
-			ObjectMeta: metav1.ObjectMeta{Namespace: "crater-workspace"},
+			ObjectMeta: metav1.ObjectMeta{Namespace: "orbit-workspace"},
 			Spec: batch.JobSpec{Tasks: []batch.TaskSpec{{
 				Template: v1.PodTemplateSpec{
 					Spec: v1.PodSpec{Containers: []v1.Container{{

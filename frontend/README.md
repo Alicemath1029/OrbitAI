@@ -1,6 +1,8 @@
-# 🌋 Crater Frontend
+# 🌋 Orbit Frontend
 
-Crater is a Kubernetes-based GPU cluster management system providing a comprehensive solution for GPU resource orchestration.
+Orbit is a Kubernetes-based GPU cluster management system providing a comprehensive solution for GPU resource orchestration.
+
+Orbit Frontend is developed based on the open-source [Crater](https://github.com/raids-lab/crater) project from RAIDS Lab. The UI, branding, routing assets, and documentation have been adapted for the Orbit platform.
 
 <table>
   <tr>
@@ -57,8 +59,8 @@ For other IDEs, manually configure:
 Clone and initialize:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/crater.git
-cd crater/frontend
+git clone https://github.com/YOUR_USERNAME/orbit.git
+cd orbit/frontend
 pnpm install
 ```
 
@@ -114,7 +116,7 @@ done
 
 ## 🚀 Deployment
 
-To deploy Crater Project in a production environment, we provide a Helm Chart available at: [Crater Helm Chart](https://github.com/raids-lab/crater).
+To deploy Orbit Project in a production environment, we provide a Helm Chart available at: [Orbit Helm Chart](https://github.com/raids-lab/orbit).
 
 Please refer to the main documentation for detailed deployment instructions.
 
@@ -144,15 +146,15 @@ src/
 
 ## 👥 Contribution Guide
 
-We welcome and appreciate contributions from the community! Here's how you can help improve Crater Frontend.
+We welcome and appreciate contributions from the community! Here's how you can help improve Orbit Frontend.
 
 ### 🛠️ Development Workflow
 
 1. **Fork** the repository
 2. **Clone** your fork locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/crater-frontend.git
-   cd crater-frontend
+   git clone https://github.com/YOUR_USERNAME/orbit-frontend.git
+   cd orbit-frontend
    ```
 3. Create a new **feature branch**:
    ```bash
@@ -204,4 +206,4 @@ When reporting bugs, please include:
 - Screenshots if applicable
 - Browser/OS version information
 
-Thank you for contributing to Crater Frontend! Your help makes this project better for everyone.
+Thank you for contributing to Orbit Frontend! Your help makes this project better for everyone.

@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Crater
+ * Copyright 2025 Orbit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ export default async function Page(props: {
           })}
         />
         <a
-          href={`https://github.com/raids-lab/crater/blob/main/website/content/docs/${page.file.path}`}
+          href={`https://github.com/raids-lab/orbit/blob/main/website/content/docs/${page.file.path}`}
           rel="noreferrer noopener"
           target="_blank"
           className="w-fit border flex items-center mt-2 gap-2 no-underline rounded-md p-2 font-medium text-sm text-fd-secondary-foreground bg-fd-secondary transition-colors hover:text-fd-accent-foreground hover:bg-fd-accent"

@@ -18,8 +18,8 @@ ARG TARGETPLATFORM
 ARG BIN_DIR
 
 # Add OpenContainers image metadata labels (https://github.com/opencontainers/image-spec)
-LABEL org.opencontainers.image.source="https://github.com/raids-lab/crater-backend"
-LABEL org.opencontainers.image.description="Crater Web Backend"
+LABEL org.opencontainers.image.source="https://github.com/raids-lab/orbit-backend"
+LABEL org.opencontainers.image.description="Orbit Web Backend"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 
 RUN apk add tzdata && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime

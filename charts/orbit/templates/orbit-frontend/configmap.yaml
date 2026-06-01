@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: orbit-frontend-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: orbit-frontend
+data:
+  config.json: |-
+    {{ include "orbit.frontendConfig" . }}

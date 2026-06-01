@@ -7,7 +7,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
-	"github.com/raids-lab/crater/dao/model"
+	"github.com/raids-lab/orbit/dao/model"
 )
 
 func TestResolveDeleteSettlementTime(t *testing.T) {

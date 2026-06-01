@@ -5,11 +5,11 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/raids-lab/crater/internal/handler"
-	"github.com/raids-lab/crater/internal/service"
-	"github.com/raids-lab/crater/pkg/aitaskctl"
-	"github.com/raids-lab/crater/pkg/cronjob"
-	"github.com/raids-lab/crater/pkg/monitor"
+	"github.com/raids-lab/orbit/internal/handler"
+	"github.com/raids-lab/orbit/internal/service"
+	"github.com/raids-lab/orbit/pkg/aitaskctl"
+	"github.com/raids-lab/orbit/pkg/cronjob"
+	"github.com/raids-lab/orbit/pkg/monitor"
 )
 
 //nolint:gochecknoinits // This is the standard way to register a gin handler.

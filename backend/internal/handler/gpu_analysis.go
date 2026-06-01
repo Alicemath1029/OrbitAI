@@ -17,11 +17,11 @@ import (
 	// 需要引入 controller-runtime client
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/service"
-	"github.com/raids-lab/crater/pkg/config" // 需要引入 config 获取 namespace
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/service"
+	"github.com/raids-lab/orbit/pkg/config" // 需要引入 config 获取 namespace
 )
 
 //nolint:gochecknoinits // init is used to register handler routes

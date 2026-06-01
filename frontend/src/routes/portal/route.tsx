@@ -185,7 +185,7 @@ const useUserSidebarGroups = (): NavGroupProps[] => {
               url: '/portal/more/orders',
             },
             {
-              title: t('navigation.aboutCrater'),
+              title: t('navigation.aboutOrbit'),
               url: '/portal/more/version',
             },
           ],

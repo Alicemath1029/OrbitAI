@@ -1,13 +1,13 @@
 ---
 title: "配置说明"
-description: "Crater 平台 Helm Chart 详细配置参数说明，涵盖后端、前端、存储、监控及认证等核心模块。"
+description: "Orbit 平台 Helm Chart 详细配置参数说明，涵盖后端、前端、存储、监控及认证等核心模块。"
 ---
 
 <ChartBadge />
 
-Crater 是一个专为 Kubernetes 设计的综合性 AI 开发平台，提供 GPU 资源管理、容器化开发环境和工作流编排功能。本文档详细列出了通过 Helm 部署 Crater 时的所有可配置项。
+Orbit 是一个专为 Kubernetes 设计的综合性 AI 开发平台，提供 GPU 资源管理、容器化开发环境和工作流编排功能。本文档详细列出了通过 Helm 部署 Orbit 时的所有可配置项。
 
-**项目主页：** [https://github.com/raids-lab/crater](https://github.com/raids-lab/crater)
+**项目主页：** [https://github.com/raids-lab/orbit](https://github.com/raids-lab/orbit)
 
 ## 维护者
 
@@ -17,24 +17,24 @@ Crater 是一个专为 Kubernetes 设计的综合性 AI 开发平台，提供 GP
 
 ## 源码
 
-* [https://github.com/raids-lab/crater/tree/main/charts/crater](https://github.com/raids-lab/crater/tree/main/charts/crater)
+* [https://github.com/raids-lab/orbit/tree/main/charts/orbit](https://github.com/raids-lab/orbit/tree/main/charts/orbit)
 
 ## 基础配置 (Global Values)
 
 | 参数 | 类型 | 默认值 | 描述 |
 |-----|------|---------|-------------|
-| host | string | `"crater.example.com"` | 平台访问的域名或 IP 地址 |
+| host | string | `"orbit.example.com"` | 平台访问的域名或 IP 地址 |
 | protocol | string | `"http"` | 访问协议类型（`http` 或 `https`） |
-| firstUser.username | string | `"crater-admin"` | 初始管理员用户名 |
+| firstUser.username | string | `"orbit-admin"` | 初始管理员用户名 |
 | firstUser.password | string | `"Masked@Password"` | 初始管理员密码（请务必修改） |
 | imagePullPolicy | string | `"Always"` | 容器镜像拉取策略 |
 | namespaces.create | bool | `true` | 是否自动创建命名空间 |
-| namespaces.job | string | `"crater-workspace"` | 用于运行作业任务的命名空间 |
-| namespaces.image | string | `"crater-images"` | 用于构建镜像的命名空间 |
+| namespaces.job | string | `"orbit-workspace"` | 用于运行作业任务的命名空间 |
+| namespaces.image | string | `"orbit-images"` | 用于构建镜像的命名空间 |
 | storage.create | bool | `true` | 是否自动创建基础持久化存储（PVC） |
 | storage.request | string | `"10Gi"` | 存储申请容量 |
 | storage.storageClass | string | `"nfs"` | 存储类名称（需支持 ReadWriteMany） |
-| storage.pvcName | string | `"crater-rw-storage"` | 共享 PVC 的名称 |
+| storage.pvcName | string | `"orbit-rw-storage"` | 共享 PVC 的名称 |
 
 ## 监控基础配置 (Monitoring)
 
@@ -85,8 +85,8 @@ Crater 是一个专为 Kubernetes 设计的综合性 AI 开发平台，提供 GP
 
 | 参数 | 类型 | 默认值 | 描述 |
 |-----|------|---------|-------------|
-| backendConfig.secrets.tlsSecretName | string | `"crater-tls-secret"` | 用于 HTTPS 的 TLS 证书 Secret 名称 |
-| backendConfig.secrets.tlsForwardSecretName | string | `"crater-tls-forward-secret"` | 用于转发的 TLS 证书 Secret 名称 |
+| backendConfig.secrets.tlsSecretName | string | `"orbit-tls-secret"` | 用于 HTTPS 的 TLS 证书 Secret 名称 |
+| backendConfig.secrets.tlsForwardSecretName | string | `"orbit-tls-forward-secret"` | 用于转发的 TLS 证书 Secret 名称 |
 | backendConfig.secrets.imagePullSecretName | string | `""` | 用于拉取私有镜像的 Secret 名称 |
 
 ### 认证方式配置 (backendConfig.auth)

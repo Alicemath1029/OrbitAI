@@ -9,8 +9,8 @@ import (
 	"k8s.io/klog/v2"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/monitor"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/monitor"
 )
 
 func NewCleanerClients(

@@ -5,8 +5,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/internal/util"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/internal/util"
 )
 
 func TestShouldIssueInitialAccountBalance(t *testing.T) {

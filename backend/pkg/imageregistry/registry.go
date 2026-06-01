@@ -14,7 +14,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/dao/query"
+	"github.com/raids-lab/orbit/dao/query"
 )
 
 var (
@@ -52,8 +52,8 @@ func (r *ImageRegistry) CheckOrCreateProjectForUser(c context.Context, userName 
 }
 
 func (r *ImageRegistry) getImageInfo(fullImageURL string) (projectName, imageName, imageTag string, err error) {
-	// fullImageURL like: crater-harbor-URL/crater-images/crater:latest
-	// projectName: crater-images, imageName: crater, imageTag: latest
+	// fullImageURL like: orbit-harbor-URL/orbit-images/orbit:latest
+	// projectName: orbit-images, imageName: orbit, imageTag: latest
 	// get projectName, imageName, imageTag from fullImageURL by regex
 	// check if full image url starts with inner registry
 	if !strings.HasPrefix(fullImageURL, r.harborClient.RegistryServer) {

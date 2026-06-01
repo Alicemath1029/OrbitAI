@@ -11,10 +11,10 @@ import (
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/utils"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/utils"
 )
 
 type alertMgr struct {
@@ -56,7 +56,7 @@ func (a *alertMgr) SendVerificationCode(ctx context.Context, code string, receiv
 	subject := "邮箱验证码"
 	body := fmt.Sprintf(`
 		<div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-			<h2 style="color: #2c3e50;">Crater 邮箱验证</h2>
+			<h2 style="color: #2c3e50;">Orbit 邮箱验证</h2>
 			<p>您好，</p>
 			<p>您的邮箱验证码为：</p>
 			<div style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 18px; font-weight: bold; text-align: center; letter-spacing: 2px;">
@@ -310,7 +310,7 @@ func generateHTMLEmail(username, title, message, url, buttonText string) string 
 			</div>
 			<p style="margin-top: 30px; font-size: 12px; color: #7f8c8d;">此邮件由系统自动发送，请勿直接回复。如有疑问，请联系系统管理员。</p>
 			<div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; font-size: 12px; color: #95a5a6; text-align: center;">
-				© Crater 计算平台
+				© Orbit 计算平台
 			</div>
 		</div>
 	`, title, username, message, url, buttonText)

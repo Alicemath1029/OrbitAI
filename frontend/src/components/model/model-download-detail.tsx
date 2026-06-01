@@ -293,7 +293,7 @@ export function ModelDownloadDetail({ ...props }: DetailPageCoreProps) {
                       <>
                         <p className="font-medium">✅ 模型下载完成</p>
                         <p className="text-muted-foreground">
-                          文件已保存到共享存储 (PVC: crater-storage)
+                          文件已保存到共享存储 (PVC: orbit-storage)
                         </p>
                         <p className="text-muted-foreground">
                           可在创建作业时通过以下路径挂载：
@@ -306,7 +306,7 @@ export function ModelDownloadDetail({ ...props }: DetailPageCoreProps) {
                       <>
                         <p className="font-medium">📦 下载目标</p>
                         <p className="text-muted-foreground">
-                          文件将保存到共享存储 (PVC: crater-storage)
+                          文件将保存到共享存储 (PVC: orbit-storage)
                         </p>
                         <p className="text-muted-foreground">
                           目标路径：
@@ -342,7 +342,7 @@ export function ModelDownloadDetail({ ...props }: DetailPageCoreProps) {
           children: (
             <DetailPageLog
               namespacedName={{
-                namespace: 'crater-workspace',
+                namespace: 'orbit-workspace',
                 name: download?.jobName || '',
               }}
             />

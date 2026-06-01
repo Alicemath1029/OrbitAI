@@ -1,7 +1,7 @@
 # Default values for kube-state-metrics.
 prometheusScrape: true
 image:
-  registry: crater-harbor.act.buaa.edu.cn/registry.k8s.io
+  registry: orbit-harbor.act.buaa.edu.cn/registry.k8s.io
   repository: kube-state-metrics/kube-state-metrics
   # If unset use v + .Charts.appVersion
   tag: ""
@@ -295,7 +295,7 @@ containerSecurityContext:
 ## Node labels for pod assignment
 ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
 nodeSelector: 
-  "crater.raids-lab.io/devops": "true"
+  "orbit.raids-lab.io/devops": "true"
 
 ## Affinity settings for pod assignment
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/

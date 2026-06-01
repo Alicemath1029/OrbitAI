@@ -46,19 +46,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-array_github_com_raids-lab_crater_pkg_crclient_Pod"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-array_github_com_raids-lab_orbit_pkg_crclient_Pod"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -86,19 +86,19 @@ const docTemplate = `{
                     "200": {
                         "description": "token验证成功，返回用户信息、上下文和版本信息",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_CheckResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_CheckResp"
                         }
                     },
                     "401": {
                         "description": "token无效或已过期",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "服务器内部错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -131,25 +131,25 @@ const docTemplate = `{
                     "200": {
                         "description": "登录成功，返回 JWT Token 和默认个人项目",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_LoginResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_LoginResp"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "401": {
                         "description": "用户名或密码错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "数据库交互错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -172,13 +172,13 @@ const docTemplate = `{
                     "200": {
                         "description": "启用认证类型及注册配置",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_AuthModeResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_AuthModeResp"
                         }
                     },
                     "500": {
                         "description": "获取相关配置时错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -208,20 +208,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                                "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                             }
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -249,19 +249,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_AccountResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_AccountResp"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -297,19 +297,19 @@ const docTemplate = `{
                     "200": {
                         "description": "账户信息",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -346,25 +346,25 @@ const docTemplate = `{
                     "200": {
                         "description": "User account entries",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "403": {
                         "description": "Forbidden - user not in account",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -401,25 +401,25 @@ const docTemplate = `{
                     "200": {
                         "description": "User account entries",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "403": {
                         "description": "Forbidden - user not in account",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -472,25 +472,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Update result",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PutUserInProjectResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PutUserInProjectResp"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "403": {
                         "description": "Forbidden - not account admin",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -539,25 +539,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Returns added username and account name",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "403": {
                         "description": "Forbidden - not account admin",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -599,25 +599,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Returns removed username and account name",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "403": {
                         "description": "Forbidden - not account admin",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -668,25 +668,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Returns updated username and account name",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "403": {
                         "description": "Forbidden - not account admin",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -722,19 +722,19 @@ const docTemplate = `{
                     "200": {
                         "description": "账户信息",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -762,19 +762,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -802,13 +802,13 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回检查结果消息",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -845,25 +845,25 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回工单详情",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ApprovalOrderResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ApprovalOrderResp"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "工单不存在",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -891,19 +891,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -942,19 +942,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -993,19 +993,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1044,19 +1044,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1095,19 +1095,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1132,13 +1132,13 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_GpuAnalysisWithJobInfo"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_GpuAnalysisWithJobInfo"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1177,19 +1177,19 @@ const docTemplate = `{
                     "200": {
                         "description": "分析成功，返回创建的分析记录",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_dao_model_GpuAnalysis"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_dao_model_GpuAnalysis"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "分析过程中发生错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1214,13 +1214,13 @@ const docTemplate = `{
                     "200": {
                         "description": "成功，返回入队的 Job 数量",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_TriggerAllJobsAnalysisResponse"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_TriggerAllJobsAnalysisResponse"
                         }
                     },
                     "500": {
                         "description": "服务器错误或队列已满",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1259,19 +1259,19 @@ const docTemplate = `{
                     "200": {
                         "description": "分析成功，返回创建或更新后的分析记录",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_dao_model_GpuAnalysis"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_dao_model_GpuAnalysis"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "分析过程中发生错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1308,19 +1308,19 @@ const docTemplate = `{
                     "200": {
                         "description": "操作成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "操作失败",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1366,19 +1366,19 @@ const docTemplate = `{
                     "200": {
                         "description": "更新成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1608,7 +1608,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_ModelDownloadResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_ModelDownloadResp"
                         }
                     }
                 }
@@ -1645,7 +1645,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     }
                 }
@@ -1682,19 +1682,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功排空节点",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "排空节点失败",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1772,19 +1772,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_internal_resputil_List-internal_handler_operations_OperationLogResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_internal_resputil_List-internal_handler_operations_OperationLogResp"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1810,13 +1810,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-map_string_string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-map_string_string"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1886,19 +1886,19 @@ const docTemplate = `{
                     "200": {
                         "description": "账户列表",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -1949,19 +1949,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Returns added username and account name",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2012,19 +2012,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Returns added username and account name",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2066,19 +2066,19 @@ const docTemplate = `{
                     "200": {
                         "description": "返回添加的用户名和队列名",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2115,19 +2115,19 @@ const docTemplate = `{
                     "200": {
                         "description": "User account entries",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2171,19 +2171,19 @@ const docTemplate = `{
                     "200": {
                         "description": "更新结果",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PutUserInProjectResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PutUserInProjectResp"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2220,19 +2220,19 @@ const docTemplate = `{
                     "200": {
                         "description": "User account entries",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2275,19 +2275,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功更新配额",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2321,19 +2321,19 @@ const docTemplate = `{
                     "200": {
                         "description": "删除的队列名",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_DeleteProjectResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_DeleteProjectResp"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2369,19 +2369,19 @@ const docTemplate = `{
                     "200": {
                         "description": "重置成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2406,13 +2406,13 @@ const docTemplate = `{
                     "200": {
                         "description": "配置信息",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_QueueQuotaResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_QueueQuotaResp"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2449,19 +2449,19 @@ const docTemplate = `{
                     "200": {
                         "description": "创建成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_QueueQuotaConfigItemResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_QueueQuotaConfigItemResp"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "409": {
                         "description": "名称冲突",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2507,25 +2507,25 @@ const docTemplate = `{
                     "200": {
                         "description": "更新成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_QueueQuotaConfigItemResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_QueueQuotaConfigItemResp"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "配置不存在",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "409": {
                         "description": "名称冲突",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2557,19 +2557,19 @@ const docTemplate = `{
                     "200": {
                         "description": "删除成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "配置不存在",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2608,19 +2608,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2648,19 +2648,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2706,19 +2706,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2753,19 +2753,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2809,19 +2809,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2858,19 +2858,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2914,19 +2914,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -2979,19 +2979,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3033,19 +3033,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3070,7 +3070,7 @@ const docTemplate = `{
                     "200": {
                         "description": "开关状态",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_GpuAnalysisStatusResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_GpuAnalysisStatusResp"
                         }
                     }
                 }
@@ -3107,13 +3107,13 @@ const docTemplate = `{
                     "200": {
                         "description": "设置成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "LLM连接检查失败，无法开启",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3138,13 +3138,13 @@ const docTemplate = `{
                     "200": {
                         "description": "配置信息",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_LLMConfigResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_LLMConfigResp"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3181,13 +3181,13 @@ const docTemplate = `{
                     "200": {
                         "description": "更新成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "参数错误或校验失败",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3210,13 +3210,13 @@ const docTemplate = `{
                     "200": {
                         "description": "重置成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3229,7 +3229,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "获取当前回填提交开关、Crater 队内资源配额开关、普通作业等待忍耐时间和 watcher 运行参数",
+                "description": "获取当前回填提交开关、Orbit 队内资源配额开关、普通作业等待忍耐时间和 watcher 运行参数",
                 "produces": [
                     "application/json"
                 ],
@@ -3241,13 +3241,13 @@ const docTemplate = `{
                     "200": {
                         "description": "配置",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PrequeueConfigResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PrequeueConfigResp"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3258,7 +3258,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "更新回填提交开关、Crater 队内资源配额开关、普通作业等待忍耐时间和 watcher 运行参数",
+                "description": "更新回填提交开关、Orbit 队内资源配额开关、普通作业等待忍耐时间和 watcher 运行参数",
                 "consumes": [
                     "application/json"
                 ],
@@ -3284,19 +3284,19 @@ const docTemplate = `{
                     "200": {
                         "description": "更新成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3324,19 +3324,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功获取用户信息",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3364,19 +3364,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功获取用户信息",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3413,19 +3413,19 @@ const docTemplate = `{
                     "200": {
                         "description": "删除成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3463,7 +3463,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.UserAttribute"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.UserAttribute"
                         }
                     }
                 ],
@@ -3471,19 +3471,19 @@ const docTemplate = `{
                     "200": {
                         "description": "用户属性更新成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3529,19 +3529,19 @@ const docTemplate = `{
                     "200": {
                         "description": "调整成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_AdjustUserExtraBalanceResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_AdjustUserExtraBalanceResp"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3586,19 +3586,19 @@ const docTemplate = `{
                     "200": {
                         "description": "更新角色成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3635,19 +3635,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3675,19 +3675,19 @@ const docTemplate = `{
                     "200": {
                         "description": "AI Job ListUserJob",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3715,19 +3715,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Quota Information",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3764,19 +3764,19 @@ const docTemplate = `{
                     "200": {
                         "description": "CreateCustom AI Job Response",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3813,19 +3813,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Delete AI Job Response",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3862,19 +3862,19 @@ const docTemplate = `{
                     "200": {
                         "description": "AI Job Details",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3911,19 +3911,19 @@ const docTemplate = `{
                     "200": {
                         "description": "事件列表",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -3960,19 +3960,19 @@ const docTemplate = `{
                     "200": {
                         "description": "任务yaml",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4035,19 +4035,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回工单列表",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4084,19 +4084,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4133,25 +4133,25 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回工单列表",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_ApprovalOrderResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_ApprovalOrderResp"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "工单不存在",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4188,31 +4188,31 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回工单详情",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ApprovalOrderResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ApprovalOrderResp"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "403": {
                         "description": "权限不足",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "工单不存在",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4249,19 +4249,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4296,19 +4296,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4347,19 +4347,19 @@ const docTemplate = `{
                     "200": {
                         "description": "用户上下文",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_LoginResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_LoginResp"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4390,7 +4390,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.UserAttribute"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.UserAttribute"
                         }
                     }
                 ],
@@ -4398,19 +4398,19 @@ const docTemplate = `{
                     "200": {
                         "description": "User attributes updated",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4438,19 +4438,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully send email verification code to user",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4478,19 +4478,19 @@ const docTemplate = `{
                     "200": {
                         "description": "User email updated successfully",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4518,19 +4518,19 @@ const docTemplate = `{
                     "200": {
                         "description": "当前作业资源占用汇总",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_JobResourceSummaryResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_JobResourceSummaryResp"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4555,13 +4555,13 @@ const docTemplate = `{
                     "200": {
                         "description": "当前状态",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PrequeueFeatureStatusResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PrequeueFeatureStatusResp"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4589,19 +4589,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Volcano Queue Quota",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4639,13 +4639,13 @@ const docTemplate = `{
                     "200": {
                         "description": "检查结果",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_internal_service_ResourceLimitCheckResult"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_internal_service_ResourceLimitCheckResult"
                         }
                     },
                     "500": {
                         "description": "服务器错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4684,19 +4684,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4735,19 +4735,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4786,19 +4786,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4834,19 +4834,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4882,19 +4882,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4922,19 +4922,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -4973,19 +4973,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -5023,19 +5023,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -5074,19 +5074,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -5122,19 +5122,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -5170,19 +5170,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -5218,19 +5218,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -5266,19 +5266,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -6151,19 +6151,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -6200,19 +6200,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -6240,19 +6240,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -6291,19 +6291,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -6340,19 +6340,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -6391,7 +6391,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ModelDownloadResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ModelDownloadResp"
                         }
                     }
                 }
@@ -6427,7 +6427,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_ModelDownloadResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_ModelDownloadResp"
                         }
                     }
                 }
@@ -6464,7 +6464,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ModelDownloadResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ModelDownloadResp"
                         }
                     }
                 }
@@ -6499,7 +6499,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     }
                 }
@@ -6536,7 +6536,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     }
                 }
@@ -6573,7 +6573,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ModelDownloadResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ModelDownloadResp"
                         }
                     }
                 }
@@ -6610,7 +6610,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ModelDownloadResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ModelDownloadResp"
                         }
                     }
                 }
@@ -6647,7 +6647,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ModelDownloadResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ModelDownloadResp"
                         }
                     }
                 }
@@ -6691,19 +6691,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Pod容器列表",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -6768,19 +6768,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Pod容器日志",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -6803,19 +6803,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -6859,25 +6859,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Pod事件列表",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "任务未找到",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -6921,25 +6921,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Pod Ingress规则列表",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodIngressResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodIngressResp"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "Pod未找到",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -6990,25 +6990,25 @@ const docTemplate = `{
                     "200": {
                         "description": "成功创建的Ingress规则",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodIngress"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodIngress"
                         }
                     },
                     "400": {
                         "description": "请求参数错误或规则冲突",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "Pod未找到",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7059,25 +7059,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Ingress规则删除成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误或Ingress规则未找到",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "Pod未找到",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7121,25 +7121,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Pod NodePort规则列表",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodNodeportResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodNodeportResp"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "Pod未找到",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7190,25 +7190,25 @@ const docTemplate = `{
                     "200": {
                         "description": "成功创建的NodePort规则",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodNodeport"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodNodeport"
                         }
                     },
                     "400": {
                         "description": "请求参数错误或规则冲突",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "Pod未找到",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7259,25 +7259,25 @@ const docTemplate = `{
                     "200": {
                         "description": "NodePort规则删除成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误或NodePort规则未找到",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "Pod未找到",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7305,19 +7305,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述，注意这里返回Json字符串，swagger无法准确解析",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7354,19 +7354,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_pkg_crclient_ClusterNodeDetail"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_pkg_crclient_ClusterNodeDetail"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7410,19 +7410,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7468,19 +7468,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功添加注解",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7524,19 +7524,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功删除注解",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7572,19 +7572,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_pkg_crclient_GPUInfo"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_pkg_crclient_GPUInfo"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7630,19 +7630,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功添加标签",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7686,19 +7686,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功删除标签",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7735,19 +7735,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回节点标记信息",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_NodeMark"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_NodeMark"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7783,19 +7783,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功返回值描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7841,19 +7841,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功添加污点",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7897,19 +7897,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功删除污点",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-string"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-string"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7932,19 +7932,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -7967,19 +7967,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8007,19 +8007,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8048,7 +8048,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.CronJobConfig"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.CronJobConfig"
                         }
                     }
                 ],
@@ -8056,19 +8056,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8091,19 +8091,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8126,19 +8126,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8175,19 +8175,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功创建账户，返回账户ID",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ProjectCreateResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ProjectCreateResp"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "账户创建失败，返回错误信息",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8223,19 +8223,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8272,19 +8272,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8321,19 +8321,19 @@ const docTemplate = `{
                     "200": {
                         "description": "事件列表",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8397,7 +8397,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_internal_payload_StatisticsResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_internal_payload_StatisticsResp"
                         }
                     }
                 }
@@ -8425,19 +8425,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Token 鉴权",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_TokenReq"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_TokenReq"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8465,19 +8465,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功获取用户信息",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8514,19 +8514,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功获取用户信息",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_UserDetailResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_UserDetailResp"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "其他错误",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8554,19 +8554,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Volcano Job List",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8603,19 +8603,19 @@ const docTemplate = `{
                     "200": {
                         "description": "admin get Volcano Job List",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "admin Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8654,19 +8654,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8703,19 +8703,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8752,19 +8752,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8808,31 +8808,31 @@ const docTemplate = `{
                     "200": {
                         "description": "User's Job List",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "403": {
                         "description": "Forbidden - insufficient permissions",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8871,19 +8871,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8920,19 +8920,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -8955,19 +8955,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -9004,19 +9004,19 @@ const docTemplate = `{
                     "200": {
                         "description": "任务描述",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -9053,19 +9053,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -9102,19 +9102,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Pod列表",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -9151,19 +9151,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -9200,19 +9200,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -9249,19 +9249,19 @@ const docTemplate = `{
                     "200": {
                         "description": "SSH开启成功",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -9298,19 +9298,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -9347,19 +9347,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -9396,19 +9396,19 @@ const docTemplate = `{
                     "200": {
                         "description": "任务yaml",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "400": {
                         "description": "Request parameter error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     },
                     "500": {
                         "description": "Other errors",
                         "schema": {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.Response-any"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.Response-any"
                         }
                     }
                 }
@@ -9419,13 +9419,13 @@ const docTemplate = `{
         "datatypes.JSONType-array_string": {
             "type": "object"
         },
-        "datatypes.JSONType-github_com_raids-lab_crater_dao_model_QueueQuota": {
+        "datatypes.JSONType-github_com_raids-lab_orbit_dao_model_QueueQuota": {
             "type": "object"
         },
         "datatypes.JSONType-v1_ResourceList": {
             "type": "object"
         },
-        "github_com_raids-lab_crater_dao_model.AccessMode": {
+        "github_com_raids-lab_orbit_dao_model.AccessMode": {
             "type": "integer",
             "format": "int32",
             "enum": [
@@ -9456,7 +9456,7 @@ const docTemplate = `{
                 "AccessModeAO"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.ApprovalOrderContent": {
+        "github_com_raids-lab_orbit_dao_model.ApprovalOrderContent": {
             "type": "object",
             "properties": {
                 "approvalorderExtensionHours": {
@@ -9472,7 +9472,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_dao_model.ApprovalOrderStatus": {
+        "github_com_raids-lab_orbit_dao_model.ApprovalOrderStatus": {
             "type": "string",
             "enum": [
                 "Pending",
@@ -9499,7 +9499,7 @@ const docTemplate = `{
                 "ApprovalOrderStatusCancelled"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.ApprovalOrderType": {
+        "github_com_raids-lab_orbit_dao_model.ApprovalOrderType": {
             "type": "string",
             "enum": [
                 "dataset",
@@ -9518,7 +9518,7 @@ const docTemplate = `{
                 "ApprovalOrderTypeJob"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.BuildSource": {
+        "github_com_raids-lab_orbit_dao_model.BuildSource": {
             "type": "string",
             "enum": [
                 "Dockerfile",
@@ -9535,7 +9535,7 @@ const docTemplate = `{
                 "EnvdRaw"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.CraterResourceType": {
+        "github_com_raids-lab_orbit_dao_model.OrbitResourceType": {
             "type": "string",
             "enum": [
                 "gpu",
@@ -9548,7 +9548,7 @@ const docTemplate = `{
                 "ResourceTypeVGPU"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.CronJobConfig": {
+        "github_com_raids-lab_orbit_dao_model.CronJobConfig": {
             "type": "object",
             "properties": {
                 "config": {
@@ -9576,17 +9576,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.CronJobConfigStatus"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.CronJobConfigStatus"
                 },
                 "type": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.CronJobType"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.CronJobType"
                 },
                 "updatedAt": {
                     "type": "string"
                 }
             }
         },
-        "github_com_raids-lab_crater_dao_model.CronJobConfigStatus": {
+        "github_com_raids-lab_orbit_dao_model.CronJobConfigStatus": {
             "type": "string",
             "enum": [
                 "unknown",
@@ -9601,7 +9601,7 @@ const docTemplate = `{
                 "CronJobConfigStatusRunning"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.CronJobType": {
+        "github_com_raids-lab_orbit_dao_model.CronJobType": {
             "type": "string",
             "enum": [
                 "cleaner_function",
@@ -9612,7 +9612,7 @@ const docTemplate = `{
                 "CronJobTypePatrolFunc"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.DataType": {
+        "github_com_raids-lab_orbit_dao_model.DataType": {
             "type": "string",
             "enum": [
                 "dataset",
@@ -9625,7 +9625,7 @@ const docTemplate = `{
                 "DataTypeShareFile"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.GpuAnalysis": {
+        "github_com_raids-lab_orbit_dao_model.GpuAnalysis": {
             "type": "object",
             "properties": {
                 "command": {
@@ -9678,7 +9678,7 @@ const docTemplate = `{
                     "description": "管理状态",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.ReviewStatus"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.ReviewStatus"
                         }
                     ]
                 },
@@ -9690,7 +9690,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_dao_model.JobType": {
+        "github_com_raids-lab_orbit_dao_model.JobType": {
             "type": "string",
             "enum": [
                 "all",
@@ -9715,7 +9715,7 @@ const docTemplate = `{
                 "JobTypeCustom"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.ReviewStatus": {
+        "github_com_raids-lab_orbit_dao_model.ReviewStatus": {
             "type": "integer",
             "format": "int32",
             "enum": [
@@ -9743,7 +9743,7 @@ const docTemplate = `{
                 "ReviewStatusIgnored"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.Role": {
+        "github_com_raids-lab_orbit_dao_model.Role": {
             "type": "integer",
             "format": "int32",
             "enum": [
@@ -9759,7 +9759,7 @@ const docTemplate = `{
                 "RoleAdmin"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.ScheduleType": {
+        "github_com_raids-lab_orbit_dao_model.ScheduleType": {
             "type": "integer",
             "enum": [
                 0,
@@ -9770,7 +9770,7 @@ const docTemplate = `{
                 "ScheduleTypeNormal"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.Status": {
+        "github_com_raids-lab_orbit_dao_model.Status": {
             "type": "integer",
             "format": "int32",
             "enum": [
@@ -9797,7 +9797,7 @@ const docTemplate = `{
                 "StatusInactive"
             ]
         },
-        "github_com_raids-lab_crater_dao_model.UserAttribute": {
+        "github_com_raids-lab_orbit_dao_model.UserAttribute": {
             "type": "object",
             "properties": {
                 "avatar": {
@@ -9846,7 +9846,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_dao_model.UserInfo": {
+        "github_com_raids-lab_orbit_dao_model.UserInfo": {
             "type": "object",
             "properties": {
                 "nickname": {
@@ -9857,7 +9857,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_payload.Order": {
+        "github_com_raids-lab_orbit_internal_payload.Order": {
             "type": "string",
             "enum": [
                 "asc",
@@ -9868,7 +9868,7 @@ const docTemplate = `{
                 "Desc"
             ]
         },
-        "github_com_raids-lab_crater_internal_payload.ResourceDetail": {
+        "github_com_raids-lab_orbit_internal_payload.ResourceDetail": {
             "type": "object",
             "properties": {
                 "label": {
@@ -9885,25 +9885,25 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_payload.StatisticsResp": {
+        "github_com_raids-lab_orbit_internal_payload.StatisticsResp": {
             "type": "object",
             "properties": {
                 "series": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_raids-lab_crater_internal_payload.TimePointData"
+                        "$ref": "#/definitions/github_com_raids-lab_orbit_internal_payload.TimePointData"
                     }
                 },
                 "totalUsage": {
                     "description": "TotalUsage Key: ResourceName (如 nvidia.com/v100)\nValue: 包含 Label 和 Type 的详细对象",
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/definitions/github_com_raids-lab_crater_internal_payload.ResourceDetail"
+                        "$ref": "#/definitions/github_com_raids-lab_orbit_internal_payload.ResourceDetail"
                     }
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_payload.TimePointData": {
+        "github_com_raids-lab_orbit_internal_payload.TimePointData": {
             "type": "object",
             "properties": {
                 "timestamp": {
@@ -9919,7 +9919,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.ErrorCode": {
+        "github_com_raids-lab_orbit_internal_resputil.ErrorCode": {
             "type": "integer",
             "enum": [
                 0,
@@ -9960,7 +9960,7 @@ const docTemplate = `{
                 "NotSpecified"
             ]
         },
-        "github_com_raids-lab_crater_internal_resputil.List-internal_handler_operations_OperationLogResp": {
+        "github_com_raids-lab_orbit_internal_resputil.List-internal_handler_operations_OperationLogResp": {
             "type": "object",
             "properties": {
                 "items": {
@@ -9974,11 +9974,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-any": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-any": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {},
                 "msg": {
@@ -9986,16 +9986,16 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-array_github_com_raids-lab_crater_pkg_crclient_Pod": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-array_github_com_raids-lab_orbit_pkg_crclient_Pod": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_raids-lab_crater_pkg_crclient.Pod"
+                        "$ref": "#/definitions/github_com_raids-lab_orbit_pkg_crclient.Pod"
                     }
                 },
                 "msg": {
@@ -10003,11 +10003,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_AccountResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_AccountResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "type": "array",
@@ -10020,11 +10020,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_ApprovalOrderResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_ApprovalOrderResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "type": "array",
@@ -10037,11 +10037,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_GpuAnalysisWithJobInfo": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_GpuAnalysisWithJobInfo": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "type": "array",
@@ -10054,11 +10054,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-array_internal_handler_ModelDownloadResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-array_internal_handler_ModelDownloadResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "type": "array",
@@ -10071,95 +10071,95 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_dao_model_GpuAnalysis": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_dao_model_GpuAnalysis": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.GpuAnalysis"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.GpuAnalysis"
                 },
                 "msg": {
                     "type": "string"
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_internal_payload_StatisticsResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_internal_payload_StatisticsResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_payload.StatisticsResp"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_payload.StatisticsResp"
                 },
                 "msg": {
                     "type": "string"
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_internal_resputil_List-internal_handler_operations_OperationLogResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_internal_resputil_List-internal_handler_operations_OperationLogResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.List-internal_handler_operations_OperationLogResp"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.List-internal_handler_operations_OperationLogResp"
                 },
                 "msg": {
                     "type": "string"
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_internal_service_ResourceLimitCheckResult": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_internal_service_ResourceLimitCheckResult": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_service.ResourceLimitCheckResult"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_service.ResourceLimitCheckResult"
                 },
                 "msg": {
                     "type": "string"
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_pkg_crclient_ClusterNodeDetail": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_pkg_crclient_ClusterNodeDetail": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_pkg_crclient.ClusterNodeDetail"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_pkg_crclient.ClusterNodeDetail"
                 },
                 "msg": {
                     "type": "string"
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-github_com_raids-lab_crater_pkg_crclient_GPUInfo": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-github_com_raids-lab_orbit_pkg_crclient_GPUInfo": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_pkg_crclient.GPUInfo"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_pkg_crclient.GPUInfo"
                 },
                 "msg": {
                     "type": "string"
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_AdjustUserExtraBalanceResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_AdjustUserExtraBalanceResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.AdjustUserExtraBalanceResp"
@@ -10169,11 +10169,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ApprovalOrderResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ApprovalOrderResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.ApprovalOrderResp"
@@ -10183,11 +10183,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_AuthModeResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_AuthModeResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.AuthModeResp"
@@ -10197,11 +10197,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_CheckResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_CheckResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.CheckResp"
@@ -10211,11 +10211,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_DeleteProjectResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_DeleteProjectResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.DeleteProjectResp"
@@ -10225,11 +10225,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_GpuAnalysisStatusResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_GpuAnalysisStatusResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.GpuAnalysisStatusResp"
@@ -10239,11 +10239,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_JobResourceSummaryResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_JobResourceSummaryResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.JobResourceSummaryResp"
@@ -10253,11 +10253,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_LLMConfigResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_LLMConfigResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.LLMConfigResp"
@@ -10267,11 +10267,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_LoginResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_LoginResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.LoginResp"
@@ -10281,11 +10281,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ModelDownloadResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ModelDownloadResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.ModelDownloadResp"
@@ -10295,11 +10295,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_NodeMark": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_NodeMark": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.NodeMark"
@@ -10309,11 +10309,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PrequeueConfigResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PrequeueConfigResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.PrequeueConfigResp"
@@ -10323,11 +10323,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PrequeueFeatureStatusResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PrequeueFeatureStatusResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.PrequeueFeatureStatusResp"
@@ -10337,11 +10337,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_ProjectCreateResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_ProjectCreateResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.ProjectCreateResp"
@@ -10351,11 +10351,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_PutUserInProjectResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_PutUserInProjectResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.PutUserInProjectResp"
@@ -10365,11 +10365,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_QueueQuotaConfigItemResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_QueueQuotaConfigItemResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.QueueQuotaConfigItemResp"
@@ -10379,11 +10379,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_QueueQuotaResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_QueueQuotaResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.QueueQuotaResp"
@@ -10393,11 +10393,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_TokenReq": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_TokenReq": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.TokenReq"
@@ -10407,11 +10407,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_TriggerAllJobsAnalysisResponse": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_TriggerAllJobsAnalysisResponse": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.TriggerAllJobsAnalysisResponse"
@@ -10421,11 +10421,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_UserDetailResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_UserDetailResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler.UserDetailResp"
@@ -10435,11 +10435,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodIngress": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodIngress": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler_tool.PodIngress"
@@ -10449,11 +10449,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodIngressResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodIngressResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler_tool.PodIngressResp"
@@ -10463,11 +10463,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodNodeport": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodNodeport": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler_tool.PodNodeport"
@@ -10477,11 +10477,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_tool_PodNodeportResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_tool_PodNodeportResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler_tool.PodNodeportResp"
@@ -10491,11 +10491,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-internal_handler_vcjob_JupyterTokenResp": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/internal_handler_vcjob.JupyterTokenResp"
@@ -10505,11 +10505,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-map_string_string": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-map_string_string": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "$ref": "#/definitions/map_string_string"
@@ -10519,11 +10519,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_resputil.Response-string": {
+        "github_com_raids-lab_orbit_internal_resputil.Response-string": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_resputil.ErrorCode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_resputil.ErrorCode"
                 },
                 "data": {
                     "type": "string"
@@ -10533,13 +10533,13 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_service.ResourceLimitCheckResult": {
+        "github_com_raids-lab_orbit_internal_service.ResourceLimitCheckResult": {
             "type": "object",
             "properties": {
                 "details": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_raids-lab_crater_internal_service.ResourceLimitDetail"
+                        "$ref": "#/definitions/github_com_raids-lab_orbit_internal_service.ResourceLimitDetail"
                     }
                 },
                 "enabled": {
@@ -10550,7 +10550,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_service.ResourceLimitDetail": {
+        "github_com_raids-lab_orbit_internal_service.ResourceLimitDetail": {
             "type": "object",
             "properties": {
                 "exceeded": {
@@ -10567,7 +10567,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_service_vcjob.ForwardType": {
+        "github_com_raids-lab_orbit_internal_service_vcjob.ForwardType": {
             "type": "integer",
             "enum": [
                 0,
@@ -10580,7 +10580,7 @@ const docTemplate = `{
                 "NodePortType"
             ]
         },
-        "github_com_raids-lab_crater_internal_util.VolumeMount": {
+        "github_com_raids-lab_orbit_internal_util.VolumeMount": {
             "type": "object",
             "properties": {
                 "datasetID": {
@@ -10593,11 +10593,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_util.VolumeType"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_util.VolumeType"
                 }
             }
         },
-        "github_com_raids-lab_crater_internal_util.VolumeType": {
+        "github_com_raids-lab_orbit_internal_util.VolumeType": {
             "type": "integer",
             "enum": [
                 0,
@@ -10610,7 +10610,7 @@ const docTemplate = `{
                 "DataType"
             ]
         },
-        "github_com_raids-lab_crater_pkg_crclient.ClusterNodeDetail": {
+        "github_com_raids-lab_orbit_pkg_crclient.ClusterNodeDetail": {
             "type": "object",
             "properties": {
                 "address": {
@@ -10672,7 +10672,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_pkg_crclient.GPUDeviceInfo": {
+        "github_com_raids-lab_orbit_pkg_crclient.GPUDeviceInfo": {
             "type": "object",
             "properties": {
                 "arch": {
@@ -10713,7 +10713,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_pkg_crclient.GPUInfo": {
+        "github_com_raids-lab_orbit_pkg_crclient.GPUInfo": {
             "type": "object",
             "properties": {
                 "cudaVersion": {
@@ -10730,7 +10730,7 @@ const docTemplate = `{
                     "description": "多种类型的 GPU 设备列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_raids-lab_crater_pkg_crclient.GPUDeviceInfo"
+                        "$ref": "#/definitions/github_com_raids-lab_orbit_pkg_crclient.GPUDeviceInfo"
                     }
                 },
                 "gpuDriver": {
@@ -10767,7 +10767,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_raids-lab_crater_pkg_crclient.Pod": {
+        "github_com_raids-lab_orbit_pkg_crclient.Pod": {
             "type": "object",
             "properties": {
                 "accountID": {
@@ -10861,7 +10861,7 @@ const docTemplate = `{
                     "description": "User access mode of the platform",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.AccessMode"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.AccessMode"
                         }
                     ]
                 },
@@ -10869,7 +10869,7 @@ const docTemplate = `{
                     "description": "User access mode of the queue",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.AccessMode"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.AccessMode"
                         }
                     ]
                 },
@@ -10881,7 +10881,7 @@ const docTemplate = `{
                     "description": "User role of the platform",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.Role"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.Role"
                         }
                     ]
                 },
@@ -10889,7 +10889,7 @@ const docTemplate = `{
                     "description": "User role of the queue",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.Role"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.Role"
                         }
                     ]
                 },
@@ -10903,7 +10903,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "access": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.AccessMode"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.AccessMode"
                 },
                 "expiredAt": {
                     "type": "string"
@@ -10915,7 +10915,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.Role"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.Role"
                 }
             }
         },
@@ -10957,13 +10957,13 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "content": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderContent"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderContent"
                 },
                 "createdAt": {
                     "type": "string"
                 },
                 "creator": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.UserInfo"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.UserInfo"
                 },
                 "creatorID": {
                     "type": "integer"
@@ -10978,16 +10978,16 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "reviewer": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.UserInfo"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.UserInfo"
                 },
                 "reviewerID": {
                     "type": "integer"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderStatus"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderStatus"
                 },
                 "type": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderType"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderType"
                 }
             }
         },
@@ -11014,10 +11014,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderStatus"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderStatus"
                 },
                 "type": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderType"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderType"
                 }
             }
         },
@@ -11059,7 +11059,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/internal_handler.AccountContext"
                 },
                 "user": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.UserAttribute"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.UserAttribute"
                 },
                 "version": {
                     "$ref": "#/definitions/internal_handler.VersionInfo"
@@ -11118,7 +11118,7 @@ const docTemplate = `{
                     }
                 },
                 "type": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.DataType"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.DataType"
                 },
                 "url": {
                     "type": "string"
@@ -11192,7 +11192,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "jobType": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.JobType"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.JobType"
                 },
                 "llmversion": {
                     "type": "string"
@@ -11233,7 +11233,7 @@ const docTemplate = `{
                     "description": "管理状态",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.ReviewStatus"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.ReviewStatus"
                         }
                     ]
                 },
@@ -11415,7 +11415,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.UserAttribute"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.UserAttribute"
                 }
             }
         },
@@ -11587,7 +11587,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "quota": {
-                    "$ref": "#/definitions/datatypes.JSONType-github_com_raids-lab_crater_dao_model_QueueQuota"
+                    "$ref": "#/definitions/datatypes.JSONType-github_com_raids-lab_orbit_dao_model_QueueQuota"
                 },
                 "role": {
                     "type": "string"
@@ -11802,10 +11802,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderStatus"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderStatus"
                 },
                 "type": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.ApprovalOrderType"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.ApprovalOrderType"
                 }
             }
         },
@@ -11943,7 +11943,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.CraterResourceType"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.OrbitResourceType"
                 }
             }
         },
@@ -11957,7 +11957,7 @@ const docTemplate = `{
                     "minimum": 1,
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.ReviewStatus"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.ReviewStatus"
                         }
                     ]
                 }
@@ -11970,7 +11970,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "role": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.Role"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.Role"
                 }
             }
         },
@@ -12009,7 +12009,7 @@ const docTemplate = `{
                     "description": "用户角色",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.Role"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.Role"
                         }
                     ]
                 },
@@ -12017,7 +12017,7 @@ const docTemplate = `{
                     "description": "用户状态",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.Status"
+                            "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.Status"
                         }
                     ]
                 },
@@ -12034,7 +12034,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "quota": {
-                    "$ref": "#/definitions/datatypes.JSONType-github_com_raids-lab_crater_dao_model_QueueQuota"
+                    "$ref": "#/definitions/datatypes.JSONType-github_com_raids-lab_orbit_dao_model_QueueQuota"
                 },
                 "role": {
                     "type": "string"
@@ -12136,7 +12136,7 @@ const docTemplate = `{
                 "volumeMounts": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_raids-lab_crater_internal_util.VolumeMount"
+                        "$ref": "#/definitions/github_com_raids-lab_orbit_internal_util.VolumeMount"
                     }
                 }
             }
@@ -12154,7 +12154,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "buildSource": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.BuildSource"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.BuildSource"
                 },
                 "description": {
                     "type": "string"
@@ -12290,7 +12290,7 @@ const docTemplate = `{
                     }
                 },
                 "taskType": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.JobType"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.JobType"
                 }
             }
         },
@@ -12478,7 +12478,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/v1.ResourceList"
                 },
                 "scheduleType": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_dao_model.ScheduleType"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_dao_model.ScheduleType"
                 },
                 "selectors": {
                     "type": "array",
@@ -12492,7 +12492,7 @@ const docTemplate = `{
                 "volumeMounts": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_raids-lab_crater_internal_util.VolumeMount"
+                        "$ref": "#/definitions/github_com_raids-lab_orbit_internal_util.VolumeMount"
                     }
                 }
             }
@@ -12518,7 +12518,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "type": {
-                    "$ref": "#/definitions/github_com_raids-lab_crater_internal_service_vcjob.ForwardType"
+                    "$ref": "#/definitions/github_com_raids-lab_orbit_internal_service_vcjob.ForwardType"
                 }
             }
         },
@@ -12872,8 +12872,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Crater API",
-	Description:      "This is the API server for Crater, a Multi-tenant AI Model Training Platform based on Kubernetes.",
+	Title:            "Orbit API",
+	Description:      "This is the API server for Orbit, a Multi-tenant AI Model Training Platform based on Kubernetes.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

@@ -9,10 +9,10 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/service"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/crclient"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/service"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/crclient"
 )
 
 const (

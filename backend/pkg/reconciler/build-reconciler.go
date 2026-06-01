@@ -36,11 +36,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/imageregistry"
-	"github.com/raids-lab/crater/pkg/packer"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/imageregistry"
+	"github.com/raids-lab/orbit/pkg/packer"
 )
 
 // VcJobReconciler reconciles a AIJob object

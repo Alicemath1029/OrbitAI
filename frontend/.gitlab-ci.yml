@@ -19,12 +19,12 @@ stages:
 
 variables:
   HUSKY: '0' # avoid installing Git Hooks on CI servers
-  HARBOR_REGISTRY_IMAGE: '${HARBOR_REGISTRY}/crater/web-frontend'
+  HARBOR_REGISTRY_IMAGE: '${HARBOR_REGISTRY}/orbit/web-frontend'
 
 # Build frontend and generate artifacts for main branch
 build_frontend_main:
   stage: build_frontend
-  image: harbor.crater.example.io/crater/node-pnpm:21
+  image: harbor.orbit.example.io/orbit/node-pnpm:21
   script:
     - sed -i "s/VITE_APP_VERSION=\".*\"/VITE_APP_VERSION=\"${CI_COMMIT_SHORT_SHA}\"/" .env
     - pnpm config set store-dir .pnpm-store
@@ -34,7 +34,7 @@ build_frontend_main:
   only:
     - main
   cache:
-    key: 'crater-web-frontend'
+    key: 'orbit-web-frontend'
     paths:
       - .pnpm-store/
       - node_modules/
@@ -47,7 +47,7 @@ build_frontend_main:
 build_image_main:
   stage: build_image
   image:
-    name: harbor.crater.example.io/crater/kaniko-executor:debug
+    name: harbor.orbit.example.io/orbit/kaniko-executor:debug
     entrypoint: ['']
   script:
     # Since GitLab container registry is not enabled, we need to set up harbor registry manually.
@@ -67,11 +67,11 @@ build_image_main:
 deploy_testing:
   stage: deploy
   image:
-    name: harbor.crater.example.io/crater/bitnami-kubectl:240302
+    name: harbor.orbit.example.io/orbit/bitnami-kubectl:240302
     entrypoint: ['']
   script:
-    - kubectl config use-context raids/resource-scheduling/crater/web-frontend:crater-cluster
-    - kubectl set image deployment/crater-web-frontend crater-web-frontend-container=${HARBOR_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} -n crater
+    - kubectl config use-context raids/resource-scheduling/orbit/web-frontend:orbit-cluster
+    - kubectl set image deployment/orbit-web-frontend orbit-web-frontend-container=${HARBOR_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} -n orbit
   only:
     - main
   dependencies:
@@ -81,11 +81,11 @@ deploy_testing:
 deploy_main:
   stage: deploy
   image:
-    name: harbor.crater.example.io/crater/bitnami-kubectl:240302
+    name: harbor.orbit.example.io/orbit/bitnami-kubectl:240302
     entrypoint: ['']
   script:
-    - kubectl config use-context raids/resource-scheduling/crater/web-frontend:actgpu-cluster
-    - kubectl set image deployment/crater-web-frontend crater-web-frontend-container=${HARBOR_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} -n crater
+    - kubectl config use-context raids/resource-scheduling/orbit/web-frontend:actgpu-cluster
+    - kubectl set image deployment/orbit-web-frontend orbit-web-frontend-container=${HARBOR_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} -n orbit
   only:
     - main
   dependencies:

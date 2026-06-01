@@ -6,14 +6,14 @@ import (
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/raids-lab/crater/internal/service"
-	"github.com/raids-lab/crater/pkg/aitaskctl"
-	"github.com/raids-lab/crater/pkg/crclient"
-	"github.com/raids-lab/crater/pkg/cronjob"
-	"github.com/raids-lab/crater/pkg/imageregistry"
-	"github.com/raids-lab/crater/pkg/monitor"
-	"github.com/raids-lab/crater/pkg/packer"
-	"github.com/raids-lab/crater/pkg/prequeuewatcher"
+	"github.com/raids-lab/orbit/internal/service"
+	"github.com/raids-lab/orbit/pkg/aitaskctl"
+	"github.com/raids-lab/orbit/pkg/crclient"
+	"github.com/raids-lab/orbit/pkg/cronjob"
+	"github.com/raids-lab/orbit/pkg/imageregistry"
+	"github.com/raids-lab/orbit/pkg/monitor"
+	"github.com/raids-lab/orbit/pkg/packer"
+	"github.com/raids-lab/orbit/pkg/prequeuewatcher"
 )
 
 // Manager is the interface that wraps the basic methods for a handler manager.

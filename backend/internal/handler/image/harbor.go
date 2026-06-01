@@ -7,9 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/utils"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/utils"
 )
 
 // GetHarborIP godoc

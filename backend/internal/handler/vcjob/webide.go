@@ -13,13 +13,13 @@ import (
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 	bus "volcano.sh/apis/pkg/apis/bus/v1alpha1"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/crclient"
-	"github.com/raids-lab/crater/pkg/utils"
-	"github.com/raids-lab/crater/pkg/vcqueue"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/crclient"
+	"github.com/raids-lab/orbit/pkg/utils"
+	"github.com/raids-lab/orbit/pkg/vcqueue"
 )
 
 // CreateWebIDEJob godoc
@@ -90,7 +90,7 @@ func (mgr *VolcanojobMgr) CreateWebIDEJob(c *gin.Context) {
 
 	// 4. Labels and Annotations
 	labels, jobAnnotations, podAnnotations := getLabelAndAnnotations(
-		CraterJobTypeWebIDE,
+		OrbitJobTypeWebIDE,
 		token,
 		baseURL,
 		&req.CreateJobCommon,
@@ -106,7 +106,7 @@ func (mgr *VolcanojobMgr) CreateWebIDEJob(c *gin.Context) {
 		req.Image,
 		commandArgs,
 		JupyterPort,
-		string(CraterJobTypeWebIDE),
+		string(OrbitJobTypeWebIDE),
 		req.CpuPinningEnabled,
 		jobName,
 	)
@@ -239,7 +239,7 @@ func (mgr *VolcanojobMgr) GetWebIDESecret(c *gin.Context) {
 	// Fetch the password from the pod
 	// Command: cat /home/<username>/.config/code-server/config.yaml
 	cmd := []string{"cat", fmt.Sprintf("/home/%s/.config/code-server/config.yaml", token.Username)}
-	output, err := mgr.execCommandInPod(c, namespace, podName, string(CraterJobTypeWebIDE), cmd)
+	output, err := mgr.execCommandInPod(c, namespace, podName, string(OrbitJobTypeWebIDE), cmd)
 	if err != nil {
 		resputil.Error(c, fmt.Sprintf("failed to exec command in pod: %v", err), resputil.NotSpecified)
 		return

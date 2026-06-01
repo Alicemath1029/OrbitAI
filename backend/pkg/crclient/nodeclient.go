@@ -12,12 +12,12 @@ import (
 	"k8s.io/klog/v2"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/indexer"
-	"github.com/raids-lab/crater/pkg/monitor"
-	"github.com/raids-lab/crater/pkg/utils"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/indexer"
+	"github.com/raids-lab/orbit/pkg/monitor"
+	"github.com/raids-lab/orbit/pkg/utils"
 )
 
 const (
@@ -190,7 +190,7 @@ func getNodeStatus(node *corev1.Node) corev1.NodeConditionType {
 func isNodeOccupied(node *corev1.Node) bool {
 	for _, taint := range node.Spec.Taints {
 		taintStr := taint.ToString()
-		if strings.Contains(taintStr, "crater.raids.io/account=") && strings.HasSuffix(taintStr, ":NoSchedule") {
+		if strings.Contains(taintStr, "orbit.raids.io/account=") && strings.HasSuffix(taintStr, ":NoSchedule") {
 			return true
 		}
 	}
@@ -238,7 +238,7 @@ func getNodeRole(node *corev1.Node) NodeRole {
 		}
 	}
 	// 检查是否为虚拟节点
-	if nodeType, exists := node.Labels["crater.raids.io/nodetype"]; exists && nodeType == "virtual" {
+	if nodeType, exists := node.Labels["orbit.raids.io/nodetype"]; exists && nodeType == "virtual" {
 		return NodeRoleVirtual
 	}
 	return NodeRoleWorker
@@ -292,7 +292,7 @@ func (nc *NodeClient) ListNodes(ctx context.Context) ([]NodeBriefInfo, error) {
 
 		// 获取节点的供应商信息
 		vendor := ""
-		if vendorLabel, exists := node.Labels["crater.raids-lab.io/instance-type"]; exists {
+		if vendorLabel, exists := node.Labels["orbit.raids-lab.io/instance-type"]; exists {
 			vendor = vendorLabel
 		}
 
@@ -390,8 +390,8 @@ func (nc *NodeClient) UpdateNodeunschedule(ctx context.Context, name, reason, op
 
 	// 记录原状态
 	wasUnschedulable := node.Spec.Unschedulable
-	reasonKey := "crater.raids.io/unschedulable-reason"
-	operatorKey := "crater.raids.io/unschedulable-operator"
+	reasonKey := "orbit.raids.io/unschedulable-reason"
+	operatorKey := "orbit.raids.io/unschedulable-operator"
 
 	// 切换节点的 Unschedulable 状态
 	node.Spec.Unschedulable = !node.Spec.Unschedulable
@@ -402,13 +402,13 @@ func (nc *NodeClient) UpdateNodeunschedule(ctx context.Context, name, reason, op
 		delete(node.Annotations, reasonKey)
 		delete(node.Annotations, operatorKey)
 		// 恢复调度时，同时删除排空相关的注解和 taint
-		delete(node.Annotations, "crater.raids.io/drained-reason")
-		delete(node.Annotations, "crater.raids.io/drained-operator")
+		delete(node.Annotations, "orbit.raids.io/drained-reason")
+		delete(node.Annotations, "orbit.raids.io/drained-operator")
 
 		// 删除排空 taint
 		newTaints := []corev1.Taint{}
 		for _, t := range node.Spec.Taints {
-			if t.Key != "crater.raids.io/drained" {
+			if t.Key != "orbit.raids.io/drained" {
 				newTaints = append(newTaints, t)
 			}
 		}
@@ -514,7 +514,7 @@ func (nc *NodeClient) AdminGetPodsForNode(ctx context.Context, nodeName string) 
 			LockedTimestamp:  metav1.Time{},
 		}
 
-		// 如果是 crater 作业命名空间中的 VolcanoJob Pod，查询作业和用户信息
+		// 如果是 orbit 作业命名空间中的 VolcanoJob Pod，查询作业和用户信息
 		if pod.Namespace == jobNamespace && len(pod.OwnerReferences) > 0 {
 			for _, owner := range pod.OwnerReferences {
 				if owner.Kind != VCJOBKIND || owner.APIVersion != VCJOBAPIVERSION {
@@ -1020,12 +1020,12 @@ func (nc *NodeClient) AddNodeTaint(ctx context.Context, nodeName, key, value, ef
 	node.Spec.Taints = append(node.Spec.Taints, newTaint)
 
 	// 如果是账户独占，记录原因和操作员
-	if strings.HasPrefix(key, "crater.raids.io/account") && effect == "NoSchedule" {
+	if strings.HasPrefix(key, "orbit.raids.io/account") && effect == "NoSchedule" {
 		if reason != "" {
-			node.Annotations["crater.raids.io/taint-reason-occupied"] = reason
+			node.Annotations["orbit.raids.io/taint-reason-occupied"] = reason
 		}
 		if operator != "" {
-			node.Annotations["crater.raids.io/taint-operator-occupied"] = formatOperatorInfo(ctx, operator)
+			node.Annotations["orbit.raids.io/taint-operator-occupied"] = formatOperatorInfo(ctx, operator)
 		}
 	}
 
@@ -1065,9 +1065,9 @@ func (nc *NodeClient) DeleteNodeTaint(ctx context.Context, nodeName, key, value,
 	node.Spec.Taints = newTaints
 
 	// 如果删除的是账户独占污点，删除对应的注解
-	if strings.HasPrefix(key, "crater.raids.io/account") && effect == "NoSchedule" && node.Annotations != nil {
-		delete(node.Annotations, "crater.raids.io/taint-reason-occupied")
-		delete(node.Annotations, "crater.raids.io/taint-operator-occupied")
+	if strings.HasPrefix(key, "orbit.raids.io/account") && effect == "NoSchedule" && node.Annotations != nil {
+		delete(node.Annotations, "orbit.raids.io/taint-reason-occupied")
+		delete(node.Annotations, "orbit.raids.io/taint-operator-occupied")
 	}
 
 	_, err = nc.KubeClient.CoreV1().Nodes().Update(ctx, node, metav1.UpdateOptions{})
@@ -1159,7 +1159,7 @@ func (nc *NodeClient) DrainNode(ctx context.Context, nodeName, operator string) 
 
 	// 1. 添加排空污点
 	drainedTaint := corev1.Taint{
-		Key:    "crater.raids.io/drained",
+		Key:    "orbit.raids.io/drained",
 		Value:  "true",
 		Effect: corev1.TaintEffectNoSchedule,
 	}
@@ -1181,9 +1181,9 @@ func (nc *NodeClient) DrainNode(ctx context.Context, nodeName, operator string) 
 	node.Spec.Unschedulable = true
 
 	// 3. 记录排空操作的原因和操作员
-	node.Annotations["crater.raids.io/drained-reason"] = "节点已排空"
+	node.Annotations["orbit.raids.io/drained-reason"] = "节点已排空"
 	if operator != "" {
-		node.Annotations["crater.raids.io/drained-operator"] = formatOperatorInfo(ctx, operator)
+		node.Annotations["orbit.raids.io/drained-operator"] = formatOperatorInfo(ctx, operator)
 	}
 
 	// 4. 更新节点

@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Crater
+ * Copyright 2025 Orbit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function getChartVersion() {
-  const fromEnv = process.env.NEXT_PUBLIC_CRATER_CHART_VERSION;
+  const fromEnv = process.env.NEXT_PUBLIC_ORBIT_CHART_VERSION;
   if (fromEnv && fromEnv !== '<chart-version>') return fromEnv;
-  const chartPath = resolve(__dirname, '../charts/crater/Chart.yaml');
+  const chartPath = resolve(__dirname, '../charts/orbit/Chart.yaml');
   try {
     if (!existsSync(chartPath)) return '<chart-version>';
     const content = readFileSync(chartPath, 'utf8');
@@ -44,14 +44,14 @@ const withNextIntl = createNextIntlPlugin();
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  basePath: "/crater",
+  basePath: "/orbit",
   output: "export",
   trailingSlash: true,
   images: {
     unoptimized: true,
   },
   env: {
-    NEXT_PUBLIC_CRATER_CHART_VERSION: chartVersion,
+    NEXT_PUBLIC_ORBIT_CHART_VERSION: chartVersion,
   },
 };
 

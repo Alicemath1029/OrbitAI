@@ -9,9 +9,9 @@ import (
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/service"
-	"github.com/raids-lab/crater/internal/util"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/service"
+	"github.com/raids-lab/orbit/internal/util"
 )
 
 const unknownOperatorValue = "unknown"

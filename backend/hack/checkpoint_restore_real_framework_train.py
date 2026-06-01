@@ -11,15 +11,15 @@ DATASET_SEED = 260530
 
 
 def checkpoint_dir() -> Path:
-    return Path(os.environ["CRATER_CHECKPOINT_DIR"])
+    return Path(os.environ["ORBIT_CHECKPOINT_DIR"])
 
 
 def framework() -> str:
-    return os.getenv("CRATER_CHECKPOINT_FRAMEWORK", "pytorch").strip().lower()
+    return os.getenv("ORBIT_CHECKPOINT_FRAMEWORK", "pytorch").strip().lower()
 
 
 def resume_from() -> str:
-    return os.getenv("CRATER_RESUME_FROM", "").strip()
+    return os.getenv("ORBIT_RESUME_FROM", "").strip()
 
 
 def dataset_tensors(torch):
@@ -46,7 +46,7 @@ def write_proof(fw: str, loaded_step: int, continued_to: int, before, after, res
         "continuedToStep": continued_to,
         "weightsChangedAfterResume": changed,
         "finalCheckpoint": str(final_path),
-        "job": os.getenv("CRATER_JOB_NAME", ""),
+        "job": os.getenv("ORBIT_JOB_NAME", ""),
     }
     proof_path(fw).write_text(json.dumps(proof, indent=2, sort_keys=True))
     return proof
@@ -249,7 +249,7 @@ def run_verl_limited():
 
     # The local arm64 CPU validation environment is not suitable for a full veRL
     # runtime, but this still writes the native veRL checkpoint layout expected by
-    # Crater and verifies tensor state restoration with torch serialization.
+    # Orbit and verifies tensor state restoration with torch serialization.
     fw = framework()
     ckpt_root = checkpoint_dir()
     ckpt_root.mkdir(parents=True, exist_ok=True)

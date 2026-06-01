@@ -96,9 +96,9 @@ livenessProbe:
 
 image:
   # -- The Docker registry
-  registry: crater-harbor.act.buaa.edu.cn
+  registry: orbit-harbor.act.buaa.edu.cn
   # -- Docker image repository
-  repository: crater/grafana
+  repository: orbit/grafana
   # Overrides the Grafana image tag whose default is the chart appVersion
   tag: "11.3.0"
   sha: ""
@@ -120,7 +120,7 @@ testFramework:
   # hookType: test
   image:
     # -- The Docker registry
-    registry: crater-harbor.act.buaa.edu.cn/docker.io
+    registry: orbit-harbor.act.buaa.edu.cn/docker.io
     repository: bats/bats
     tag: "v1.4.1"
   imagePullPolicy: IfNotPresent
@@ -184,7 +184,7 @@ extraLabels: {}
 
 downloadDashboardsImage:
   # -- The Docker registry
-  registry: crater-harbor.act.buaa.edu.cn/docker.io
+  registry: orbit-harbor.act.buaa.edu.cn/docker.io
   repository: curlimages/curl
   tag: 7.85.0
   sha: ""
@@ -359,7 +359,7 @@ resources: {}
 ## ref: https://kubernetes.io/docs/user-guide/node-selection/
 #
 nodeSelector: 
-  "crater.raids-lab.io/devops": "true"
+  "orbit.raids-lab.io/devops": "true"
 
 ## Tolerations for pod assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
@@ -457,7 +457,7 @@ initChownData:
   ##
   image:
     # -- The Docker registry
-    registry: crater-harbor.act.buaa.edu.cn/docker.io
+    registry: orbit-harbor.act.buaa.edu.cn/docker.io
     repository: library/busybox
     tag: "1.31.1"
     sha: ""
@@ -1216,7 +1216,7 @@ imageRenderer:
   renderingCallbackURL: ""
   image:
     # -- The Docker registry
-    registry: crater-harbor.act.buaa.edu.cn/docker.io
+    registry: orbit-harbor.act.buaa.edu.cn/docker.io
     # image-renderer Image repository
     repository: grafana/grafana-image-renderer
     # image-renderer Image tag

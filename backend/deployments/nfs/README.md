@@ -1,6 +1,6 @@
 # Setting Up NFS in Kubernetes
 
-In the Crater cluster, NFS (Network File System) is used to provide scalable and shared persistent storage, which is especially useful for AI scenarios such as dataset caching and result sharing. This guide outlines how to install and integrate NFS with Kubernetes.
+In the Orbit cluster, NFS (Network File System) is used to provide scalable and shared persistent storage, which is especially useful for AI scenarios such as dataset caching and result sharing. This guide outlines how to install and integrate NFS with Kubernetes.
 
 ---
 
@@ -101,7 +101,7 @@ helm install -n kube-system nfs-client nfs-subdir-external-provisioner/nfs-subdi
 --set nfs.server=10.8.0.10 \
 --set nfs.path=/data/nfs \
 --set storageClass.defaultClass=true \
---set image.repository=crater-harbor.act.buaa.edu.cn/registry.k8s.io/sig-storage/nfs-subdir-external-provisioner
+--set image.repository=orbit-harbor.act.buaa.edu.cn/registry.k8s.io/sig-storage/nfs-subdir-external-provisioner
 ```
 
 ### Step 2: Create a PVC and Pod to Test NFS
@@ -128,7 +128,7 @@ metadata:
 spec:
   containers:
     - name: test
-      image: crater-harbor.act.buaa.edu.cn/dockerhub/library/busybox:latest
+      image: orbit-harbor.act.buaa.edu.cn/dockerhub/library/busybox:latest
       command: ["sh", "-c", "echo 'Hello from NFS test pod' > /data/test.txt && sleep 3600"]
       volumeMounts:
         - mountPath: /data
@@ -162,4 +162,4 @@ On the NFS server, check for a new subdirectory in /data/nfs/, and confirm the p
 ls /data/nfs/*
 cat /data/nfs/*/test.txt
 ```
-With the above steps, you will have successfully set up NFS-based persistent storage in the Crater Kubernetes cluster, verified it works, and ensured it supports shared volume access across multiple pods or nodes.
+With the above steps, you will have successfully set up NFS-based persistent storage in the Orbit Kubernetes cluster, verified it works, and ensured it supports shared volume access across multiple pods or nodes.

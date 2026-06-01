@@ -14,12 +14,12 @@ import (
 	"k8s.io/klog/v2"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	aijobapi "github.com/raids-lab/crater/pkg/apis/aijob/v1alpha1"
-	"github.com/raids-lab/crater/pkg/crclient"
+	aijobapi "github.com/raids-lab/orbit/pkg/apis/aijob/v1alpha1"
+	"github.com/raids-lab/orbit/pkg/crclient"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/pkg/util"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/pkg/util"
 )
 
 // TaskController 调度task

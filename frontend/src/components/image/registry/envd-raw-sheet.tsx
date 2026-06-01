@@ -126,7 +126,7 @@ function EnvdRawSheetContent({
       envdScript: `# syntax=v1
 
 def build():
-    base(image="crater-harbor.act.buaa.edu.cn/nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04",dev=True)
+    base(image="orbit-harbor.act.buaa.edu.cn/nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04",dev=True)
     install.python(version="3.10")
     install.apt_packages(["openssh-server", "build-essential", "iputils-ping", "net-tools", "htop"])
     config.pip_index(url = "https://pypi.tuna.tsinghua.edu.cn/simple")

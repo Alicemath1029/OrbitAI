@@ -5,7 +5,7 @@
 helm repo add cnpg https://cloudnative-pg.github.io/charts
 
 helm upgrade --install cnpg \
-  --namespace crater \
+  --namespace orbit \
   --create-namespace \
   --set config.clusterWide=false \
   cnpg/cloudnative-pg \
@@ -66,7 +66,7 @@ spec:
 helm show values cnpg/cluster
 
 helm upgrade --install database \
-  --namespace crater \
+  --namespace orbit \
   ./cluster \
   -f cluster.values.yaml --dry-run
 ```
@@ -74,10 +74,10 @@ helm upgrade --install database \
 ## Fetch DB password
 
 ```shell
-kubectl get secret database-cluster-app -n crater -o jsonpath="{.data.password}" | base64 --decode
+kubectl get secret database-cluster-app -n orbit -o jsonpath="{.data.password}" | base64 --decode
 ```
 
-Keep the password for crater deployments!!
+Keep the password for orbit deployments!!
 
 ## TroubleShooting
 
@@ -90,5 +90,5 @@ https://github.com/openebs/openebs/issues/2915
 we add custom labels to nodes in cluster for dependecy components running, and the affinity is configured in values:
 
 ```shell
-kubectl label node your-devops-node crater.raids-lab.io/devops="true"
+kubectl label node your-devops-node orbit.raids-lab.io/devops="true"
 ```

@@ -14,8 +14,8 @@ import (
 
 	"gorm.io/datatypes"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/pkg/config"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/pkg/config"
 )
 
 const defaultServiceScanTimeout = 30 * time.Second
@@ -76,7 +76,7 @@ var errServiceScannerDisabled = fmt.Errorf("checkpoint scanner service endpoint 
 
 func normalizeServiceScannerOptions(opts ServiceScannerOptions) ServiceScannerOptions {
 	if opts.Endpoint == "" {
-		opts.Endpoint = strings.TrimSpace(os.Getenv("CRATER_CHECKPOINT_SCANNER_ENDPOINT"))
+		opts.Endpoint = strings.TrimSpace(os.Getenv("ORBIT_CHECKPOINT_SCANNER_ENDPOINT"))
 	}
 	if opts.Endpoint == "" {
 		cfg := config.GetConfig()
@@ -86,7 +86,7 @@ func normalizeServiceScannerOptions(opts ServiceScannerOptions) ServiceScannerOp
 		}
 	}
 	if opts.Timeout <= 0 {
-		if timeoutEnv := strings.TrimSpace(os.Getenv("CRATER_CHECKPOINT_SCANNER_TIMEOUT_SECONDS")); timeoutEnv != "" {
+		if timeoutEnv := strings.TrimSpace(os.Getenv("ORBIT_CHECKPOINT_SCANNER_TIMEOUT_SECONDS")); timeoutEnv != "" {
 			if seconds, err := strconv.Atoi(timeoutEnv); err == nil && seconds > 0 {
 				opts.Timeout = time.Duration(seconds) * time.Second
 			}

@@ -8,7 +8,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/utils/ptr"
 
-	"github.com/raids-lab/crater/internal/payload"
+	"github.com/raids-lab/orbit/internal/payload"
 )
 
 func isQuotaResourceName(name v1.ResourceName) bool {

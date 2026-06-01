@@ -1,46 +1,46 @@
 ---
 title: Getting Started
-description: Deploy Crater and use it
+description: Deploy Orbit and use it
 ---
 
-The Crater platform relies on a Kubernetes cluster for operation, so before deployment, you need to prepare a series of basic dependency components. These components provide core capabilities such as monitoring, storage, networking, scheduling, and image repository, ensuring the platform can start and run normally.
+The Orbit platform relies on a Kubernetes cluster for operation, so before deployment, you need to prepare a series of basic dependency components. These components provide core capabilities such as monitoring, storage, networking, scheduling, and image repository, ensuring the platform can start and run normally.
 
 In the minimal deployment scheme, we try to retain only the most core and indispensable dependencies to avoid introducing too much complexity. The finally determined dependencies include:
 
-- **NVIDIA GPU Operator**: Responsible for installing GPU drivers, device plugins, and monitoring components, ensuring that Crater can schedule GPU tasks.
-- **Bitnami PostgreSQL**: A PostgreSQL database service without high availability, mainly used as an external database for Crater in this scheme.
+- **NVIDIA GPU Operator**: Responsible for installing GPU drivers, device plugins, and monitoring components, ensuring that Orbit can schedule GPU tasks.
+- **Bitnami PostgreSQL**: A PostgreSQL database service without high availability, mainly used as an external database for Orbit in this scheme.
 - **IngressClass (Ingress-Nginx)**: Responsible for handling external traffic routing, forwarding user requests to internal cluster services.
-- **Volcano**: A scheduling framework for batch processing and AI workloads, which is the core scheduling component of Crater.
+- **Volcano**: A scheduling framework for batch processing and AI workloads, which is the core scheduling component of Orbit.
 - **StorageClass (NFS)**: A unified distributed storage backend that provides persistent storage capabilities for the database and Harbor.
 
-The reason for selecting these components is that they are **key supports for the minimal operational environment of the Crater platform**. Without them, the platform cannot operate normally. Functions such as **Prometheus/Grafana monitoring stack**, **MetalLB load balancing**, **OpenEBS storage**, which are more powerful but not essential, are excluded from the minimal version to reduce the deployment threshold.
+The reason for selecting these components is that they are **key supports for the minimal operational environment of the Orbit platform**. Without them, the platform cannot operate normally. Functions such as **Prometheus/Grafana monitoring stack**, **MetalLB load balancing**, **OpenEBS storage**, which are more powerful but not essential, are excluded from the minimal version to reduce the deployment threshold.
 
 ## Installation
 
 ### Install from GitHub Container Registry (Recommended)
 
-<CraterChartVersionNotice />
+<OrbitChartVersionNotice />
 
 ```bash
 # Add the Helm OCI repository
 helm registry login ghcr.io
 
 # Install the chart
-helm install crater oci://ghcr.io/raids-lab/crater --version <chart-version>
+helm install orbit oci://ghcr.io/raids-lab/orbit --version <chart-version>
 
 # Or upgrade an existing installation
-helm upgrade crater oci://ghcr.io/raids-lab/crater --version <chart-version>
+helm upgrade orbit oci://ghcr.io/raids-lab/orbit --version <chart-version>
 ```
 
 ### Install from Source
 
 ```bash
 # Clone the repository
-git clone https://github.com/raids-lab/crater.git
-cd crater/charts
+git clone https://github.com/raids-lab/orbit.git
+cd orbit/charts
 
 # Install the chart
-helm install crater crater/
+helm install orbit orbit/
 ```
 
 ## Configuration
@@ -62,7 +62,7 @@ backendConfig:
 Then install with your values:
 
 ```bash
-helm install crater oci://ghcr.io/raids-lab/crater --values values.yaml
+helm install orbit oci://ghcr.io/raids-lab/orbit --values values.yaml
 ```
 
 If you want to learn the detailed meanings of the configurations, you can read [Configuration Guide](../chart).
@@ -95,7 +95,7 @@ helm install ingress-nginx ingress-nginx/ingress-nginx \
 
 ### Volcano
 
-Crater relies on Volcano to provide batch computing scheduling capabilities for task execution and scheduling. Volcano is optimized for AI and big data scenarios, supporting features such as queues, priorities, and gang scheduling. Even in the minimal deployment environment, Volcano is an essential core component; otherwise, Crater cannot schedule and run tasks.
+Orbit relies on Volcano to provide batch computing scheduling capabilities for task execution and scheduling. Volcano is optimized for AI and big data scenarios, supporting features such as queues, priorities, and gang scheduling. Even in the minimal deployment environment, Volcano is an essential core component; otherwise, Orbit cannot schedule and run tasks.
 
 ### Deployment Command
 
@@ -112,7 +112,7 @@ helm upgrade --install volcano volcano-sh/volcano \
   -f volcano/values.yaml
 ```
 
-value.yaml configuration reference: https://github.com/raids-lab/crater-backend/blob/main/deployments/volcano/values.yaml
+value.yaml configuration reference: https://github.com/raids-lab/orbit-backend/blob/main/deployments/volcano/values.yaml
 
 #### Verify Deployment
 
@@ -246,9 +246,9 @@ CNPG serves as the external database management component for Harbor.
 
 ### Deploy Harbor
 
-Harbor is the image repository that the Crater platform depends on. In an intranet or offline environment, public image repositories (such as DockerHub, ghcr.io) are often inaccessible, so a private repository must be used to store the frontend and backend images of Crater and its dependencies.
+Harbor is the image repository that the Orbit platform depends on. In an intranet or offline environment, public image repositories (such as DockerHub, ghcr.io) are often inaccessible, so a private repository must be used to store the frontend and backend images of Orbit and its dependencies.
  The reason for choosing Harbor is that it has **enterprise-level capabilities such as image management, access control, and security scanning**, and it integrates well with Kubernetes. In the minimal deployment environment, Harbor only needs to depend on **NFS storage** and **CNPG external database** to operate, without additional dependencies on Redis/Postgres built-in versions, simplifying the overall architecture.
- This not only ensures that Crater's images can be stored and distributed locally, but also provides a foundation for future expansion (such as multi-user and multi-project image management).
+ This not only ensures that Orbit's images can be stored and distributed locally, but also provides a foundation for future expansion (such as multi-user and multi-project image management).
 
 Harbor uses the above **NFS** storage and **CNPG external database**.
 

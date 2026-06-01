@@ -1,37 +1,39 @@
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-# Crater Backend
+# Orbit Backend
 
-Crater is a Kubernetes-based heterogeneous cluster management system that supports various heterogeneous hardware such as NVIDIA GPUs.
+Orbit is a Kubernetes-based heterogeneous cluster management system that supports various heterogeneous hardware such as NVIDIA GPUs.
 
-Crater Backend is a subsystem of Crater, including job submission, job lifecycle management, deep learning environment management, and other features.
+Orbit is developed based on the open-source [Crater](https://github.com/raids-lab/crater) project from RAIDS Lab. The backend keeps the original architecture as a foundation while adapting package names, configuration, APIs, and deployment assets for Orbit.
+
+Orbit Backend is a subsystem of Orbit, including job submission, job lifecycle management, deep learning environment management, and other features.
 
 <table>
   <tr>
     <td align="center" width="45%">
-      <img src="https://github.com/raids-lab/crater-frontend/blob/main/docs/images/jupyter.gif"><br>
+      <img src="https://github.com/raids-lab/orbit-frontend/blob/main/docs/images/jupyter.gif"><br>
       <em>Jupyter Lab</em>
     </td>
     <td align="center" width="45%">
-      <img src="https://github.com/raids-lab/crater-frontend/blob/main/docs/images/ray.gif"><br>
+      <img src="https://github.com/raids-lab/orbit-frontend/blob/main/docs/images/ray.gif"><br>
       <em>Ray Job</em>
     </td>
   </tr>
   <tr>
     <td align="center" width="45%">
-      <img src="https://github.com/raids-lab/crater-frontend/blob/main/docs/images/monitor.gif"><br>
+      <img src="https://github.com/raids-lab/orbit-frontend/blob/main/docs/images/monitor.gif"><br>
       <em>Monitor</em>
     </td>
     <td align="center" width="45%">
-      <img src="https://github.com/raids-lab/crater-frontend/blob/main/docs/images/datasets.gif"><br>
+      <img src="https://github.com/raids-lab/orbit-frontend/blob/main/docs/images/datasets.gif"><br>
       <em>Models</em>
     </td>
   </tr>
 </table>
 
-This document is the development guide for Crater Backend. If you want to install or use the complete Crater project, you can visit the [Crater Official Documentation](https://raids-lab.github.io/crater/en/docs/admin/) for more information.
+This document is the development guide for Orbit Backend. If you want to install or use the complete Orbit project, you can visit the [Orbit Official Documentation](https://raids-lab.github.io/orbit/en/docs/admin/) for more information.
 
-## 🚀 Running Crater Backend Locally
+## 🚀 Running Orbit Backend Locally
 
 ### Installing Required Software
 
@@ -40,7 +42,7 @@ The following software and recommended versions are suggested.
 - **gvm**: Optional, recommended version `v1.0.22`: [gvm - GitHub](https://github.com/moovweb/gvm)
 - **Kubectl**: Required, recommended version `v1.33`: [Kubectl Installation Guide](https://kubernetes.io/docs/tasks/tools/)
 
-gvm is used to easily and quickly install multiple Go versions and switch between them flexibly. Using gvm allows you to quickly install the Go version used by Crater and switch quickly when upgrading Go versions.
+gvm is used to easily and quickly install multiple Go versions and switch between them flexibly. Using gvm allows you to quickly install the Go version used by Orbit and switch quickly when upgrading Go versions.
 
 You can install gvm using the following command:
 
@@ -92,7 +94,7 @@ For testing or learning environments, you can quickly obtain a cluster through o
 
 `kubeconfig` is a configuration file used by Kubernetes clients and tools to access and manage Kubernetes clusters. It contains cluster connection details, user credentials, and context information.
 
-Crater Backend will first try to read the `kubeconfig` corresponding to the `KUBECONFIG` environment variable. If it doesn't exist, it will read the `kubeconfig` file in the current directory.
+Orbit Backend will first try to read the `kubeconfig` corresponding to the `KUBECONFIG` environment variable. If it doesn't exist, it will read the `kubeconfig` file in the current directory.
 
 ```makefile
 # Makefile
@@ -101,7 +103,7 @@ KUBECONFIG_PATH := $(if $(KUBECONFIG),$(KUBECONFIG),${PWD}/kubeconfig)
 
 #### `./etc/debug-config.yaml`
 
-The `etc/debug-config.yaml` file contains the application configuration for the Crater backend service. This configuration file defines various settings, including:
+The `etc/debug-config.yaml` file contains the application configuration for the Orbit backend service. This configuration file defines various settings, including:
 
 - **Service Configuration**: Server port, metrics endpoints, and profiling settings
 - **Database Connection**: PostgreSQL connection parameters and credentials
@@ -109,7 +111,7 @@ The `etc/debug-config.yaml` file contains the application configuration for the 
 - **External Integrations**: Raids Lab system authentication (not required for non-Raids Lab environments), image registry, SMTP email notification service, etc.
 - **Feature Flags**: Scheduler and job type enablement settings昂
 
-You can find example files and corresponding descriptions in [`etc/example-config.yaml`](https://github.com/raids-lab/crater-backend/blob/main/etc/example-config.yaml).
+You can find example files and corresponding descriptions in [`etc/example-config.yaml`](https://github.com/raids-lab/orbit-backend/blob/main/etc/example-config.yaml).
 
 #### `.debug.env`
 
@@ -118,12 +120,12 @@ When you run the `make run` command, we will help you create a `.debug.env` file
 Currently, it only contains one configuration to specify the port number used by the service. If your team is developing on the same node, you can coordinate through it to avoid port conflicts.
 
 ```env
-CRATER_BE_PORT=:8088  # Backend port
+ORBIT_BE_PORT=:8088  # Backend port
 ```
 
-In development mode, we proxy the service through Crater Frontend's Vite Server, so you don't need to worry about CORS and other issues.
+In development mode, we proxy the service through Orbit Frontend's Vite Server, so you don't need to worry about CORS and other issues.
 
-### Running Crater Backend
+### Running Orbit Backend
 
 After completing the above setup, you can use the `make` command to run the project. If `make` is not yet installed, it is recommended to install it.
 
@@ -142,7 +144,7 @@ http://localhost:<your backend port>/swagger/index.html#/
 You can run the `make help` command to view the complete list of related commands:
 
 ```bash
-➜  crater-backend git:(main) ✗ make help 
+➜  orbit-backend git:(main) ✗ make help 
 
 Usage:
   make <target>
@@ -217,7 +219,7 @@ When you need to modify the database structure (such as adding fields, creating 
 
 ### Production Environment Deployment
 
-If you installed Crater via Helm, database migration will be performed automatically after deploying a new version. The related logic can be found in InitContainer.
+If you installed Orbit via Helm, database migration will be performed automatically after deploying a new version. The related logic can be found in InitContainer.
 
 ### Related Documentation
 
@@ -231,7 +233,7 @@ You can use VSCode to start the backend in debug mode by pressing F5 (Start Debu
 
 The project has provided a pre-configured debug launch configuration in the root directory `.vscode/launch.json`. You only need to:
 
-1. Open the project root directory in VSCode (`crater`, the root directory containing `backend` and `frontend`)
+1. Open the project root directory in VSCode (`orbit`, the root directory containing `backend` and `frontend`)
 2. Set breakpoints (click on the left side of the line number)
 3. Press `F5` to start debugging and select the "Backend Debug Server" configuration
 
@@ -250,7 +252,7 @@ The `.vscode/launch.json` in the project root directory contains the following c
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/backend/cmd/crater/main.go",
+            "program": "${workspaceFolder}/backend/cmd/orbit/main.go",
             "cwd": "${workspaceFolder}/backend",
             "env": {
                 "KUBECONFIG": "${workspaceFolder}/backend/kubeconfig",
@@ -264,7 +266,7 @@ The `.vscode/launch.json` in the project root directory contains the following c
 Where:
 
 - **`cwd`**: Set to `${workspaceFolder}/backend`, which ensures the program can correctly find configuration files with relative paths (such as `./etc/debug-config.yaml`)
-- **`program`**: Main program entry file, pointing to `backend/cmd/crater/main.go`
+- **`program`**: Main program entry file, pointing to `backend/cmd/orbit/main.go`
 - **Automatic Configuration File Discovery**: The program automatically searches for `./etc/debug-config.yaml` in debug mode (relative to `cwd`), **no need** to pass `--config-file` parameter through `args`
 - **`KUBECONFIG`**: Uses the `kubeconfig` configuration file in the backend repository to connect to the cluster
 
@@ -281,7 +283,7 @@ make build-storage
 
 Storage server runtime env vars:
 
-- `CRATER_STORAGE_PORT` (preferred, fallback: `PORT`, default: `7320`)
-- `CRATER_STORAGE_ROOT` (preferred, fallback: `ROOTDIR`, default: `/crater`)
+- `ORBIT_STORAGE_PORT` (preferred, fallback: `PORT`, default: `7320`)
+- `ORBIT_STORAGE_ROOT` (preferred, fallback: `ROOTDIR`, default: `/orbit`)
 
 For local debug, you can put these vars in `backend/.debug.env` and run `make run-storage`.

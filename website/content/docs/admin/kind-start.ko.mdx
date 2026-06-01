@@ -1,6 +1,6 @@
 ---
 title: 최소화 배포
-description: 본 문서는 Kind 를 사용하여 로컬에서 Crater 환경을 빠르게 설정하는 방법을 안내합니다. Crater 는 Kubernetes 기반의 분산 학습 플랫폼이며, 본 가이드는 Kind 클러스터 생성부터 Crater 에 필요한 구성 요소 배포까지의 전체 과정을 다룹니다.
+description: 본 문서는 Kind 를 사용하여 로컬에서 Orbit 환경을 빠르게 설정하는 방법을 안내합니다. Orbit 는 Kubernetes 기반의 분산 학습 플랫폼이며, 본 가이드는 Kind 클러스터 생성부터 Orbit 에 필요한 구성 요소 배포까지의 전체 과정을 다룹니다.
 ---
 
 ## 1. 환경 준비
@@ -109,26 +109,26 @@ kubectl wait --namespace ingress-nginx \
 
 ```bash
 # 네임스페이스 생성
-kubectl create namespace crater-system
+kubectl create namespace orbit-system
 
 # 현재 네임스페이스 컨텍스트 설정
-kubectl config set-context --current --namespace=crater-system
+kubectl config set-context --current --namespace=orbit-system
 
 # Bitnami Helm 저장소 추가
 helm repo add bitnami https://charts.bitnami.com/bitnami
 
 # PostgreSQL 설치
-helm install crater-postgresql bitnami/postgresql -n crater-system
+helm install orbit-postgresql bitnami/postgresql -n orbit-system
 ```
 
 **데이터베이스 비밀번호 가져오기:**
 ```bash
-export POSTGRES_PASSWORD=$(kubectl get secret --namespace crater-system crater-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
+export POSTGRES_PASSWORD=$(kubectl get secret --namespace orbit-system orbit-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
 echo "데이터베이스 비밀번호: $POSTGRES_PASSWORD"
 ```
 
 <Callout type="info">
-    데이터베이스 비밀번호는 후속 Crater 배포에 사용될 수 있으니 잘 보관하세요
+    데이터베이스 비밀번호는 후속 Orbit 배포에 사용될 수 있으니 잘 보관하세요
 </Callout>
 
 ## 5. Volcano 스케줄러 배포
@@ -183,14 +183,14 @@ NAME   PROVISIONER                                       RECLAIMPOLICY   VOLUMEB
 nfs    cluster.local/nfs-provisioner-nfs-server-provisioner   Delete          Immediate           true                   1m
 ```
 
-## 7. Crater 배포
+## 7. Orbit 배포
 
-### 7.1 Crater Helm Chart 값 파일 가져오기
+### 7.1 Orbit Helm Chart 값 파일 가져오기
 
-<CraterChartVersionNotice />
+<OrbitChartVersionNotice />
 
 ```bash
-helm show values oci://ghcr.io/raids-lab/crater --version <chart-version> > values.yaml
+helm show values oci://ghcr.io/raids-lab/orbit --version <chart-version> > values.yaml
 ```
 
 ### 7.2 데이터베이스 연결 설정
@@ -199,7 +199,7 @@ helm show values oci://ghcr.io/raids-lab/crater --version <chart-version> > valu
 
 ```yaml
 postgres:
-  host: crater-postgresql.crater-system.svc.cluster.local
+  host: orbit-postgresql.orbit-system.svc.cluster.local
   port: 5432
   dbname: postgres
   user: postgres
@@ -208,27 +208,27 @@ postgres:
   TimeZone: Asia/Shanghai
 ```
 
-### 7.3 Crater 설치
+### 7.3 Orbit 설치
 
 ```bash
-helm install crater oci://ghcr.io/raids-lab/crater --version <chart-version> -n crater-system -f values.yaml
+helm install orbit oci://ghcr.io/raids-lab/orbit --version <chart-version> -n orbit-system -f values.yaml
 ```
 
 **설치 확인:**
 ```bash
-kubectl get pods -n crater-system
+kubectl get pods -n orbit-system
 ```
 
 <Callout type="success">
-    모든 Pod 가 Running 상태이면 Crater 환경이 성공적으로 구성되었습니다!
+    모든 Pod 가 Running 상태이면 Orbit 환경이 성공적으로 구성되었습니다!
 </Callout>
 
-## 8. Crater 액세스
+## 8. Orbit 액세스
 
 ### 8.1 액세스 주소 가져오기
 
 ```bash
-kubectl get ingress -n crater-system
+kubectl get ingress -n orbit-system
 ```
 
 ### 8.2 로컬 hosts 설정 (필요 시)
@@ -236,12 +236,12 @@ kubectl get ingress -n crater-system
 로컬 Kind 클러스터를 사용하는 경우 `/etc/hosts`에 매핑을 추가할 수 있습니다:
 
 ```
-127.0.0.1 crater.example.com
+127.0.0.1 orbit.example.com
 ```
 
 ### 8.3 웹 인터페이스 액세스
 
-브라우저에서 다음 주소로 접속하세요: `http://crater.example.com:8080` (Ingress 설정에 따라 달라질 수 있음)
+브라우저에서 다음 주소로 접속하세요: `http://orbit.example.com:8080` (Ingress 설정에 따라 달라질 수 있음)
 
 ## 9. 문제 해결
 
@@ -254,10 +254,10 @@ kubectl get ingress -n crater-system
 **해결 방법:**
 ```bash
 # Pod 로그 확인
-kubectl logs <pod-name> -n crater-system
+kubectl logs <pod-name> -n orbit-system
 
 # Pod 상세 정보 확인
-kubectl describe pod <pod-name> -n crater-system
+kubectl describe pod <pod-name> -n orbit-system
 ```
 
 <Callout type="warn">
@@ -267,11 +267,11 @@ kubectl describe pod <pod-name> -n crater-system
 **해결 방법:**
 ```bash
 # 데이터베이스 서비스 상태 확인
-kubectl get svc -n crater-system | grep postgres
+kubectl get svc -n orbit-system | grep postgres
 
 # 데이터베이스 연결 테스트
 kubectl run postgres-test --rm -it --image=postgres:13 --restart=Never -- \
-  psql -h crater-postgresql.crater-system.svc.cluster.local -U postgres
+  psql -h orbit-postgresql.orbit-system.svc.cluster.local -U postgres
 ```
 
 ## 10. 환경 정리
@@ -281,8 +281,8 @@ kubectl run postgres-test --rm -it --image=postgres:13 --restart=Never -- \
 kind delete cluster
 
 # 또는 특정 리소스 삭제
-helm uninstall crater -n crater-system
-helm uninstall crater-postgresql -n crater-system
+helm uninstall orbit -n orbit-system
+helm uninstall orbit-postgresql -n orbit-system
 helm uninstall volcano -n volcano-system
 helm uninstall nfs-provisioner -n nfs-system
 ```
@@ -293,13 +293,13 @@ helm uninstall nfs-provisioner -n nfs-system
 
 ## 요약
 
-이 가이드를 통해 Kind 클러스터에 완전한 Crater 환경을 성공적으로 배포했습니다. 포함된 구성 요소는 다음과 같습니다:
+이 가이드를 통해 Kind 클러스터에 완전한 Orbit 환경을 성공적으로 배포했습니다. 포함된 구성 요소는 다음과 같습니다:
 
 - ✅ Kind Kubernetes 클러스터
 - ✅ Ingress-Nginx 컨트롤러
 - ✅ PostgreSQL 데이터베이스
 - ✅ Volcano 스케줄러
 - ✅ NFS 스토리지 프로비저너
-- ✅ Crater 학습 플랫폼
+- ✅ Orbit 학습 플랫폼
 
-이제 Crater 를 사용하여 분산 학습 작업을 시작할 수 있습니다. 문제가 발생할 경우 각 구성 요소의 공식 문서나 로그 확인을 통해 문제 해결을 시도해 보세요.
+이제 Orbit 를 사용하여 분산 학습 작업을 시작할 수 있습니다. 문제가 발생할 경우 각 구성 요소의 공식 문서나 로그 확인을 통해 문제 해결을 시도해 보세요.

@@ -8,9 +8,9 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/raids-lab/crater/pkg/cleaner"
-	"github.com/raids-lab/crater/pkg/monitor"
-	"github.com/raids-lab/crater/pkg/patrol"
+	"github.com/raids-lab/orbit/pkg/cleaner"
+	"github.com/raids-lab/orbit/pkg/monitor"
+	"github.com/raids-lab/orbit/pkg/patrol"
 )
 
 type CronJobManager struct {

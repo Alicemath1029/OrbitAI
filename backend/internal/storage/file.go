@@ -15,11 +15,11 @@ import (
 
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/config"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/config"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/webdav"
@@ -27,11 +27,11 @@ import (
 
 var fs *webdav.Handler
 var fsonce sync.Once
-var storageRootDir = "/crater"
+var storageRootDir = "/orbit"
 
 func SetRootDir(rootDir string) {
 	if rootDir == "" {
-		storageRootDir = "/crater"
+		storageRootDir = "/orbit"
 		return
 	}
 	storageRootDir = rootDir

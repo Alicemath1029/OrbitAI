@@ -185,7 +185,7 @@ const useAdminSidebarGroups = (): NavGroupProps[] => {
           icon: ScrollText,
         },
         {
-          title: t('navigation.aboutCrater'),
+          title: t('navigation.aboutOrbit'),
           url: '/admin/more/version',
           icon: SettingsIcon,
         },

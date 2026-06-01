@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { HelpCircle } from 'lucide-react'
+import { HelpCircle, TerminalSquare } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -31,8 +31,8 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import DocsButton from '@/components/button/docs-button'
-import CraterIcon from '@/components/icon/crater-icon'
-import CraterText from '@/components/icon/crater-text'
+import OrbitIcon from '@/components/icon/orbit-icon'
+import OrbitText from '@/components/icon/orbit-text'
 import NotFound from '@/components/placeholder/not-found'
 
 import { AuthMode } from '@/services/api/auth'
@@ -102,6 +102,8 @@ function LoginPage() {
 
   // Calculate if we should show mode switcher
   const showSwitcher = enableLdap && enableNormalLogin
+  const loginCardClass =
+    'tech-login-card border-border/75 mx-auto w-full max-w-[380px] space-y-6 rounded-md border p-6 shadow-[0_24px_80px_-48px_var(--primary-glow)] backdrop-blur-xl sm:p-7'
 
   // Handle mode switching
   const handleModeChange = (newMode: string) => {
@@ -144,83 +146,129 @@ function LoginPage() {
   }
 
   return (
-    <div className="h-screen w-full lg:grid lg:grid-cols-2">
+    <div className="bg-background min-h-[100dvh] w-full lg:grid lg:grid-cols-[1.08fr_0.92fr]">
       {/* 左侧部分 */}
-      <div className="bg-primary hidden lg:block dark:bg-slate-800/70">
-        <div className="relative h-full w-full">
+      <div className="bg-sidebar text-sidebar-foreground hidden lg:block">
+        <div className="tech-login-visual relative h-full w-full overflow-hidden">
+          <div className="from-sidebar-primary/70 via-sidebar-primary/18 absolute top-0 right-0 h-px w-3/4 bg-gradient-to-l to-transparent" />
+          <div className="orbit-halo orbit-halo-slow border-sidebar-primary/20 absolute top-1/2 left-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full border shadow-[0_0_100px_-64px_var(--sidebar-primary)]" />
+          <div className="orbit-halo orbit-halo-fast border-sidebar-primary/12 absolute top-1/2 left-1/2 h-[18rem] w-[18rem] -translate-x-1/2 -translate-y-1/2 rounded-full border" />
+          <div className="orbit-core-pulse bg-sidebar-primary/70 absolute top-1/2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-[0_0_38px_10px_var(--sidebar-primary)]" />
+          <div className="orbit-signal orbit-signal-a" aria-hidden="true" />
+          <div className="orbit-signal orbit-signal-b" aria-hidden="true" />
+          <div className="orbit-signal orbit-signal-c" aria-hidden="true" />
+          <div className="orbit-data-rain" aria-hidden="true">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <span
+                key={index}
+                style={{
+                  animationDelay: `${index * -0.32}s`,
+                  height: `${36 + (index % 4) * 12}%`,
+                }}
+              />
+            ))}
+          </div>
           {/* 顶部Logo */}
           <div
             className="absolute top-10 left-10 z-20 flex items-center text-lg font-medium"
             title="Switch signup and login"
           >
             <button
-              className="flex h-14 w-full flex-row items-center justify-center text-white"
+              className="border-sidebar-primary/16 hover:border-sidebar-primary/35 flex h-12 w-full flex-row items-center justify-center rounded-md border bg-white/[0.025] px-3 text-white/92 transition-colors hover:bg-white/[0.045]"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
-              <CraterIcon className="mr-1.5 h-8 w-8" />
-              <CraterText className="h-4" />
+              <OrbitIcon className="text-sidebar-primary mr-1.5 h-7 w-7" />
+              <OrbitText className="h-4" />
             </button>
           </div>
           {/* 底部版权信息 */}
           <div className="absolute bottom-10 left-10 z-20">
             <blockquote className="space-y-2">
-              <footer className="text-sm text-white/80">Copyright @ RAIDS Lab</footer>
+              <footer className="font-mono text-[11px] tracking-[0.16em] text-white/38 uppercase">
+                Copyright @ RAIDS Lab
+              </footer>
             </blockquote>
           </div>
           {/* 中间文字内容 */}
-          <div className="relative flex h-full items-center justify-center">
-            <div className="z-10 px-6 py-8 text-left text-white lg:px-16 lg:py-12">
-              <h1 className="mb-4 text-5xl leading-tight font-semibold">
-                <span className="dark:text-primary">欢迎体验</span>
+          <div className="relative flex h-full items-center">
+            <div className="z-10 max-w-3xl px-6 py-8 text-left text-white lg:px-16 lg:py-12">
+              <div className="border-sidebar-primary/22 text-sidebar-primary mb-6 inline-flex items-center gap-2 rounded-md border bg-white/[0.025] px-3 py-1.5 font-mono text-[11px] tracking-[0.18em] uppercase shadow-[inset_0_1px_0_hsla(0,0%,100%,0.06)]">
+                <TerminalSquare className="size-3.5" />
+                Orchestration Fabric
+              </div>
+              <h1 className="mb-7 text-5xl leading-[1.04] font-semibold tracking-tight text-white xl:text-6xl">
+                <span className="text-sidebar-primary">Orbit</span>
                 <br />
-                异构云资源混合调度
+                异构云资源
                 <br />
-                与智能运维平台
+                混合调度系统
               </h1>
               <DocsButton
                 variant="ghost"
-                className="dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/85 dark:hover:text-primary-foreground bg-white text-black hover:bg-slate-200 hover:text-black"
+                className="border-sidebar-primary/35 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 hover:text-sidebar-primary-foreground shadow-[0_0_0_1px_var(--primary-glow-soft),0_18px_38px_-24px_var(--sidebar-primary)]"
                 title="平台文档"
                 url=""
               />
+              <div className="mt-10 grid max-w-xl grid-cols-3 gap-3">
+                {['GPU', 'QUEUE', 'OPS'].map((label, index) => (
+                  <div
+                    key={label}
+                    className="border-sidebar-primary/14 bg-white/[0.025] px-3 py-2 shadow-[inset_0_1px_0_hsla(0,0%,100%,0.05)] [clip-path:polygon(0_8px,8px_0,100%_0,100%_100%,0_100%)]"
+                  >
+                    <div className="font-mono text-[10px] tracking-[0.18em] text-white/42 uppercase">
+                      {label}
+                    </div>
+                    <div
+                      className="orbit-meter bg-sidebar-primary/75 mt-1 h-1 shadow-[0_0_18px_-6px_var(--sidebar-primary)]"
+                      style={{ width: `${72 - index * 11}%` }}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
       {/* 右侧表单部分 */}
-      <div className="flex items-center justify-center py-12">
+      <div className="app-shell-surface flex items-center justify-center px-4 py-12">
         {showSignup && selectedMode === AuthMode.NORMAL ? (
-          <div className="mx-auto w-full max-w-[350px] space-y-6 px-4 sm:px-0">
+          <div className={loginCardClass}>
             <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">用户注册</h1>
-              <p className="text-muted-foreground text-sm">注册您在 Crater 平台的账号</p>
+              <h1 className="text-3xl font-semibold tracking-tight">用户注册</h1>
+              <p className="text-muted-foreground text-sm">注册您在 Orbit 平台的账号</p>
             </div>
             <SignupForm />
             <div className="text-muted-foreground text-center text-sm">
               已有账号？
-              <button onClick={handleBackToLogin} className="underline">
+              <button
+                onClick={handleBackToLogin}
+                className="text-primary underline-offset-4 hover:underline"
+              >
                 立即登录
               </button>
             </div>
           </div>
         ) : showForgotPassword && selectedMode === AuthMode.NORMAL ? (
-          <div className="mx-auto w-full max-w-[350px] space-y-6 px-4 sm:px-0">
+          <div className={loginCardClass}>
             <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">重置密码</h1>
+              <h1 className="text-3xl font-semibold tracking-tight">重置密码</h1>
               <p className="text-muted-foreground text-sm">我们将向您的邮箱发送密码重置链接</p>
             </div>
             <ForgotPasswordForm />
             <div className="text-muted-foreground text-center text-sm">
               想起密码了？
-              <button onClick={handleBackToLogin} className="underline">
+              <button
+                onClick={handleBackToLogin}
+                className="text-primary underline-offset-4 hover:underline"
+              >
                 返回登录
               </button>
             </div>
           </div>
         ) : (
-          <div className="mx-auto w-full max-w-[350px] space-y-6 px-4 sm:px-0">
+          <div className={loginCardClass}>
             <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">用户登录</h1>
+              <h1 className="text-3xl font-semibold tracking-tight">用户登录</h1>
               <p className="text-muted-foreground flex items-center justify-center gap-1.5 text-sm">
                 {selectedMode === AuthMode.LDAP ? (
                   <>
@@ -272,7 +320,10 @@ function LoginPage() {
             />
             <div className="text-muted-foreground text-center text-sm">
               还没有账号？
-              <button onClick={handleRegisterClick} className="underline">
+              <button
+                onClick={handleRegisterClick}
+                className="text-primary underline-offset-4 hover:underline"
+              >
                 立即注册
               </button>
             </div>

@@ -9,11 +9,11 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/constants"
-	"github.com/raids-lab/crater/pkg/crclient"
-	"github.com/raids-lab/crater/pkg/prequeuewatcher"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/constants"
+	"github.com/raids-lab/orbit/pkg/crclient"
+	"github.com/raids-lab/orbit/pkg/prequeuewatcher"
 )
 
 //nolint:gochecknoinits // This is the standard way to register a gin handler.

@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Crater
+ * Copyright 2025 Orbit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 function getChartVersion() {
-  const fromEnv = process.env.NEXT_PUBLIC_CRATER_CHART_VERSION;
+  const fromEnv = process.env.NEXT_PUBLIC_ORBIT_CHART_VERSION;
   if (fromEnv && fromEnv !== '<chart-version>') return fromEnv;
   // source.config.ts runs in the website directory
-  const chartPath = resolve(process.cwd(), '../charts/crater/Chart.yaml');
+  const chartPath = resolve(process.cwd(), '../charts/orbit/Chart.yaml');
   try {
     if (!existsSync(chartPath)) return '<chart-version>';
     const content = readFileSync(chartPath, 'utf8');

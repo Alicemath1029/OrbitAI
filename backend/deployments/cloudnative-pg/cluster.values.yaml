@@ -129,7 +129,7 @@ cluster:
 
   # -- Name of the container image, supporting both tags (<image>:<tag>) and digests for deterministic and repeatable deployments:
   # <image>:<tag>@sha256:<digestValue>
-  imageName: "crater-harbor.act.buaa.edu.cn/crater/cloudnative-pg/postgresql:16" # Default value depends on type (postgresql/postgis/timescaledb)
+  imageName: "orbit-harbor.act.buaa.edu.cn/orbit/cloudnative-pg/postgresql:16" # Default value depends on type (postgresql/postgis/timescaledb)
 
   # -- Reference to `ImageCatalog` of `ClusterImageCatalog`, if specified takes precedence over `cluster.imageName`
   imageCatalogRef:
@@ -141,7 +141,7 @@ cluster:
   # More info: https://kubernetes.io/docs/concepts/containers/images#updating-images
   imagePullPolicy: IfNotPresent
 
-  pingTestImageName: crater-harbor.act.buaa.edu.cn/docker.io/alpine:3.17
+  pingTestImageName: orbit-harbor.act.buaa.edu.cn/docker.io/alpine:3.17
 
   # -- The list of pull secrets to be used to pull the images.
   # See: https://cloudnative-pg.io/documentation/current/cloudnative-pg.v1/#postgresql-cnpg-io-v1-LocalObjectReference
@@ -285,7 +285,7 @@ cluster:
   # See: https://cloudnative-pg.io/documentation/current/bootstrap/
   # See: https://cloudnative-pg.io/documentation/current/cloudnative-pg.v1/#postgresql-cnpg-io-v1-bootstrapinitdb
   initdb:
-    database: crater
+    database: orbit
     # owner: "" # Defaults to the database name
     # secret:
     #   name: "" # Name of the secret containing the initial credentials for the owner of the user database. If empty a new secret will be created from scratch

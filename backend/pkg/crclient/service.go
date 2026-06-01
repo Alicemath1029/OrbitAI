@@ -17,25 +17,25 @@ import (
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/raids-lab/crater/pkg/config"
+	"github.com/raids-lab/orbit/pkg/config"
 )
 
-type CraterJobType string
+type OrbitJobType string
 
 const (
-	CraterJobTypeTensorflow CraterJobType = "tensorflow"
-	CraterJobTypePytorch    CraterJobType = "pytorch"
-	CraterJobTypeJupyter    CraterJobType = "jupyter"
-	CraterJobTypeCustom     CraterJobType = "custom"
+	OrbitJobTypeTensorflow OrbitJobType = "tensorflow"
+	OrbitJobTypePytorch    OrbitJobType = "pytorch"
+	OrbitJobTypeJupyter    OrbitJobType = "jupyter"
+	OrbitJobTypeCustom     OrbitJobType = "custom"
 )
 
 const (
-	LabelKeyBaseURL     = "crater.raids.io/base-url"
-	LabelKeyTaskType    = "crater.raids.io/task-type"
-	LabelKeyTaskUser    = "crater.raids.io/task-user"
-	LalbeKeyTaskAccount = "crater.raids.io/task-account"
+	LabelKeyBaseURL     = "orbit.raids.io/base-url"
+	LabelKeyTaskType    = "orbit.raids.io/task-type"
+	LabelKeyTaskUser    = "orbit.raids.io/task-user"
+	LalbeKeyTaskAccount = "orbit.raids.io/task-account"
 
-	AnnotationKeyPortName = "crater.raids.io/port-name" // Annotation key for port name
+	AnnotationKeyPortName = "orbit.raids.io/port-name" // Annotation key for port name
 
 	Poll    = 500 * time.Millisecond // Polling interval for checking service creation
 	Timeout = 5 * time.Second        // Timeout for service creation
@@ -114,7 +114,7 @@ func (s *serviceManagerImpl) GenerateLabels(podSelector map[string]string) map[s
 	}
 
 	taskType := podSelector[LabelKeyTaskType]
-	if taskType == string(CraterJobTypeTensorflow) || taskType == string(CraterJobTypePytorch) {
+	if taskType == string(OrbitJobTypeTensorflow) || taskType == string(OrbitJobTypePytorch) {
 		if index, ok := podSelector[LabelKeyTaskIndex]; ok {
 			labels[LabelKeyTaskIndex] = index
 		}

@@ -3,7 +3,7 @@ set -e
 
 # Usage: bash hack/install-nerdctl.sh
 NERDCTL_VERSION=2.0.1-retry
-REGISTERY=crater-harbor.act.buaa.edu.cn/crater
+REGISTERY=orbit-harbor.act.buaa.edu.cn/orbit
 
 # wget https://github.com/containerd/nerdctl/releases/download/v2.0.1/nerdctl-2.0.1-linux-amd64.tar.gz -O bin/nerdctl-2.0.1-linux-amd64.tar.gz
 

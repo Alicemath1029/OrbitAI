@@ -92,10 +92,10 @@ export function NavUser() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <UserAvatar user={user} />
+              <UserAvatar user={user} className="rounded-md bg-white/8 ring-1 ring-white/10" />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{displayName}</span>
-                <span className="truncate text-xs">{user?.email}</span>
+                <span className="text-sidebar-foreground/50 truncate text-xs">{user?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -108,7 +108,7 @@ export function NavUser() {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <UserAvatar user={user} />
+                <UserAvatar user={user} className="rounded-md" />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{displayName}</span>
                   <span className="truncate text-xs">{user?.email}</span>
@@ -152,7 +152,7 @@ export function NavUser() {
                 {t('navUser.platformDocs')}
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => window.open('https://github.com/raids-lab/crater/issues')}
+                onClick={() => window.open('https://github.com/raids-lab/orbit/issues')}
               >
                 <MessageSquareMoreIcon />
                 {t('navUser.feedback')}

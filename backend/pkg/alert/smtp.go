@@ -8,8 +8,8 @@ import (
 	"gopkg.in/gomail.v2"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/dao/model"
-	config "github.com/raids-lab/crater/pkg/config"
+	"github.com/raids-lab/orbit/dao/model"
+	config "github.com/raids-lab/orbit/pkg/config"
 )
 
 type SMTPAlerter struct {
@@ -32,8 +32,8 @@ func newSMTPAlerter() (alertHandlerInterface, error) {
 		return nil, fmt.Errorf("invalid SMTP port: %w", err)
 	}
 
-	// 使用固定昵称"Crater System"，也可以从配置中获取
-	fromName := "Crater System"
+	// 使用固定昵称"Orbit System"，也可以从配置中获取
+	fromName := "Orbit System"
 
 	return &SMTPAlerter{
 		host:     smtpHost,
@@ -56,7 +56,7 @@ func (sa *SMTPAlerter) SendMessageTo(_ context.Context, receiver *model.UserAttr
 	m.SetAddressHeader("From", sa.from, sa.fromName)
 	// 使用SetAddressHeader方法设置收件人，让gomail处理编码
 	m.SetAddressHeader("To", *receiver.Email, receiver.Nickname)
-	m.SetHeader("Subject", fmt.Sprintf("[Crater] %s", subject))
+	m.SetHeader("Subject", fmt.Sprintf("[Orbit] %s", subject))
 	m.SetBody("text/html", body)
 
 	d := gomail.NewDialer(sa.host, sa.port, sa.username, sa.password)

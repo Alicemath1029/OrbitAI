@@ -1,6 +1,6 @@
 ---
 title: 最小化デプロイ
-description: このドキュメントでは、Kind を使用してローカルで Crater 環境を迅速に構築する方法をガイドします。Crater は Kubernetes ベースの分散トレーニングプラットフォームであり、本ガイドでは Kind クラスターの作成から Crater の必要な各コンポーネントのデプロイに至るまでの完全な手順をカバーしています。
+description: このドキュメントでは、Kind を使用してローカルで Orbit 環境を迅速に構築する方法をガイドします。Orbit は Kubernetes ベースの分散トレーニングプラットフォームであり、本ガイドでは Kind クラスターの作成から Orbit の必要な各コンポーネントのデプロイに至るまでの完全な手順をカバーしています。
 ---
 
 ## 1. 環境準備
@@ -109,26 +109,26 @@ kubectl wait --namespace ingress-nginx \
 
 ```bash
 # 名前空間の作成
-kubectl create namespace crater-system
+kubectl create namespace orbit-system
 
 # 現在の名前空間コンテキストの設定
-kubectl config set-context --current --namespace=crater-system
+kubectl config set-context --current --namespace=orbit-system
 
 # Bitnami Helmリポジトリの追加
 helm repo add bitnami https://charts.bitnami.com/bitnami
 
 # PostgreSQLのインストール
-helm install crater-postgresql bitnami/postgresql -n crater-system
+helm install orbit-postgresql bitnami/postgresql -n orbit-system
 ```
 
 **データベースパスワードの取得：**
 ```bash
-export POSTGRES_PASSWORD=$(kubectl get secret --namespace crater-system crater-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
+export POSTGRES_PASSWORD=$(kubectl get secret --namespace orbit-system orbit-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
 echo "データベースパスワード: $POSTGRES_PASSWORD"
 ```
 
 <Callout type="info">
-    データベースパスワードを適切に保存してください。後続の Crater のデプロイ時に必要になります。
+    データベースパスワードを適切に保存してください。後続の Orbit のデプロイ時に必要になります。
 </Callout>
 
 ## 5. Volcano スケジューラのデプロイ
@@ -183,14 +183,14 @@ NAME   PROVISIONER                                       RECLAIMPOLICY   VOLUMEB
 nfs    cluster.local/nfs-provisioner-nfs-server-provisioner   Delete          Immediate           true                   1m
 ```
 
-## 7. Crater のデプロイ
+## 7. Orbit のデプロイ
 
-### 7.1 Crater Helm Chart の値ファイルの取得
+### 7.1 Orbit Helm Chart の値ファイルの取得
 
-<CraterChartVersionNotice />
+<OrbitChartVersionNotice />
 
 ```bash
-helm show values oci://ghcr.io/raids-lab/crater --version <chart-version> > values.yaml
+helm show values oci://ghcr.io/raids-lab/orbit --version <chart-version> > values.yaml
 ```
 
 ### 7.2 データベース接続の設定
@@ -199,7 +199,7 @@ helm show values oci://ghcr.io/raids-lab/crater --version <chart-version> > valu
 
 ```yaml
 postgres:
-  host: crater-postgresql.crater-system.svc.cluster.local
+  host: orbit-postgresql.orbit-system.svc.cluster.local
   port: 5432
   dbname: postgres
   user: postgres
@@ -208,27 +208,27 @@ postgres:
   TimeZone: Asia/Shanghai
 ```
 
-### 7.3 Crater のインストール
+### 7.3 Orbit のインストール
 
 ```bash
-helm install crater oci://ghcr.io/raids-lab/crater --version <chart-version> -n crater-system -f values.yaml
+helm install orbit oci://ghcr.io/raids-lab/orbit --version <chart-version> -n orbit-system -f values.yaml
 ```
 
 **インストールの確認：**
 ```bash
-kubectl get pods -n crater-system
+kubectl get pods -n orbit-system
 ```
 
 <Callout type="success">
-    すべての Pod が Running 状態であれば、Crater 環境の構築は成功しています！
+    すべての Pod が Running 状態であれば、Orbit 環境の構築は成功しています！
 </Callout>
 
-## 8. Crater へのアクセス
+## 8. Orbit へのアクセス
 
 ### 8.1 アクセス先の取得
 
 ```bash
-kubectl get ingress -n crater-system
+kubectl get ingress -n orbit-system
 ```
 
 ### 8.2 ローカル hosts の設定（必要に応じて）
@@ -236,7 +236,7 @@ kubectl get ingress -n crater-system
 ローカルの Kind クラスターを使用する場合、`/etc/hosts`にマッピングを追加する必要があります：
 
 ```
-127.0.0.1 crater.example.com
+127.0.0.1 orbit.example.com
 ```
 
 ### 8.3 Web インターフェースへのアクセス
@@ -254,10 +254,10 @@ kubectl get ingress -n crater-system
 **解決策：**
 ```bash
 # Podログの確認
-kubectl logs <pod-name> -n crater-system
+kubectl logs <pod-name> -n orbit-system
 
 # Podの詳細情報の確認
-kubectl describe pod <pod-name> -n crater-system
+kubectl describe pod <pod-name> -n orbit-system
 ```
 
 <Callout type="warn">
@@ -267,11 +267,11 @@ kubectl describe pod <pod-name> -n crater-system
 **解決策：**
 ```bash
 # データベースサービスの状態の確認
-kubectl get svc -n crater-system | grep postgres
+kubectl get svc -n orbit-system | grep postgres
 
 # データベース接続のテスト
 kubectl run postgres-test --rm -it --image=postgres:13 --restart=Never -- \
-  psql -h crater-postgresql.crater-system.svc.cluster.local -U postgres
+  psql -h orbit-postgresql.orbit-system.svc.cluster.local -U postgres
 ```
 
 ## 10. 環境のクリーンアップ
@@ -281,8 +281,8 @@ kubectl run postgres-test --rm -it --image=postgres:13 --restart=Never -- \
 kind delete cluster
 
 # 特定のリソースの削除
-helm uninstall crater -n crater-system
-helm uninstall crater-postgresql -n crater-system
+helm uninstall orbit -n orbit-system
+helm uninstall orbit-postgresql -n orbit-system
 helm uninstall volcano -n volcano-system
 helm uninstall nfs-provisioner -n nfs-system
 ```
@@ -293,13 +293,13 @@ helm uninstall nfs-provisioner -n nfs-system
 
 ## 結論
 
-本ガイドに従って、Kind クラスター上に完全な Crater 環境をデプロイしました。含まれる主なコンポーネントは以下の通りです：
+本ガイドに従って、Kind クラスター上に完全な Orbit 環境をデプロイしました。含まれる主なコンポーネントは以下の通りです：
 
 - ✅ Kind Kubernetes クラスター
 - ✅ Ingress-Nginx コントローラー
 - ✅ PostgreSQL データベース
 - ✅ Volcano スケジューラ
 - ✅ NFS ストレージプロビジョナー
-- ✅ Crater トレーニングプラットフォーム
+- ✅ Orbit トレーニングプラットフォーム
 
-今や、Crater を使用して分散トレーニングタスクを開始できます！何か問題が発生した場合は、各コンポーネントの公式ドキュメントを参照し、ログを確認してトラブルシューティングを行ってください。
+今や、Orbit を使用して分散トレーニングタスクを開始できます！何か問題が発生した場合は、各コンポーネントの公式ドキュメントを参照し、ログを確認してトラブルシューティングを行ってください。

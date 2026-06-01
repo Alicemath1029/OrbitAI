@@ -124,7 +124,7 @@ cat <<EOF | kubectl apply -f -
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: crater-postgresql
+  name: orbit-postgresql
   namespace: cnpg-system
 spec:
   instances: 3
@@ -384,10 +384,10 @@ http://<your-node-ip>:30002
 
 Chart 가져오기:
 
-<CraterChartVersionNotice />
+<OrbitChartVersionNotice />
 
 ```bash
-helm pull oci://ghcr.io/raids-lab/crater --version <chart-version> --untar
+helm pull oci://ghcr.io/raids-lab/orbit --version <chart-version> --untar
 ```
 
 크레이터 플랫폼의 핵심 설정 파일은 `values.yaml`입니다.  
@@ -401,18 +401,18 @@ helm pull oci://ghcr.io/raids-lab/crater --version <chart-version> --untar
 
 ```yaml
 # 플랫폼 접근 도메인
-host: crater.example.com
+host: orbit.example.com
 
 # 프로토콜 유형, "http" 또는 "https" 선택 가능
 protocol: http
 
 # 초기 관리자 계정
 firstUser:
-  username: crater-admin
+  username: orbit-admin
   password: <MUSTEDIT>
 ```
 
-Ingress 와 도메인 해석이 설정된 경우, 실제 도메인 (예: `crater.mycluster.local`)을 사용할 수 있습니다.  
+Ingress 와 도메인 해석이 설정된 경우, 실제 도메인 (예: `orbit.mycluster.local`)을 사용할 수 있습니다.  
 테스트 환경인 경우, 컨트롤 노드 IP 를 입력할 수 있습니다.
 
 ---
@@ -426,7 +426,7 @@ storage:
   create: true
   request: 10Gi
   storageClass: "nfs"          # 앞서 생성한 NFS StorageClass 사용
-  pvcName: "crater-rw-storage" # 백엔드 마운트용 공유 PVC 이름
+  pvcName: "orbit-rw-storage" # 백엔드 마운트용 공유 PVC 이름
 ```
 
 크레이터 백엔드는 이 PVC 를 자동으로 마운트하여 사용자 공간 및 공용 디렉터리 (`users/`, `accounts/`, `public/`)에 사용합니다.
@@ -441,7 +441,7 @@ storage:
 ```yaml
 backendConfig:
   postgres:
-    host: crater-postgresql.cnpg-system.svc.cluster.local  # CloudNativePG 클러스터의 서비스 이름
+    host: orbit-postgresql.cnpg-system.svc.cluster.local  # CloudNativePG 클러스터의 서비스 이름
     port: 5432
     dbname: postgres
     user: postgres
@@ -454,8 +454,8 @@ backendConfig:
 > 
 > - `host`는 `kubectl get svc -n cnpg-system` 명령으로 확인할 수 있습니다.
 >     
-> - CloudNativePG 의 기본 클러스터 이름이 `crater-postgresql`인 경우, 서비스 이름은 다음과 같아야 합니다:  
->     `crater-postgresql-rw.cnpg-system.svc.cluster.local`입니다.
+> - CloudNativePG 의 기본 클러스터 이름이 `orbit-postgresql`인 경우, 서비스 이름은 다음과 같아야 합니다:  
+>     `orbit-postgresql-rw.cnpg-system.svc.cluster.local`입니다.
 >     
 
 ---
@@ -520,16 +520,16 @@ backendConfig:
 ```yaml
 backendConfig:
   secrets:
-    tlsSecretName: crater-tls-secret
-    tlsForwardSecretName: crater-tls-forward-secret
+    tlsSecretName: orbit-tls-secret
+    tlsForwardSecretName: orbit-tls-forward-secret
     imagePullSecretName: ""
 ```
 
 해당 인증서는 다음 명령어로 생성할 수 있습니다:
 
 ```bash
-kubectl create secret tls crater-tls-secret \
-  --cert=tls.crt --key=tls.key -n crater-system
+kubectl create secret tls orbit-tls-secret \
+  --cert=tls.crt --key=tls.key -n orbit-system
 ```
 
 HTTPS 를 사용하지 않는 경우, 기본값을 유지하고 프로토콜은 여전히 HTTP 로 유지됩니다.
@@ -538,7 +538,7 @@ HTTPS 를 사용하지 않는 경우, 기본값을 유지하고 프로토콜은 
 
 ### 4.7 LDAP 설정
 
-조직에서 이미 LDAP 디렉토리 서비스(예: OpenLDAP 또는 Active Directory)를 사용 중인 경우, Crater를 해당 서비스에 연결하여 통합 인증을 구현할 수 있습니다.
+조직에서 이미 LDAP 디렉토리 서비스(예: OpenLDAP 또는 Active Directory)를 사용 중인 경우, Orbit를 해당 서비스에 연결하여 통합 인증을 구현할 수 있습니다.
 
 LDAP을 활성화하면 사용자의 첫 로그인 시 계정 등록이 자동으로 완료되며, LDAP의 닉네임, 이메일 등의 정보가 지속적으로 동기화됩니다.
 
@@ -604,23 +604,23 @@ LDAP을 활성화하는 경우, 필드 매핑의 `username`과 `displayName`은 
 수정 완료 후 실행:
 
 ```bash
-helm install crater oci://ghcr.io/raids-lab/crater \
+helm install orbit oci://ghcr.io/raids-lab/orbit \
   --version <chart-version> \
-  -n crater-system \
+  -n orbit-system \
   -f values.yaml
 ```
 
 검증:
 
 ```bash
-kubectl get pods -n crater-system
-kubectl get ingress -n crater-system
+kubectl get pods -n orbit-system
+kubectl get ingress -n orbit-system
 ```
 
 접근 주소:
 
 ```
-http://crater.example.com
+http://orbit.example.com
 ```
 
 ---

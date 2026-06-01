@@ -3,7 +3,7 @@ package vcjob
 import (
 	"testing"
 
-	"github.com/raids-lab/crater/dao/model"
+	"github.com/raids-lab/orbit/dao/model"
 )
 
 func TestParseJobScheduleMetadataDefaultsToNormal(t *testing.T) {

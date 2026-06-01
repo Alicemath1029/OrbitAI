@@ -1,6 +1,6 @@
 ## Installation
 
-We recommend installing `metrics-server` using Helm with Crater’s preconfigured `values.yaml`.
+We recommend installing `metrics-server` using Helm with Orbit’s preconfigured `values.yaml`.
 
 ### Step 1: Add the Helm Chart Repository
 

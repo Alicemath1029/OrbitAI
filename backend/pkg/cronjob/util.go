@@ -12,10 +12,10 @@ import (
 	"gorm.io/gorm/clause"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/pkg/util"
-	"github.com/raids-lab/crater/pkg/utils"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/pkg/util"
+	"github.com/raids-lab/orbit/pkg/utils"
 )
 
 const (

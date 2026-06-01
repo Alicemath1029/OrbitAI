@@ -1,4 +1,4 @@
-# Crater 项目通用准则
+# Orbit 项目通用准则
 
 此文档定义了项目开发的通用标准，并规定了所有指令文档的执行等级，适用于 GitHub Copilot 的所有智能体（`coding-agent` 与 `code-review`）。
 

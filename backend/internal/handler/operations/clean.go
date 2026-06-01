@@ -3,8 +3,8 @@ package operations
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/pkg/cleaner"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/pkg/cleaner"
 )
 
 func (mgr *OperationsMgr) handleCleanerRequest(

@@ -12,10 +12,10 @@ import (
 	"k8s.io/klog/v2"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/pkg/crclient"
-	"github.com/raids-lab/crater/pkg/monitor"
-	"github.com/raids-lab/crater/pkg/util/queue"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/pkg/crclient"
+	"github.com/raids-lab/orbit/pkg/monitor"
+	"github.com/raids-lab/orbit/pkg/util/queue"
 )
 
 const (

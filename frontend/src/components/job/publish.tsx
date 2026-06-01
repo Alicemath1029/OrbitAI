@@ -110,7 +110,7 @@ export function PublishConfigForm<T extends FieldValues>({
     const json = JSON.stringify(objcombinedConfig, null, 2)
     // 特殊处理，将 /home/username 替换为 /home/${username}
     if (json.includes(`/home/${user?.name}`)) {
-      return json.replace(new RegExp(`/home/${user?.name}`, 'g'), `/home/\${CRATER_USERNAME}`)
+      return json.replace(new RegExp(`/home/${user?.name}`, 'g'), `/home/\${ORBIT_USERNAME}`)
     }
     return json
   }, [config, data, user?.name])
@@ -270,7 +270,7 @@ export function PublishConfigForm<T extends FieldValues>({
                 请确保您不会在此配置中包含任何敏感信息，如密码、密钥等
                 {/* <span className="font-mono">/home/{user?.name}</span> 将被替换为
                 <span className="font-mono">
-                  /home/${"{"}CRATER_USERNAME{"}"}
+                  /home/${"{"}ORBIT_USERNAME{"}"}
                 </span>
                 ，以保护您的隐私。 */}
               </Label>

@@ -12,13 +12,13 @@ modelDownload:
   # Container image used for model download jobs
   # Optional: Defaults to "python:3.11-slim" if not specified
   # For deployments with network restrictions (e.g., in China), use internal registry:
-  # image: crater-harbor.act.buaa.edu.cn/crater/base/python:3.11-slim
+  # image: orbit-harbor.act.buaa.edu.cn/orbit/base/python:3.11-slim
   image: python:3.11-slim
 
 # Checkpoint scanner service configuration
 checkpointScanner:
   # HTTP base URL for the always-on checkpoint-scanner service
-  endpoint: http://checkpoint-scanner-service.crater-workspace.svc.cluster.local:7330
+  endpoint: http://checkpoint-scanner-service.orbit-workspace.svc.cluster.local:7330
   # Backend-to-scanner request timeout in seconds
   timeoutSeconds: 30
 
@@ -28,7 +28,7 @@ prometheusAPI: http://192.168.0.1:12345
 
 # Domain name or IP address that the server will bind to
 # Required: Must be specified for the server to start
-host: crater.example.com
+host: orbit.example.com
 
 # PostgreSQL database connection configuration
 # Required: All fields must be specified for database connectivity
@@ -41,7 +41,7 @@ postgres:
   port: 6432
   # Name of the database to connect to
   # Required: Database must exist and be accessible
-  dbname: crater
+  dbname: orbit
   # Database username for authentication
   # Required: User must have appropriate permissions
   user: postgres
@@ -73,31 +73,31 @@ storage:
   pvc:
     # Name of the ReadWriteMany Persistent Volume Claim for shared storage
     # Required: PVC must exist in the cluster with ReadWriteMany access mode
-    readWriteMany: crater-storage
+    readWriteMany: orbit-storage
     # Name of the ReadOnlyMany Persistent Volume Claim for datasets and models
     # It should be a link to the same underlying storage as ReadWriteMany
     # Optional: If not specified, datasets and models will be mounted as read-write
-    readOnlyMany: crater-rox-storage
+    readOnlyMany: orbit-rox-storage
 
 # Kubernetes namespace configurations for different resources
 # Required: Both Job and Image namespaces must be specified
 namespaces:
   # Job namespace where job resources will be created and managed
   # Required: Must be a valid Kubernetes namespace
-  job: crater-workspace
+  job: orbit-workspace
   # Image namespace where image resources will be stored and managed
   # Required: Must be a valid Kubernetes namespace
-  image: crater-images
+  image: orbit-images
 
 # Kubernetes secret names for various security components
 # Required: All secret names must correspond to existing Kubernetes secrets
 secrets:
   # Name of the Kubernetes secret containing TLS certificates for HTTPS
   # Required: Secret must contain 'tls.crt' and 'tls.key' keys
-  tlsSecretName: crater-tls-secret
+  tlsSecretName: orbit-tls-secret
   # Name of the Kubernetes secret for TLS forwarding configuration
   # Required: Secret must contain appropriate forwarding certificates
-  tlsForwardSecretName: crater-tls-forward-secret
+  tlsForwardSecretName: orbit-tls-forward-secret
   # Name of the Kubernetes secret for pulling container images from private registries
   # Optional: If not specified, no image pull secret will be used
   imagePullSecretName: ""

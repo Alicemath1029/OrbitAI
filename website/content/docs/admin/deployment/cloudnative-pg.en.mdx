@@ -1,11 +1,11 @@
 ---
 title: "CloudNativePG Deployment Guide"
-description: "Integrate PostgreSQL into Crater using the CloudNativePG Operator with OpenEBS storage."
+description: "Integrate PostgreSQL into Orbit using the CloudNativePG Operator with OpenEBS storage."
 ---
 
 ## Overview
 
-Crater uses **PostgreSQL** as its backend database to manage user sessions, job metadata, scheduling state, and platform configurations.
+Orbit uses **PostgreSQL** as its backend database to manage user sessions, job metadata, scheduling state, and platform configurations.
 
 To achieve production-grade, Kubernetes-native PostgreSQL management, we adopt the [CloudNativePG Operator](https://cloudnative-pg.io/), which provides:
 
@@ -23,7 +23,7 @@ We chose CloudNativePG because:
 - It provides a clean separation between **PostgreSQL configuration** and **Kubernetes-native orchestration**.  
 - It simplifies PostgreSQL deployment while remaining flexible for advanced tuning.
 
-In the Crater stack, each PostgreSQL cluster is defined as a custom `Cluster` resource and controlled by the operator.
+In the Orbit stack, each PostgreSQL cluster is defined as a custom `Cluster` resource and controlled by the operator.
 
 ## Storage Configuration
 

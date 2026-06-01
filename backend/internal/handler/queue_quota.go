@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/service"
-	"github.com/raids-lab/crater/pkg/prequeuewatcher"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/service"
+	"github.com/raids-lab/orbit/pkg/prequeuewatcher"
 )
 
 //nolint:gochecknoinits // This is the standard way to register a gin handler.

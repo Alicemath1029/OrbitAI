@@ -3,8 +3,8 @@ package aitaskctl
 import (
 	"strconv"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/pkg/util/queue"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/pkg/util/queue"
 )
 
 // 每个用户自己的作业队列排序

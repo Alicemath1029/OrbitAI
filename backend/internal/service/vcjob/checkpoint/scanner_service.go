@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	DefaultScannerMountPath = "/crater"
+	DefaultScannerMountPath = "/orbit"
 	DefaultScannerPort      = "7330"
 
 	scannerBackendService = "scanner-service"

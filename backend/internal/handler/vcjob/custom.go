@@ -11,11 +11,11 @@ import (
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 	bus "volcano.sh/apis/pkg/apis/bus/v1alpha1"
 
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/utils"
-	"github.com/raids-lab/crater/pkg/vcqueue"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/utils"
+	"github.com/raids-lab/orbit/pkg/vcqueue"
 )
 
 type (
@@ -86,7 +86,7 @@ func (mgr *VolcanojobMgr) CreateTrainingJob(c *gin.Context) {
 
 	// 4. Labels and Annotations
 	labels, jobAnnotations, podAnnotations := getLabelAndAnnotations(
-		CraterJobTypeCustom,
+		OrbitJobTypeCustom,
 		token,
 		baseURL,
 		&req.CreateJobCommon,
@@ -192,7 +192,7 @@ func GenerateCustomPodSpec(
 		ImagePullSecrets: imagePullSecrets,
 		Containers: []v1.Container{
 			{
-				Name:         string(CraterJobTypeCustom),
+				Name:         string(OrbitJobTypeCustom),
 				Image:        custom.Image.ImageLink,
 				WorkingDir:   custom.WorkingDir,
 				Resources:    resourceRequirements,

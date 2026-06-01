@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Crater
+ * Copyright 2025 Orbit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ export function WhyChooseSection() {
       <div className="container mx-auto max-w-6xl">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
           {t("heading")}
-          <span className="text-blue-600 dark:text-blue-500">Crater</span>
+          <span className="text-blue-600 dark:text-blue-500">Orbit</span>
         </h2>
 
         <div className="grid md:grid-cols-3 gap-8">

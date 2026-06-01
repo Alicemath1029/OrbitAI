@@ -1,6 +1,6 @@
 ---
 title: Minimal Deployment
-description: This document will guide you through quickly setting up a Crater environment locally using Kind. Crater is a distributed training platform based on Kubernetes. This guide will cover the complete process from creating a Kind cluster to deploying all necessary components of Crater.
+description: This document will guide you through quickly setting up a Orbit environment locally using Kind. Orbit is a distributed training platform based on Kubernetes. This guide will cover the complete process from creating a Kind cluster to deploying all necessary components of Orbit.
 ---
 
 ## 1. Environment Preparation
@@ -109,26 +109,26 @@ Reference documentation: https://artifacthub.io/packages/helm/bitnami/postgresql
 
 ```bash
 # Create namespace
-kubectl create namespace crater-system
+kubectl create namespace orbit-system
 
 # Set current namespace context
-kubectl config set-context --current --namespace=crater-system
+kubectl config set-context --current --namespace=orbit-system
 
 # Add Bitnami Helm repository
 helm repo add bitnami https://charts.bitnami.com/bitnami
 
 # Install PostgreSQL
-helm install crater-postgresql bitnami/postgresql -n crater-system
+helm install orbit-postgresql bitnami/postgresql -n orbit-system
 ```
 
 **Get the database password:**
 ```bash
-export POSTGRES_PASSWORD=$(kubectl get secret --namespace crater-system crater-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
+export POSTGRES_PASSWORD=$(kubectl get secret --namespace orbit-system orbit-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
 echo "Database password: $POSTGRES_PASSWORD"
 ```
 
 <Callout type="info">
-Please keep the database password secure; it will be needed for subsequent Crater deployments.
+Please keep the database password secure; it will be needed for subsequent Orbit deployments.
 </Callout>
 
 ## 5. Deploying Volcano Scheduler
@@ -183,14 +183,14 @@ NAME   PROVISIONER                                       RECLAIMPOLICY   VOLUMEB
 nfs    cluster.local/nfs-provisioner-nfs-server-provisioner   Delete          Immediate           true                   1m
 ```
 
-## 7. Deploying Crater
+## 7. Deploying Orbit
 
-### 7.1 Get Crater Helm Chart Values File
+### 7.1 Get Orbit Helm Chart Values File
 
-<CraterChartVersionNotice />
+<OrbitChartVersionNotice />
 
 ```bash
-helm show values oci://ghcr.io/raids-lab/crater --version <chart-version> > values.yaml
+helm show values oci://ghcr.io/raids-lab/orbit --version <chart-version> > values.yaml
 ```
 
 ### 7.2 Configure Database Connection
@@ -199,7 +199,7 @@ Edit the `values.yaml` file to configure the database connection information:
 
 ```yaml
 postgres:
-  host: crater-postgresql.crater-system.svc.cluster.local
+  host: orbit-postgresql.orbit-system.svc.cluster.local
   port: 5432
   dbname: postgres
   user: postgres
@@ -208,27 +208,27 @@ postgres:
   TimeZone: Asia/Shanghai
 ```
 
-### 7.3 Install Crater
+### 7.3 Install Orbit
 
 ```bash
-helm install crater oci://ghcr.io/raids-lab/crater --version <chart-version> -n crater-system -f values.yaml
+helm install orbit oci://ghcr.io/raids-lab/orbit --version <chart-version> -n orbit-system -f values.yaml
 ```
 
 **Verify the installation:**
 ```bash
-kubectl get pods -n crater-system
+kubectl get pods -n orbit-system
 ```
 
 <Callout type="success">
-If all Pods are in the Running state, it means the Crater environment has been successfully set up!
+If all Pods are in the Running state, it means the Orbit environment has been successfully set up!
 </Callout>
 
-## 8. Accessing Crater
+## 8. Accessing Orbit
 
 ### 8.1 Get Access Address
 
 ```bash
-kubectl get ingress -n crater-system
+kubectl get ingress -n orbit-system
 ```
 
 ### 8.2 Configure Local hosts (if needed)
@@ -236,12 +236,12 @@ kubectl get ingress -n crater-system
 If you are using a local Kind cluster, you may need to add a mapping in `/etc/hosts`:
 
 ```
-127.0.0.1 crater.example.com
+127.0.0.1 orbit.example.com
 ```
 
 ### 8.3 Access the Web Interface
 
-Open your browser and visit: `http://crater.example.com:8080` (or according to your Ingress configuration)
+Open your browser and visit: `http://orbit.example.com:8080` (or according to your Ingress configuration)
 
 ## 9. Troubleshooting
 
@@ -254,10 +254,10 @@ Open your browser and visit: `http://crater.example.com:8080` (or according to y
 **Solution:**
 ```bash
 # Check Pod logs
-kubectl logs <pod-name> -n crater-system
+kubectl logs <pod-name> -n orbit-system
 
 # Check Pod details
-kubectl describe pod <pod-name> -n crater-system
+kubectl describe pod <pod-name> -n orbit-system
 ```
 
 <Callout type="warn">
@@ -267,11 +267,11 @@ kubectl describe pod <pod-name> -n crater-system
 **Solution:**
 ```bash
 # Check database service status
-kubectl get svc -n crater-system | grep postgres
+kubectl get svc -n orbit-system | grep postgres
 
 # Test database connection
 kubectl run postgres-test --rm -it --image=postgres:13 --restart=Never -- \
-  psql -h crater-postgresql.crater-system.svc.cluster.local -U postgres
+  psql -h orbit-postgresql.orbit-system.svc.cluster.local -U postgres
 ```
 
 ## 10. Cleanup Environment
@@ -281,8 +281,8 @@ kubectl run postgres-test --rm -it --image=postgres:13 --restart=Never -- \
 kind delete cluster
 
 # Or delete specific resources
-helm uninstall crater -n crater-system
-helm uninstall crater-postgresql -n crater-system
+helm uninstall orbit -n orbit-system
+helm uninstall orbit-postgresql -n orbit-system
 helm uninstall volcano -n volcano-system
 helm uninstall nfs-provisioner -n nfs-system
 ```
@@ -293,13 +293,13 @@ Deleting the cluster will clear all data, please ensure that important data has 
 
 ## Summary
 
-Through this guide, you have successfully deployed a complete Crater environment on a Kind cluster, including:
+Through this guide, you have successfully deployed a complete Orbit environment on a Kind cluster, including:
 
 - ✅ Kind Kubernetes cluster
 - ✅ Ingress-Nginx controller
 - ✅ PostgreSQL database
 - ✅ Volcano scheduler
 - ✅ NFS storage provisioner
-- ✅ Crater training platform
+- ✅ Orbit training platform
 
-Now you can start using Crater for distributed training tasks! If you encounter any issues, please refer to the official documentation for each component or check the logs for troubleshooting.
+Now you can start using Orbit for distributed training tasks! If you encounter any issues, please refer to the official documentation for each component or check the logs for troubleshooting.

@@ -10,7 +10,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/raids-lab/crater/pkg/config"
+	"github.com/raids-lab/orbit/pkg/config"
 )
 
 const (

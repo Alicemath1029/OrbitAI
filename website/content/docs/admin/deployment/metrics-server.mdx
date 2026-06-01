@@ -1,17 +1,17 @@
 ---
 title: 指标服务器部署指南
-description: metrics-server 为 Crater 中的监控、调度和前端可视化提供实时的 CPU 和内存使用数据。
+description: metrics-server 为 Orbit 中的监控、调度和前端可视化提供实时的 CPU 和内存使用数据。
 ---
 
 ## 概述
 
-`metrics-server` 是一个轻量级且可扩展的 Kubernetes 资源使用指标聚合器。在 Crater 平台上，它提供 **实时 CPU 和内存使用数据**，用于：
+`metrics-server` 是一个轻量级且可扩展的 Kubernetes 资源使用指标聚合器。在 Orbit 平台上，它提供 **实时 CPU 和内存使用数据**，用于：
 
 - Pod 和 Node 资源监控
 - 作业调度决策
 - 前端可视化（例如，仪表盘、使用统计）
 
-Kubernetes 组件如 `kubectl top`、水平 Pod 自动扩展器（HPA）以及 Crater 的作业管理 UI **需要** Metrics Server。
+Kubernetes 组件如 `kubectl top`、水平 Pod 自动扩展器（HPA）以及 Orbit 的作业管理 UI **需要** Metrics Server。
 
 ---
 
@@ -26,9 +26,9 @@ Kubernetes 组件如 `kubectl top`、水平 Pod 自动扩展器（HPA）以及 C
 
 ---
 
-## Crater 特定说明
+## Orbit 特定说明
 
-- Crater 在其 UI 的 **实时资源显示** 中使用 `metrics-server`。
+- Orbit 在其 UI 的 **实时资源显示** 中使用 `metrics-server`。
 - 作业提交和资源预测模块也可能读取这些值以提高调度准确性。
 - 指标与 Prometheus 补充，但为短期 Pod 提供更快的采样速度。
 
@@ -36,7 +36,7 @@ Kubernetes 组件如 `kubectl top`、水平 Pod 自动扩展器（HPA）以及 C
 
 ## 安装
 
-我们建议使用官方 Helm chart 并结合 Crater 的值。
+我们建议使用官方 Helm chart 并结合 Orbit 的值。
 
 📦 Helm 值：[`deployments/metrics-server/values.yaml`](../deployments/metrics-server/values.yaml)  
 📖 详细指南：[`deployments/metrics-server/README.md`](../deployments/metrics-server/README.md)

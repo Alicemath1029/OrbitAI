@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Crater
+ * Copyright 2025 Orbit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ export default function HomePage({ params }: { params: Promise<{ lang: string }>
             <div className="mb-6 md:mb-0">
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-500"></div>
-                <span className="text-lg font-bold">Crater</span>
+                <span className="text-lg font-bold">Orbit</span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {tFooter("copyright", {year: new Date().getFullYear()})}

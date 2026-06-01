@@ -1,46 +1,46 @@
 ---
 title: すばやく始める
-description: Crater をデプロイして使用する
+description: Orbit をデプロイして使用する
 ---
 
-Crater プラットフォームは Kubernetes クラスターに依存して動作するため、デプロイする前に一連の基本的な依存コンポーネントを準備する必要があります。これらのコンポーネントは、モニタリング、ストレージ、ネットワーク、スケジューリング、イメージリポジトリなど、プラットフォームが正常に起動および動作するために必要なコア機能を提供します。
+Orbit プラットフォームは Kubernetes クラスターに依存して動作するため、デプロイする前に一連の基本的な依存コンポーネントを準備する必要があります。これらのコンポーネントは、モニタリング、ストレージ、ネットワーク、スケジューリング、イメージリポジトリなど、プラットフォームが正常に起動および動作するために必要なコア機能を提供します。
 
 最小限のデプロイメント方案では、できるだけコアで不可欠な依存のみを残し、複雑さを過剰に導入することを避けています。最終的に選定された依存は以下の通りです：
 
-- **NVIDIA GPU Operator**：GPU ドライバ、デバイスプラグイン、モニタリングコンポーネントをインストールし、Crater が GPU タスクをスケジュールできるようにします。
-- **Bitnami PostgreSQL**：高可用性を考慮しない PostgreSQL データベースサービスで、本方案では Crater の外部データベースとして使用されます。
+- **NVIDIA GPU Operator**：GPU ドライバ、デバイスプラグイン、モニタリングコンポーネントをインストールし、Orbit が GPU タスクをスケジュールできるようにします。
+- **Bitnami PostgreSQL**：高可用性を考慮しない PostgreSQL データベースサービスで、本方案では Orbit の外部データベースとして使用されます。
 - **IngressClass (Ingress-Nginx)**：外部トラフィックのルーティングを処理し、ユーザーのリクエストをクラスター内のサービスに転送します。
-- **Volcano**：バッチ処理と AI ワークロード向けのスケジューリングフレームワークで、Crater のジョブスケジューリングのコアです。
+- **Volcano**：バッチ処理と AI ワークロード向けのスケジューリングフレームワークで、Orbit のジョブスケジューリングのコアです。
 - **StorageClass (NFS)**：データベースと Harbor に永続ストレージ能力を提供する統一された分散ストレージバックエンド。
 
-これらのコンポーネントを選択した理由は、**Crater プラットフォームの最小動作環境**に必要なキーポイントであり、それらがなければプラットフォームは正常に動作しません。**Prometheus/Grafana モニタリングスタック**、**MetalLB ロードバランサー**、**OpenEBS ストレージ**などの強力だが必須ではない依存は、最小バージョンから除外され、デプロイのハードルを下げています。
+これらのコンポーネントを選択した理由は、**Orbit プラットフォームの最小動作環境**に必要なキーポイントであり、それらがなければプラットフォームは正常に動作しません。**Prometheus/Grafana モニタリングスタック**、**MetalLB ロードバランサー**、**OpenEBS ストレージ**などの強力だが必須ではない依存は、最小バージョンから除外され、デプロイのハードルを下げています。
 
 ## インストール
 
 ### GitHub Container Registry からインストール (推奨)
 
-<CraterChartVersionNotice />
+<OrbitChartVersionNotice />
 
 ```bash
 # Helm OCI レポジトリを追加
 helm registry login ghcr.io
 
 # チャートをインストール
-helm install crater oci://ghcr.io/raids-lab/crater --version <chart-version>
+helm install orbit oci://ghcr.io/raids-lab/orbit --version <chart-version>
 
 # 既存のインストールをアップグレード
-helm upgrade crater oci://ghcr.io/raids-lab/crater --version <chart-version>
+helm upgrade orbit oci://ghcr.io/raids-lab/orbit --version <chart-version>
 ```
 
 ### ソースからインストール
 
 ```bash
 # レポジトリをクローン
-git clone https://github.com/raids-lab/crater.git
-cd crater/charts
+git clone https://github.com/raids-lab/orbit.git
+cd orbit/charts
 
 # チャートをインストール
-helm install crater crater/
+helm install orbit orbit/
 ```
 
 ## 設定
@@ -62,7 +62,7 @@ backendConfig:
 次に、あなたの値を使用してインストールします：
 
 ```bash
-helm install crater oci://ghcr.io/raids-lab/crater --values values.yaml
+helm install orbit oci://ghcr.io/raids-lab/orbit --values values.yaml
 ```
 
 詳細な設定の意味については、[設定説明](../chart)を参照してください。
@@ -95,7 +95,7 @@ helm install ingress-nginx ingress-nginx/ingress-nginx \
 
 ### Volcano
 
-Crater のタスクの実行とスケジューリングは、Volcano が提供するバッチ計算スケジューリング機能に依存しています。Volcano は AI/ビッグデータのシナリオに最適化されており、キュー、優先度、Gang スケジューリングなどの機能をサポートしています。最小限のデプロイメント環境においても、Volcano は不可欠なコアコンポーネントであり、これをなしにすると Crater はタスクのスケジューリングや実行ができません。
+Orbit のタスクの実行とスケジューリングは、Volcano が提供するバッチ計算スケジューリング機能に依存しています。Volcano は AI/ビッグデータのシナリオに最適化されており、キュー、優先度、Gang スケジューリングなどの機能をサポートしています。最小限のデプロイメント環境においても、Volcano は不可欠なコアコンポーネントであり、これをなしにすると Orbit はタスクのスケジューリングや実行ができません。
 
 ### デプロイコマンド
 
@@ -112,7 +112,7 @@ helm upgrade --install volcano volcano-sh/volcano \
   -f volcano/values.yaml
 ```
 
-value.yaml 設定例：https://github.com/raids-lab/crater-backend/blob/main/deployments/volcano/values.yaml
+value.yaml 設定例：https://github.com/raids-lab/orbit-backend/blob/main/deployments/volcano/values.yaml
 
 #### デプロイの確認
 
@@ -248,9 +248,9 @@ CNPG は Harbor の外部データベース管理コンポーネントです。
 
 ### Harbor のデプロイ
 
-Harbor は Crater プラットフォームに依存するイメージリポジトリです。内網やオフライン環境では、パブリックイメージリポジトリ（例：DockerHub、ghcr.io）がしばしばアクセス不能であるため、Crater のフロントエンドとバックエンド、および依存イメージを保存するためのプライベートリポジトリが必要になります。
+Harbor は Orbit プラットフォームに依存するイメージリポジトリです。内網やオフライン環境では、パブリックイメージリポジトリ（例：DockerHub、ghcr.io）がしばしばアクセス不能であるため、Orbit のフロントエンドとバックエンド、および依存イメージを保存するためのプライベートリポジトリが必要になります。
 Harbor を選択した理由は、**イメージ管理、権限制御、セキュリティスキャン**などの企業向け機能を備え、Kubernetes とネイティブに統合されているからです。最小限のデプロイ環境では、Harbor は**NFS ストレージ**と**CNPG 外部データベース**にのみ依存し、Redis/Postgres の組み込みバージョンを追加で依存しなくなり、全体アーキテクチャを簡素化します。
-これにより、Crater のイメージをローカルで保存および配布でき、将来的な拡張（例：マルチユーザー、マルチプロジェクトのイメージ管理）に基礎を提供します。
+これにより、Orbit のイメージをローカルで保存および配布でき、将来的な拡張（例：マルチユーザー、マルチプロジェクトのイメージ管理）に基礎を提供します。
 
 Harbor は上記の **NFS** ストレージと **CNPG 外部データベース** を使用します。
 

@@ -97,7 +97,7 @@ export function TeamSwitcher() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-full">
+              <Avatar className="grid h-8 w-8 place-items-center overflow-hidden rounded-md bg-white/8 ring-1 ring-white/10">
                 {currentQueue?.name && (
                   <Identicon
                     value={stringToSS58(currentQueue?.name)}
@@ -115,7 +115,7 @@ export function TeamSwitcher() {
                     <TooltipProvider delayDuration={10}>
                       <Tooltip>
                         <TooltipTrigger>
-                          <span className="text-muted-foreground text-xs">
+                          <span className="text-sidebar-foreground/50 text-xs">
                             {currentExpiredDiff < 0 ? (
                               <>已过期</>
                             ) : (
@@ -143,7 +143,7 @@ export function TeamSwitcher() {
                   </span>
                 )}
               </div>
-              <ChevronsUpDown className="ml-auto" />
+              <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

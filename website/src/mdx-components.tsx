@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Crater
+ * Copyright 2025 Orbit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import defaultMdxComponents from "fumadocs-ui/mdx";
-import { CraterChartVersionNotice } from "@/components/mdx/crater-chart-version-notice";
+import { OrbitChartVersionNotice } from "@/components/mdx/orbit-chart-version-notice";
 import { ChartBadge } from "@/components/mdx/chart-badge";
 import { Mermaid } from "@/components/mdx/mermaid";
 import type { MDXComponents } from "mdx/types";
@@ -24,7 +24,7 @@ import type { MDXComponents } from "mdx/types";
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
   return {
     ...defaultMdxComponents,
-    CraterChartVersionNotice,
+    OrbitChartVersionNotice,
     ChartBadge,
     Mermaid,
     ...components,

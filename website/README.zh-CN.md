@@ -1,6 +1,8 @@
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-# Crater
+# Orbit
+
+本文档站属于 Orbit。Orbit 基于 RAIDS Lab 开源的 [Crater](https://github.com/raids-lab/crater) 项目演进而来，当前文档已适配 Orbit 品牌、平台能力与部署流程。
 
 这是一个使用 [Create Fumadocs](https://github.com/fuma-nama/fumadocs) 生成的 Next.js 应用程序。
 
@@ -14,16 +16,16 @@ pnpm install
 pnpm dev
 ```
 
-在浏览器中打开 http://localhost:3000/crater/zh 查看结果。
+在浏览器中打开 http://localhost:3000/orbit/zh 查看结果。
 
 ## 构建并在本地运行
 
 ```bash
 pnpm build
-pnpm dlx serve@latest out --serve-path /crater
+pnpm dlx serve@latest out --serve-path /orbit
 ```
 
-在浏览器中打开 http://localhost:3000/crater/zh 查看结果。
+在浏览器中打开 http://localhost:3000/orbit/zh 查看结果。
 
 ## 提交前准备
 
@@ -38,4 +40,3 @@ pnpm dlx serve@latest out --serve-path /crater
 - [Next.js 文档](https://nextjs.org/docs) - 了解 Next.js 的功能和 API
 - [学习 Next.js](https://nextjs.org/learn) - 交互式 Next.js 教程
 - [Fumadocs](https://fumadocs.vercel.app) - 了解 Fumadocs
-

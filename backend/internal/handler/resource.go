@@ -11,10 +11,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/service"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/service"
 )
 
 //nolint:gochecknoinits // This is the standard way to register a gin handler.
@@ -87,7 +87,7 @@ type (
 		Format          string                    `json:"format"`
 		Priority        int                       `json:"priority"`
 		Label           string                    `json:"label"`
-		Type            *model.CraterResourceType `json:"type"`
+		Type            *model.OrbitResourceType `json:"type"`
 		Networks        []*model.Resource         `json:"networks"`
 	}
 
@@ -391,7 +391,7 @@ func (mgr *ResourceMgr) SyncResource(c *gin.Context) {
 type (
 	UpdateResourceReq struct {
 		Label *string                   `json:"label" binding:"omitempty"`
-		Type  *model.CraterResourceType `json:"type" binding:"omitempty"`
+		Type  *model.OrbitResourceType `json:"type" binding:"omitempty"`
 	}
 	ResourcePathReq struct {
 		ID uint `uri:"id" binding:"required"`

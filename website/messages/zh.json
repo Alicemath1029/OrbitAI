@@ -17,17 +17,17 @@
     "editOnGithub": "在 GitHub 上编辑"
 },
   "HeroSection": {
-    "title": "Crater · 云原生智算平台",
+    "title": "Orbit · 云原生智算平台",
     "descriptionLine1": "基于 Kubernetes 的机器学习一站式解决方案",
     "descriptionLine2": "整合开源生态，为 AI 训练与服务提供简单高效的体验",
     "buttons": {
     "getStarted": "开始使用",
     "readDocs": "阅读文档"
     },
-    "altText": "Crater 平台"
+    "altText": "Orbit 平台"
   },
   "Footer": {
-    "copyright": "© {year} Crater. 保留所有权利。",
+    "copyright": "© {year} Orbit. 保留所有权利。",
     "product": {
       "title": "产品",
       "features": "功能",
@@ -66,7 +66,7 @@
   },
   "CoreCapabilities": {
     "title": "核心能力",
-    "description": "Crater 提供全面的机器学习平台能力，从数据管理到模型训练，一站式解决您的 AI 工作流需求",
+    "description": "Orbit 提供全面的机器学习平台能力，从数据管理到模型训练，一站式解决您的 AI 工作流需求",
     "cards": {
       "dataManagement": {
         "title": "数据管理",
@@ -161,7 +161,7 @@
   },
   "CustomerScenarios": {
     "heading": "适用场景",
-    "subheading": "Crater 为不同类型的组织提供定制化的解决方案，满足各种 AI 计算需求。",
+    "subheading": "Orbit 为不同类型的组织提供定制化的解决方案，满足各种 AI 计算需求。",
     "cards": {
       "education": {
         "title": "高校科研",
@@ -193,12 +193,12 @@
     }
   },
   "GetStarted": {
-    "heading": "立即开始使用 Crater",
-    "subheading": "通过以下资源快速了解和部署 Crater，开启您的云原生 AI 计算之旅。",
+    "heading": "立即开始使用 Orbit",
+    "subheading": "通过以下资源快速了解和部署 Orbit，开启您的云原生 AI 计算之旅。",
     "cards": {
       "docs": {
         "title": "快速入门指南",
-        "description": "详细的文档和教程，帮助您快速上手 Crater 平台。"
+        "description": "详细的文档和教程，帮助您快速上手 Orbit 平台。"
       },
       "github": {
         "title": "GitHub 仓库",
@@ -214,24 +214,24 @@
     "heading": "常见问题",
     "faqs": {
       "0": {
-        "question": "Crater 与 OpenPAI / Kubeflow 的区别？",
-        "answer": "Crater 深度整合了调度、数据和环境配置组件，提供更贴近生产环境的开箱即用体验。相比 OpenPAI 和 Kubeflow，Crater 更注重用户体验和资源利用率，降低了使用门槛，同时保持了高度的可扩展性。"
+        "question": "Orbit 与 OpenPAI / Kubeflow 的区别？",
+        "answer": "Orbit 深度整合了调度、数据和环境配置组件，提供更贴近生产环境的开箱即用体验。相比 OpenPAI 和 Kubeflow，Orbit 更注重用户体验和资源利用率，降低了使用门槛，同时保持了高度的可扩展性。"
       },
       "1": {
         "question": "是否支持私有化部署？",
-        "answer": "是的，Crater 完全支持私有化部署，可以在裸金属服务器、VMware、OpenStack 以及主流云厂商的 Kubernetes 服务上部署。我们提供完整的部署文档和技术支持，确保您的部署顺利进行。"
+        "answer": "是的，Orbit 完全支持私有化部署，可以在裸金属服务器、VMware、OpenStack 以及主流云厂商的 Kubernetes 服务上部署。我们提供完整的部署文档和技术支持，确保您的部署顺利进行。"
       },
       "2": {
         "question": "如何保证数据安全？",
-        "answer": "Crater 采用多层次的安全机制保护您的数据，包括网络隔离、访问控制、数据加密等。所有数据处理都在您的私有环境中进行，不会上传到外部服务器，确保数据安全和隐私。"
+        "answer": "Orbit 采用多层次的安全机制保护您的数据，包括网络隔离、访问控制、数据加密等。所有数据处理都在您的私有环境中进行，不会上传到外部服务器，确保数据安全和隐私。"
       },
       "3": {
         "question": "支持哪些深度学习框架？",
-        "answer": "Crater 支持主流的深度学习框架，包括但不限于 PyTorch、TensorFlow、JAX、MXNet 等。我们提供这些框架的预配置环境模板，您可以根据需要选择和定制。"
+        "answer": "Orbit 支持主流的深度学习框架，包括但不限于 PyTorch、TensorFlow、JAX、MXNet 等。我们提供这些框架的预配置环境模板，您可以根据需要选择和定制。"
       },
       "4": {
         "question": "如何进行资源配额管理？",
-        "answer": "Crater 提供细粒度的资源配额管理功能，管理员可以为不同的用户组或项目设置 GPU、CPU、内存等资源的使用限制，确保资源的合理分配和使用。"
+        "answer": "Orbit 提供细粒度的资源配额管理功能，管理员可以为不同的用户组或项目设置 GPU、CPU、内存等资源的使用限制，确保资源的合理分配和使用。"
       },
       "5": {
         "question": "是否提供商业支持？",
@@ -246,8 +246,8 @@
     "poweredBy": "搜索引擎: ",
     "untitled": "无标题"
   },
-  "CraterChartVersionNotice": {
-    "message": "此版本号为 Helm Chart 配置版本，提取自 <link>Chart.yaml</link>，需与 Crater 相关组件镜像版本保持对应，系统才能正常工作。",
+  "OrbitChartVersionNotice": {
+    "message": "此版本号为 Helm Chart 配置版本，提取自 <link>Chart.yaml</link>，需与 Orbit 相关组件镜像版本保持对应，系统才能正常工作。",
     "version": "（当前版本：{version}）",
     "fallback": "无法自动获取版本号，请查阅 <link>Chart.yaml</link> 以确保其与相关组件镜像版本保持对应。"
   }

@@ -4,10 +4,10 @@
 set -e
 
 # 定义命名空间
-NAMESPACE="crater"
-WEBDAV_NAMESPACE="crater-workspace"
+NAMESPACE="orbit"
+WEBDAV_NAMESPACE="orbit-workspace"
 # values.yaml 文件路径，根据实际情况调整
-VALUES_FILE="charts/crater/values.yaml"
+VALUES_FILE="charts/orbit/values.yaml"
 
 # 检查是否安装了 yq
 if ! command -v yq &> /dev/null; then
@@ -20,11 +20,11 @@ if ! command -v yq &> /dev/null; then
 fi
 
 # 获取 web-backend 当前使用的镜像
-backend_image=$(kubectl get deploy crater-web-backend -n $NAMESPACE -o jsonpath='{.spec.template.spec.containers[0].image}')
+backend_image=$(kubectl get deploy orbit-web-backend -n $NAMESPACE -o jsonpath='{.spec.template.spec.containers[0].image}')
 echo "web-backend 镜像：$backend_image"
 
 # 获取 web-frontend 当前使用的镜像
-frontend_image=$(kubectl get deploy crater-web-frontend -n $NAMESPACE -o jsonpath='{.spec.template.spec.containers[0].image}')
+frontend_image=$(kubectl get deploy orbit-web-frontend -n $NAMESPACE -o jsonpath='{.spec.template.spec.containers[0].image}')
 echo "web-frontend 镜像：$frontend_image"
 
 # 获取 webdav（对应 storage 部分）当前使用的镜像

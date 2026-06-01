@@ -5,7 +5,7 @@ import (
 
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/raids-lab/crater/dao/model"
+	"github.com/raids-lab/orbit/dao/model"
 )
 
 func ScanJobWithKubernetes(

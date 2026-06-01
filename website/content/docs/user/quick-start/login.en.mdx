@@ -1,16 +1,16 @@
 ---
 title: Platform Access
-description: Log in to Crater using an existing account or create a Crater account
+description: Log in to Orbit using an existing account or create a Orbit account
 ---
 
-To use the Crater platform, you need to have a valid platform account. Depending on the platform configuration, you can choose to log in using the laboratory's LDAP account or through a Crater platform account.
+To use the Orbit platform, you need to have a valid platform account. Depending on the platform configuration, you can choose to log in using the laboratory's LDAP account or through a Orbit platform account.
 
 If you don't see some login method entries mentioned in this document, it's normal. The available login methods depend on your platform administrator's configuration.
 
 ## LDAP Login & Registration
 
 ### Overview
-Crater supports automatic registration and information synchronization of LDAP accounts. You don't need to manually create an account; just enter your LDAP username and password to log in.
+Orbit supports automatic registration and information synchronization of LDAP accounts. You don't need to manually create an account; just enter your LDAP username and password to log in.
 
 If you are a member of the ACT Lab and have a unified authentication account, you should use this method.
 
@@ -21,10 +21,10 @@ If you are a member of the ACT Lab and have a unified authentication account, yo
 flowchart TD;
     A[Enter LDAP Username/Password] --> B{LDAP Server Authentication};
     B -- Auth Failed --> C[Return Credential Error];
-    B -- Auth Success --> D{Does user exist<br/>in Crater DB?};
+    B -- Auth Success --> D{Does user exist<br/>in Orbit DB?};
     D -- No --> E1[Get User UID/GID<br/>from LDAP attributes or external service];
-    E1 --> E2[Automatically create account<br/>and sync attributes in Crater DB];
-    D -- Yes --> F[Update Crater DB attributes<br/>such as Email, Nickname, etc.];
+    E1 --> E2[Automatically create account<br/>and sync attributes in Orbit DB];
+    D -- Yes --> F[Update Orbit DB attributes<br/>such as Email, Nickname, etc.];
     E2 --> G[Assign Default Queue Permissions];
     F --> H[Generate JWT Token];
     G --> H;
@@ -41,7 +41,7 @@ The current platform error message system is being refactored. Specific quick-ch
 ## Platform Login
 
 ### Overview
-If you have manually registered an account in Crater, or if the administrator assigned you an account and requested this login method, please log in this way.
+If you have manually registered an account in Orbit, or if the administrator assigned you an account and requested this login method, please log in this way.
 
 Note that normally you cannot use this login method to directly log in to your LDAP or other accounts.
 
@@ -50,7 +50,7 @@ Note that normally you cannot use this login method to directly log in to your L
 <Mermaid
   chart="
 flowchart TD;
-    A[Enter Crater Account Username/Password] --> B{Crater DB Comparison<br/>Bcrypt Validation};
+    A[Enter Orbit Account Username/Password] --> B{Orbit DB Comparison<br/>Bcrypt Validation};
     B -- Validation Failed --> C[Return Username or Password Error];
     B -- Validation Success --> D{User Status Check};
     D -- Inactive/Disabled --> E[Return User Not Enabled];
@@ -69,7 +69,7 @@ The current platform error message system is being refactored. Specific quick-ch
 ## Platform Registration
 
 ### Overview
-When the administrator has enabled the "Allow Self-Registration" function, new users who do not yet have any account can create a Crater platform account through the registration page.
+When the administrator has enabled the "Allow Self-Registration" function, new users who do not yet have any account can create a Orbit platform account through the registration page.
 
 ### Authentication Flow
 
@@ -80,8 +80,8 @@ flowchart TD;
     B -- Disabled --> C[Prompt Self-Registration Forbidden];
     B -- Enabled --> D{Username Uniqueness Check};
     D -- Already Exists --> E[Prompt Username Conflict];
-    D -- Does Not Exist --> F1[Assign Crater Default UID/GID 1001];
-    F1 --> F2[Create User Record in Crater DB];
+    D -- Does Not Exist --> F1[Assign Orbit Default UID/GID 1001];
+    F1 --> F2[Create User Record in Orbit DB];
     F2 --> G[Initialize User Space];
     G --> H[Associate Default Public Queue];
     H --> I[Register Success and Auto Login];

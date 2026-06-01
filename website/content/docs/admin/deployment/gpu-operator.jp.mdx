@@ -1,26 +1,26 @@
 ---
 title: "NVIDIA GPU Operator 部署ガイド"
-description: "Kubernetes クラスターで NVIDIA GPU Operator を使用して GPU サポートを有効にし、Crater と統合します。"
+description: "Kubernetes クラスターで NVIDIA GPU Operator を使用して GPU サポートを有効にし、Orbit と統合します。"
 ---
 
 ## 概要
 
 **NVIDIA GPU Operator** は、Kubernetes クラスターで GPU をサポートするために必要なすべてのコンポーネントの展開および管理を自動化します。
 
-Crater では以下を提供します：
+Orbit では以下を提供します：
 
 - GPU ドライバのインストール  
 - NVIDIA コンテナランタイムの設定  
 - GPU 監視用の `dcgm-exporter`（Prometheus スタックで使用）  
-- Crater のジョブスケジューリングおよび GPU メトリクス表示とのスムーズな統合
+- Orbit のジョブスケジューリングおよび GPU メトリクス表示とのスムーズな統合
 
-> Crater は GPU Operator を必要とし、GPU ジョブが正しくスケジュールされ、監視されることを保証します。
+> Orbit は GPU Operator を必要とし、GPU ジョブが正しくスケジュールされ、監視されることを保証します。
 
 ---
 
 ## インストール
 
-Crater で事前に設定された値を使用して Helm 経由で GPU Operator をインストールすることを推奨します。
+Orbit で事前に設定された値を使用して Helm 経由で GPU Operator をインストールすることを推奨します。
 
 📦 Helm 値：[`deployments/gpu-operator/values.yaml`](../deployments/gpu-operator/values.yaml)  
 📖 詳細ガイド：[`deployments/gpu-operator/README.md`](../deployments/gpu-operator/README.md)

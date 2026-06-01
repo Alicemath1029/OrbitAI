@@ -19,12 +19,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	vcjobservice "github.com/raids-lab/crater/internal/service/vcjob"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/crclient"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	vcjobservice "github.com/raids-lab/orbit/internal/service/vcjob"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/crclient"
 )
 
 var (
@@ -85,14 +85,14 @@ func buildResourceRequirements(resourceList v1.ResourceList, cpuPinningEnabled b
 	return resourceRequirements, resizePolicy
 }
 
-type CraterJobType string
+type OrbitJobType string
 
 const (
-	CraterJobTypeTensorflow CraterJobType = "tensorflow"
-	CraterJobTypePytorch    CraterJobType = "pytorch"
-	CraterJobTypeJupyter    CraterJobType = "jupyter"
-	CraterJobTypeWebIDE     CraterJobType = "webide"
-	CraterJobTypeCustom     CraterJobType = "custom"
+	OrbitJobTypeTensorflow OrbitJobType = "tensorflow"
+	OrbitJobTypePytorch    OrbitJobType = "pytorch"
+	OrbitJobTypeJupyter    OrbitJobType = "jupyter"
+	OrbitJobTypeWebIDE     OrbitJobType = "webide"
+	OrbitJobTypeCustom     OrbitJobType = "custom"
 )
 
 type ImageBaseInfo struct {
@@ -156,7 +156,7 @@ func GenerateVolumeMounts(
 	})
 	volumeMounts = append(volumeMounts, v1.VolumeMount{
 		Name:      "start-bash-script-volume",
-		MountPath: "/crater-start.sh",
+		MountPath: "/orbit-start.sh",
 		ReadOnly:  true,
 		SubPath:   "start.sh",
 	})
@@ -171,7 +171,7 @@ func GenerateTaintTolerationsForAccount(token util.JWTMessage) (tolerations []v1
 	}
 	return []v1.Toleration{
 		{
-			Key:      "crater.raids.io/account",
+			Key:      "orbit.raids.io/account",
 			Operator: v1.TolerationOpEqual,
 			Value:    token.AccountName,
 			Effect:   v1.TaintEffectNoSchedule,
@@ -526,7 +526,7 @@ func (mgr *VolcanojobMgr) execCommandInPod(
 }
 
 func getLabelAndAnnotations(
-	jobType CraterJobType,
+	jobType OrbitJobType,
 	token util.JWTMessage,
 	baseURL string,
 	c *CreateJobCommon,

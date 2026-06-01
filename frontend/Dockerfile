@@ -16,8 +16,8 @@
 FROM nginx:stable-alpine
 
 # Add OpenContainers image metadata labels (https://github.com/opencontainers/image-spec)
-LABEL org.opencontainers.image.source="https://github.com/raids-lab/crater-frontend"
-LABEL org.opencontainers.image.description="Crater Web Frontend"
+LABEL org.opencontainers.image.source="https://github.com/raids-lab/orbit-frontend"
+LABEL org.opencontainers.image.description="Orbit Web Frontend"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 
 # Copy custom nginx configuration

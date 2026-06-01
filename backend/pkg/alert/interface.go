@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/raids-lab/crater/dao/model"
+	"github.com/raids-lab/orbit/dao/model"
 )
 
 // AlertMgr 是封装好的通知组件，提供：

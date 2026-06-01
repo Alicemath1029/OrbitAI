@@ -20,19 +20,19 @@ description: Ingress 규칙을 사용하여 외부 사용자가 특정 경로를
 - Visdom 액세스.
 - Jupyter Notebook 액세스.
 
-**전달 경로**: 모든 액세스 경로는 다음과 같은 통일된 형식을 따릅니다: `crater.act.buaa.edu.cn/ingress/{userName}-{uuid}`. 여기서, `userName`은 사용자 이름이며, `uuid`는 특정 서비스를 가리키는 자동 생성된 5 자리 식별자입니다.
+**전달 경로**: 모든 액세스 경로는 다음과 같은 통일된 형식을 따릅니다: `orbit.act.buaa.edu.cn/ingress/{userName}-{uuid}`. 여기서, `userName`은 사용자 이름이며, `uuid`는 특정 서비스를 가리키는 자동 생성된 5 자리 식별자입니다.
 
 ![ingress-intro](./img/ingress-intro.webp)
 
-설정이 완료되면 해당 Pod 의 `Annotations`에 다음과 같은 내용을 볼 수 있으며, `ingress.crater.raids.io`를 `key` 값으로 사용합니다:
+설정이 완료되면 해당 Pod 의 `Annotations`에 다음과 같은 내용을 볼 수 있으며, `ingress.orbit.raids.io`를 `key` 값으로 사용합니다:
 
 ```yaml
 metadata:
   annotations:
-    crater.raids.io/task-name: tensorboard-example
-    ingress.crater.raids.io/lars: '{"Name":"lars","Port":4210,"Prefix":"/ingress/liuxw24-eb05b/"}'
-    ingress.crater.raids.io/tensorboard: '{"Name":"tensorboard","Port":6006,"Prefix":"/ingress/liuxw24-379e0/"}'
-    ingress.crater.raids.io/notebook: '{"Name":"notebook","Port":8888,"Prefix":"/ingress/liuxw24-cce14/"}'
+    orbit.raids.io/task-name: tensorboard-example
+    ingress.orbit.raids.io/lars: '{"Name":"lars","Port":4210,"Prefix":"/ingress/liuxw24-eb05b/"}'
+    ingress.orbit.raids.io/tensorboard: '{"Name":"tensorboard","Port":6006,"Prefix":"/ingress/liuxw24-379e0/"}'
+    ingress.orbit.raids.io/notebook: '{"Name":"notebook","Port":8888,"Prefix":"/ingress/liuxw24-cce14/"}'
 ```
 
 ## 1.2 사용 예시
@@ -68,7 +68,7 @@ metadata:
 **필드 설명**:
 
 - **포트 번호** (`port`): 사용자 정의 포트 번호, 여기서는 `6006`으로 설정되며, TensorBoard 의 기본 포트이기 때문입니다.
-- **액세스 경로** (`prefix`): 액세스 경로는 `crater.act.buaa.edu.cn/ingress/{userName}-{uuid}`로 매핑됩니다. 여기서, `userName`은 사용자 이름이며, `uuid`는 자동 생성된 5 자리 식별자입니다.
+- **액세스 경로** (`prefix`): 액세스 경로는 `orbit.act.buaa.edu.cn/ingress/{userName}-{uuid}`로 매핑됩니다. 여기서, `userName`은 사용자 이름이며, `uuid`는 자동 생성된 5 자리 식별자입니다.
 
 ### 컨테이너 내에서 TensorBoard 실행
 

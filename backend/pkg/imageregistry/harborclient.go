@@ -6,7 +6,7 @@ import (
 	haborapiv2 "github.com/mittwald/goharbor-client/v5/apiv2"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/pkg/config"
+	"github.com/raids-lab/orbit/pkg/config"
 )
 
 type AuthInfo struct {

@@ -3,13 +3,13 @@ package internal
 import (
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/internal/handler"
-	_ "github.com/raids-lab/crater/internal/handler/aijob"
-	_ "github.com/raids-lab/crater/internal/handler/image"
-	_ "github.com/raids-lab/crater/internal/handler/operations"
-	_ "github.com/raids-lab/crater/internal/handler/spjob"
-	_ "github.com/raids-lab/crater/internal/handler/tool"
-	_ "github.com/raids-lab/crater/internal/handler/vcjob"
+	"github.com/raids-lab/orbit/internal/handler"
+	_ "github.com/raids-lab/orbit/internal/handler/aijob"
+	_ "github.com/raids-lab/orbit/internal/handler/image"
+	_ "github.com/raids-lab/orbit/internal/handler/operations"
+	_ "github.com/raids-lab/orbit/internal/handler/spjob"
+	_ "github.com/raids-lab/orbit/internal/handler/tool"
+	_ "github.com/raids-lab/orbit/internal/handler/vcjob"
 )
 
 // registerManagers registers all the managers.

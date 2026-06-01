@@ -124,6 +124,6 @@ const (
 	AdminUserPath    = "admin-user"
 	AdminPublicPath  = "admin-public"
 	AdminAccountPath = "admin-account"
-	ModelPrefix      = "crater-model"
-	DatasetPrefix    = "crater-dataset"
+	ModelPrefix      = "orbit-model"
+	DatasetPrefix    = "orbit-dataset"
 )

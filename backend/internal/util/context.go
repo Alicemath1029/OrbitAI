@@ -3,7 +3,7 @@ package util
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/raids-lab/crater/dao/model"
+	"github.com/raids-lab/orbit/dao/model"
 )
 
 const (

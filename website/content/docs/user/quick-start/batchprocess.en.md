@@ -6,7 +6,7 @@ description: Submit a PyTorch Handwritten Digit Recognition GPU Training Job
 
 ## Submit a PyTorch Handwritten Digit Recognition GPU Training Job
 
-Crater's **Single-Machine Batch Task** is used to execute instructions in a specific environment and obtain results.
+Orbit's **Single-Machine Batch Task** is used to execute instructions in a specific environment and obtain results.
 
 ## Upload Code
 

@@ -26,11 +26,11 @@ import (
 	"k8s.io/client-go/tools/remotecommand"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/pkg/monitor"
-	"github.com/raids-lab/crater/pkg/prompts"
-	"github.com/raids-lab/crater/pkg/prompts/gpu_analysis"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/pkg/monitor"
+	"github.com/raids-lab/orbit/pkg/prompts"
+	"github.com/raids-lab/orbit/pkg/prompts/gpu_analysis"
 )
 
 const (

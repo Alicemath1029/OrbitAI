@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Crater
+ * Copyright 2025 Orbit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ const SvgComponent = (
     />
   </svg>
 );
-const CraterIcon = forwardRef(SvgComponent);
-CraterIcon.displayName = "CraterIcon";
+const OrbitIcon = forwardRef(SvgComponent);
+OrbitIcon.displayName = "OrbitIcon";
 
 /**
  * Shared layout configurations
@@ -64,8 +64,8 @@ export function baseOptions(
     nav: {
       title: (
         <>
-          <CraterIcon className="size-6" />
-          Crater
+          <OrbitIcon className="size-6" />
+          Orbit
         </>
       ),
       url: `/${lang}`,
@@ -84,6 +84,6 @@ export function baseOptions(
         active: "nested-url",
       },
     ],
-    githubUrl: 'https://github.com/raids-lab/crater',
+    githubUrl: 'https://github.com/raids-lab/orbit',
   };
 }

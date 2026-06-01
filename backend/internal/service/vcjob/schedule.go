@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/raids-lab/crater/dao/model"
+	"github.com/raids-lab/orbit/dao/model"
 )
 
 const (
-	AnnotationKeyScheduleType            = "crater.raids.io/schedule-type"
-	AnnotationKeyWaitingToleranceSeconds = "crater.raids.io/waiting-tolerance-seconds"
+	AnnotationKeyScheduleType            = "orbit.raids.io/schedule-type"
+	AnnotationKeyWaitingToleranceSeconds = "orbit.raids.io/waiting-tolerance-seconds"
 )
 
 func ParseJobScheduleMetadata(annotations map[string]string) (model.ScheduleType, *int64, error) {

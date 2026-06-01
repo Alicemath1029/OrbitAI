@@ -1,11 +1,11 @@
 ---
 title: "CloudNativePG 배포 가이드"
-description: "CloudNativePG Operator 와 OpenEBS 스토리지 사용하여 PostgreSQL 을 Crater 에 통합합니다."
+description: "CloudNativePG Operator 와 OpenEBS 스토리지 사용하여 PostgreSQL 을 Orbit 에 통합합니다."
 ---
 
 ## 개요
 
-Crater 는 사용자 세션, 작업 메타데이터, 일정 상태 및 플랫폼 설정을 관리하기 위해 **PostgreSQL**을 백엔드 데이터베이스로 사용합니다.
+Orbit 는 사용자 세션, 작업 메타데이터, 일정 상태 및 플랫폼 설정을 관리하기 위해 **PostgreSQL**을 백엔드 데이터베이스로 사용합니다.
 
 생산 환경 수준의, Kubernetes 네이티브 PostgreSQL 관리를 달성하기 위해 우리는 [CloudNativePG Operator](https://cloudnative-pg.io/)를 채택했습니다. 이는 다음과 같은 기능을 제공합니다:
 
@@ -23,7 +23,7 @@ Crater 는 사용자 세션, 작업 메타데이터, 일정 상태 및 플랫폼
 - **PostgreSQL 구성**과 **Kubernetes 네이티브 오케스트레이션** 사이에 명확한 분리를 제공합니다.  
 - PostgreSQL 배포를 간소화하면서도 고급 튜닝을 위한 유연성을 유지합니다.
 
-Crater 스택에서 각 PostgreSQL 클러스터는 커스터마이즈된 `Cluster` 리소스로 정의되며, 운영자에 의해 제어됩니다.
+Orbit 스택에서 각 PostgreSQL 클러스터는 커스터마이즈된 `Cluster` 리소스로 정의되며, 운영자에 의해 제어됩니다.
 
 ## 스토리지 설정
 

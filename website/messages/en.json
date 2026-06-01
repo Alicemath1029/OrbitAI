@@ -17,17 +17,17 @@
     "editOnGithub": "Edit on GitHub"
   },
   "HeroSection": {
-    "title": "Crater - Cloud-Native AI Platform",
+    "title": "Orbit - Cloud-Native AI Platform",
     "descriptionLine1": "A one-stop solution for machine learning based on Kubernetes.",
     "descriptionLine2": "Efficient experience in AI training and serving.",
     "buttons": {
       "getStarted": "Get Started",
       "readDocs": "Read the Docs"
     },
-    "altText": "Crater Platform"
+    "altText": "Orbit Platform"
   },
   "Footer": {
-    "copyright": "© {year} Crater. All Rights Reserved.",
+    "copyright": "© {year} Orbit. All Rights Reserved.",
     "product": {
       "title": "Product",
       "features": "Features",
@@ -66,7 +66,7 @@
   },
   "CoreCapabilities": {
     "title": "Core Capabilities",
-    "description": "Crater provides comprehensive machine learning platform capabilities, from data management to model training, to solve your AI workflow needs in one stop.",
+    "description": "Orbit provides comprehensive machine learning platform capabilities, from data management to model training, to solve your AI workflow needs in one stop.",
     "cards": {
       "dataManagement": {
         "title": "Data Management",
@@ -161,7 +161,7 @@
   },
   "CustomerScenarios": {
     "heading": "Customer Scenarios",
-    "subheading": "Crater provides customized solutions for different types of organizations to meet various AI computing needs.",
+    "subheading": "Orbit provides customized solutions for different types of organizations to meet various AI computing needs.",
     "cards": {
       "education": {
         "title": "University Research",
@@ -193,12 +193,12 @@
     }
   },
   "GetStarted": {
-    "heading": "Get Started with Crater",
-    "subheading": "Explore the resources below to quickly learn and deploy Crater, starting your journey into cloud-native AI.",
+    "heading": "Get Started with Orbit",
+    "subheading": "Explore the resources below to quickly learn and deploy Orbit, starting your journey into cloud-native AI.",
     "cards": {
       "docs": {
         "title": "Quick Start Guide",
-        "description": "Detailed documentation and tutorials to help you get started with the Crater platform quickly."
+        "description": "Detailed documentation and tutorials to help you get started with the Orbit platform quickly."
       },
       "github": {
         "title": "GitHub Repository",
@@ -214,24 +214,24 @@
     "heading": "Frequently Asked Questions",
     "faqs": {
       "0": {
-        "question": "What's the difference between Crater, OpenPAI, and Kubeflow?",
-        "answer": "Crater deeply integrates scheduling, data, and environment configuration components to provide a more production-ready, out-of-the-box experience. Compared to OpenPAI and Kubeflow, Crater focuses more on user experience and resource utilization, lowering the entry barrier while maintaining high scalability."
+        "question": "What's the difference between Orbit, OpenPAI, and Kubeflow?",
+        "answer": "Orbit deeply integrates scheduling, data, and environment configuration components to provide a more production-ready, out-of-the-box experience. Compared to OpenPAI and Kubeflow, Orbit focuses more on user experience and resource utilization, lowering the entry barrier while maintaining high scalability."
       },
       "1": {
         "question": "Do you support on-premise deployment?",
-        "answer": "Yes, Crater fully supports on-premise deployment on bare metal servers, VMware, OpenStack, and major cloud providers' Kubernetes services. We provide complete deployment documentation and technical support to ensure a smooth process."
+        "answer": "Yes, Orbit fully supports on-premise deployment on bare metal servers, VMware, OpenStack, and major cloud providers' Kubernetes services. We provide complete deployment documentation and technical support to ensure a smooth process."
       },
       "2": {
         "question": "How is data security ensured?",
-        "answer": "Crater employs a multi-layered security mechanism to protect your data, including network isolation, access control, and data encryption. All data processing occurs within your private environment and is not uploaded to external servers, ensuring data security and privacy."
+        "answer": "Orbit employs a multi-layered security mechanism to protect your data, including network isolation, access control, and data encryption. All data processing occurs within your private environment and is not uploaded to external servers, ensuring data security and privacy."
       },
       "3": {
         "question": "Which deep learning frameworks are supported?",
-        "answer": "Crater supports mainstream deep learning frameworks, including but not limited to PyTorch, TensorFlow, JAX, and MXNet. We provide pre-configured environment templates for these frameworks, which you can select and customize as needed."
+        "answer": "Orbit supports mainstream deep learning frameworks, including but not limited to PyTorch, TensorFlow, JAX, and MXNet. We provide pre-configured environment templates for these frameworks, which you can select and customize as needed."
       },
       "4": {
         "question": "How is resource quota management handled?",
-        "answer": "Crater offers fine-grained resource quota management, allowing administrators to set usage limits on GPU, CPU, memory, etc., for different user groups or projects, ensuring fair resource allocation and usage."
+        "answer": "Orbit offers fine-grained resource quota management, allowing administrators to set usage limits on GPU, CPU, memory, etc., for different user groups or projects, ensuring fair resource allocation and usage."
       },
       "5": {
         "question": "Do you offer commercial support?",
@@ -246,8 +246,8 @@
     "poweredBy": "Search powered by ",
     "untitled": "Untitled"
   },
-  "CraterChartVersionNotice": {
-    "message": "This version number is the Helm Chart configuration version, extracted from <link>Chart.yaml</link>, and must correspond to the Crater component image versions for the system to function correctly.",
+  "OrbitChartVersionNotice": {
+    "message": "This version number is the Helm Chart configuration version, extracted from <link>Chart.yaml</link>, and must correspond to the Orbit component image versions for the system to function correctly.",
     "version": " (Current version: {version})",
     "fallback": "Unable to obtain the version automatically. Please check <link>Chart.yaml</link> to ensure version consistency."
   }

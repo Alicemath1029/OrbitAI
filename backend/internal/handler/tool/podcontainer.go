@@ -19,14 +19,14 @@ import (
 	"k8s.io/klog/v2"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/handler"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/constants"
-	"github.com/raids-lab/crater/pkg/crclient"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/handler"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/constants"
+	"github.com/raids-lab/orbit/pkg/crclient"
 )
 
 //nolint:gochecknoinits // This is the standard way to register a gin handler.
@@ -91,9 +91,9 @@ type (
 )
 
 const (
-	IngressLabelKey      = "ingress.crater.raids.io"
-	NodePortLabelKey     = "nodeport.crater.raids.io"
-	AnnotationKeyOpenSSH = "crater.raids.io/open-ssh"
+	IngressLabelKey      = "ingress.orbit.raids.io"
+	NodePortLabelKey     = "nodeport.orbit.raids.io"
+	AnnotationKeyOpenSSH = "orbit.raids.io/open-ssh"
 	SSHContainerPort     = 22
 )
 

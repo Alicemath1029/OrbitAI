@@ -3,7 +3,7 @@ package aitaskctl
 import (
 	"sync"
 
-	"github.com/raids-lab/crater/dao/model"
+	"github.com/raids-lab/orbit/dao/model"
 )
 
 // TaskQueue 保存每个用户的队列

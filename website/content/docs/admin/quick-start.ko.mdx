@@ -1,46 +1,46 @@
 ---
 title: 빠른 시작
-description: Crater 배포 및 사용
+description: Orbit 배포 및 사용
 ---
 
-Crater 플랫폼은 Kubernetes 클러스터에 의존하여 작동하므로, 배포하기 전에 일련의 기본 의존성 구성 요소를 준비해야 합니다. 이러한 구성 요소는 모니터링, 저장소, 네트워크, 스케줄링, 이미지 저장소 등 핵심 기능을 제공하여 플랫폼이 정상적으로 시작되고 실행될 수 있도록 합니다.
+Orbit 플랫폼은 Kubernetes 클러스터에 의존하여 작동하므로, 배포하기 전에 일련의 기본 의존성 구성 요소를 준비해야 합니다. 이러한 구성 요소는 모니터링, 저장소, 네트워크, 스케줄링, 이미지 저장소 등 핵심 기능을 제공하여 플랫폼이 정상적으로 시작되고 실행될 수 있도록 합니다.
 
 최소 배포 방식에서는 최소한의 핵심 구성 요소만 유지하고, 추가 복잡성을 최소화하려고 노력합니다. 최종적으로 결정된 의존성은 다음과 같습니다:
 
-- **NVIDIA GPU Operator**: GPU 드라이버, 장치 플러그인 및 모니터링 구성 요소를 설치하여 Crater 가 GPU 작업을 스케줄링할 수 있도록 합니다.
-- **Bitnami PostgreSQL**: 고가용성을 고려하지 않은 PostgreSQL 데이터베이스 서비스로, 이 경우 Crater 의 외부 데이터베이스로 사용됩니다.
+- **NVIDIA GPU Operator**: GPU 드라이버, 장치 플러그인 및 모니터링 구성 요소를 설치하여 Orbit 가 GPU 작업을 스케줄링할 수 있도록 합니다.
+- **Bitnami PostgreSQL**: 고가용성을 고려하지 않은 PostgreSQL 데이터베이스 서비스로, 이 경우 Orbit 의 외부 데이터베이스로 사용됩니다.
 - **IngressClass (Ingress-Nginx)**: 외부 트래픽 라우팅을 처리하고, 사용자 요청을 클러스터 내부 서비스로 전달합니다.
-- **Volcano**: 배치 및 AI 워크로드를 위한 스케줄링 프레임워크로, Crater 의 작업 스케줄링 핵심입니다.
+- **Volcano**: 배치 및 AI 워크로드를 위한 스케줄링 프레임워크로, Orbit 의 작업 스케줄링 핵심입니다.
 - **StorageClass (NFS)**: 데이터베이스 및 Harbor 에 지속 가능한 저장을 위한 통합 분산 저장소 백엔드.
 
-이러한 구성 요소를 선택한 이유는 **Crater 플랫폼의 최소 실행 환경**에 필수적인 핵심 지원 구성 요소이기 때문입니다. **Prometheus/Grafana 모니터링 스택**, **MetalLB 로드 밸런서**, **OpenEBS 저장소** 등 기능은 더 강력하지만 필수적이지 않으므로 최소 버전에서는 제외되어 배포 장벽을 낮춥니다.
+이러한 구성 요소를 선택한 이유는 **Orbit 플랫폼의 최소 실행 환경**에 필수적인 핵심 지원 구성 요소이기 때문입니다. **Prometheus/Grafana 모니터링 스택**, **MetalLB 로드 밸런서**, **OpenEBS 저장소** 등 기능은 더 강력하지만 필수적이지 않으므로 최소 버전에서는 제외되어 배포 장벽을 낮춥니다.
 
 ## 설치
 
 ### GitHub Container Registry 에서 설치 (권장)
 
-<CraterChartVersionNotice />
+<OrbitChartVersionNotice />
 
 ```bash
 # Helm OCI 저장소 추가
 helm registry login ghcr.io
 
 # 차트 설치
-helm install crater oci://ghcr.io/raids-lab/crater --version <chart-version>
+helm install orbit oci://ghcr.io/raids-lab/orbit --version <chart-version>
 
 # 기존 설치 업그레이드
-helm upgrade crater oci://ghcr.io/raids-lab/crater --version <chart-version>
+helm upgrade orbit oci://ghcr.io/raids-lab/orbit --version <chart-version>
 ```
 
 ### 소스에서 설치
 
 ```bash
 # 저장소 클론
-git clone https://github.com/raids-lab/crater.git
-cd crater/charts
+git clone https://github.com/raids-lab/orbit.git
+cd orbit/charts
 
 # 차트 설치
-helm install crater crater/
+helm install orbit orbit/
 ```
 
 ## 구성
@@ -62,7 +62,7 @@ backendConfig:
 그런 다음 values 파일과 함께 설치합니다:
 
 ```bash
-helm install crater oci://ghcr.io/raids-lab/crater --values values.yaml
+helm install orbit oci://ghcr.io/raids-lab/orbit --values values.yaml
 ```
 
 상세한 구성의 의미를 알고 싶다면 [구성 문서](../chart)를 참조하세요.
@@ -95,7 +95,7 @@ helm install ingress-nginx ingress-nginx/ingress-nginx \
 
 ### Volcano
 
-Crater 의 작업 실행 및 스케줄링은 Volcano 가 제공하는 배치 컴퓨팅 스케줄링 기능에 의존합니다. Volcano 는 AI/대규모 데이터 시나리오에 최적화되어 있으며, 대기열, 우선순위, Gang 스케줄링 등 기능을 지원합니다. 최소 배포 환경에서도 Volcano 는 필수적인 핵심 구성 요소이며, 없으면 Crater 는 작업을 스케줄링하거나 실행할 수 없습니다.
+Orbit 의 작업 실행 및 스케줄링은 Volcano 가 제공하는 배치 컴퓨팅 스케줄링 기능에 의존합니다. Volcano 는 AI/대규모 데이터 시나리오에 최적화되어 있으며, 대기열, 우선순위, Gang 스케줄링 등 기능을 지원합니다. 최소 배포 환경에서도 Volcano 는 필수적인 핵심 구성 요소이며, 없으면 Orbit 는 작업을 스케줄링하거나 실행할 수 없습니다.
 
 ### 설치 명령
 
@@ -112,7 +112,7 @@ helm upgrade --install volcano volcano-sh/volcano \
   -f volcano/values.yaml
 ```
 
-values.yaml 구성 참고: https://github.com/raids-lab/crater-backend/blob/main/deployments/volcano/values.yaml
+values.yaml 구성 참고: https://github.com/raids-lab/orbit-backend/blob/main/deployments/volcano/values.yaml
 
 #### 설치 검증
 
@@ -244,7 +244,7 @@ CNPG 는 Harbor 외부 데이터베이스 관리 구성 요소입니다.
 
 ### Harbor 설치
 
-Harbor 는 Crater 플랫폼에 의존하는 이미지 저장소입니다. 내부망 또는 오프라인 환경에서는 공용 이미지 저장소 (예: DockerHub, ghcr.io) 에 접근할 수 없기 때문에, Crater 의 전후단 및 의존 이미지를 저장하기 위해 사설 저장소가 필요합니다. Harbor 를 선택한 이유는 **이미지 관리, 권한 제어, 보안 스캔** 등 기업 수준의 기능을 제공하면서 Kubernetes 와 원적합하게 통합될 수 있기 때문입니다. 최소 배포 환경에서는 Harbor 가 **NFS 저장소**와 **CNPG 외부 데이터베이스**만으로 실행될 수 있도록 Redis/Postgres 내장 버전을 제거하여 전체 아키텍처를 간소화합니다. 이는 Crater 의 이미지가 로컬에서 저장되고 분산될 수 있도록 보장하면서, 향후 확장 (예: 다중 사용자, 다중 프로젝트 이미지 관리) 을 위한 기초를 제공합니다.
+Harbor 는 Orbit 플랫폼에 의존하는 이미지 저장소입니다. 내부망 또는 오프라인 환경에서는 공용 이미지 저장소 (예: DockerHub, ghcr.io) 에 접근할 수 없기 때문에, Orbit 의 전후단 및 의존 이미지를 저장하기 위해 사설 저장소가 필요합니다. Harbor 를 선택한 이유는 **이미지 관리, 권한 제어, 보안 스캔** 등 기업 수준의 기능을 제공하면서 Kubernetes 와 원적합하게 통합될 수 있기 때문입니다. 최소 배포 환경에서는 Harbor 가 **NFS 저장소**와 **CNPG 외부 데이터베이스**만으로 실행될 수 있도록 Redis/Postgres 내장 버전을 제거하여 전체 아키텍처를 간소화합니다. 이는 Orbit 의 이미지가 로컬에서 저장되고 분산될 수 있도록 보장하면서, 향후 확장 (예: 다중 사용자, 다중 프로젝트 이미지 관리) 을 위한 기초를 제공합니다.
 
 Harbor 는 위에서 설명한 **NFS** 저장소와 **CNPG 외부 데이터베이스**를 사용합니다.
 

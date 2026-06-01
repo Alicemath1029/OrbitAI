@@ -3,10 +3,10 @@
 </p>
 
 <p align="center">
-  <img src="./website/content/docs/admin/assets/icon.webp" alt="Crater logo" width="120" />
+  <img src="./website/content/docs/admin/assets/icon.webp" alt="Orbit logo" width="120" />
 </p>
 
-<h1 align="center">Crater</h1>
+<h1 align="center">Orbit</h1>
 
 <p align="center">
   A comprehensive AI development platform for Kubernetes that provides GPU resource management, containerized development environments, and workflow orchestration.
@@ -14,14 +14,14 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
-  <a href="https://raids-lab.github.io/crater/zh"><img src="https://img.shields.io/badge/Docs-raids--lab.github.io-brightgreen" alt="Docs" /></a>
-  <a href="https://github.com/raids-lab/crater/actions/workflows/backend-build.yml"><img src="https://github.com/raids-lab/crater/actions/workflows/backend-build.yml/badge.svg" alt="Backend Build" /></a>
-  <a href="https://github.com/raids-lab/crater/actions/workflows/helm-chart-validate.yml"><img src="https://github.com/raids-lab/crater/actions/workflows/helm-chart-validate.yml/badge.svg" alt="Helm Chart Validate" /></a>
+  <a href="https://raids-lab.github.io/orbit/zh"><img src="https://img.shields.io/badge/Docs-raids--lab.github.io-brightgreen" alt="Docs" /></a>
+  <a href="https://github.com/raids-lab/orbit/actions/workflows/backend-build.yml"><img src="https://github.com/raids-lab/orbit/actions/workflows/backend-build.yml/badge.svg" alt="Backend Build" /></a>
+  <a href="https://github.com/raids-lab/orbit/actions/workflows/helm-chart-validate.yml"><img src="https://github.com/raids-lab/orbit/actions/workflows/helm-chart-validate.yml/badge.svg" alt="Helm Chart Validate" /></a>
 </p>
 
 <p align="center">
-  <a href="https://raids-lab.github.io/crater/zh/docs/admin/">Documentation</a> ·
-  <a href="./charts/crater">Helm Chart</a> ·
+  <a href="https://raids-lab.github.io/orbit/zh/docs/admin/">Documentation</a> ·
+  <a href="./charts/orbit">Helm Chart</a> ·
   <a href="./backend/README.md">Backend</a> ·
   <a href="./frontend/README.md">Frontend</a>
 </p>
@@ -29,27 +29,31 @@
 <table>
   <tr>
     <td align="center" width="45%">
-      <img src="https://github.com/raids-lab/crater-frontend/blob/main/docs/images/jupyter.gif" alt="Jupyter Lab" /><br>
+      <img src="https://github.com/raids-lab/orbit-frontend/blob/main/docs/images/jupyter.gif" alt="Jupyter Lab" /><br>
       <em>Jupyter Lab</em>
     </td>
     <td align="center" width="45%">
-      <img src="https://github.com/raids-lab/crater-frontend/blob/main/docs/images/ray.gif" alt="Ray Job" /><br>
+      <img src="https://github.com/raids-lab/orbit-frontend/blob/main/docs/images/ray.gif" alt="Ray Job" /><br>
       <em>Ray Job</em>
     </td>
   </tr>
   <tr>
     <td align="center" width="45%">
-      <img src="https://github.com/raids-lab/crater-frontend/blob/main/docs/images/monitor.gif" alt="Monitor" /><br>
+      <img src="https://github.com/raids-lab/orbit-frontend/blob/main/docs/images/monitor.gif" alt="Monitor" /><br>
       <em>Monitor</em>
     </td>
     <td align="center" width="45%">
-      <img src="https://github.com/raids-lab/crater-frontend/blob/main/docs/images/datasets.gif" alt="Models" /><br>
+      <img src="https://github.com/raids-lab/orbit-frontend/blob/main/docs/images/datasets.gif" alt="Models" /><br>
       <em>Models</em>
     </td>
   </tr>
 </table>
 
-Crater is a Kubernetes-based platform that helps teams manage heterogeneous compute resources (e.g., GPUs) and run AI workloads through unified scheduling, development environments, and observability.
+Orbit is a Kubernetes-based platform that helps teams manage heterogeneous compute resources (e.g., GPUs) and run AI workloads through unified scheduling, development environments, and observability.
+
+## Project Lineage
+
+Orbit is developed based on the open-source [Crater](https://github.com/raids-lab/crater) project from RAIDS Lab. This repository continues that foundation under the Orbit name, with product, documentation, and deployment assets adapted for the current Orbit platform.
 
 ## Features
 
@@ -59,25 +63,25 @@ Crater is a Kubernetes-based platform that helps teams manage heterogeneous comp
 
 ## Architecture
 
-![crater architecture](./website/content/docs/admin/assets/architecture.webp)
+![orbit architecture](./website/content/docs/admin/assets/architecture.webp)
 
-High-level architecture of Crater and its major components.
+High-level architecture of Orbit and its major components.
 
 ## Documentation
 
-- Admin guide (中文): https://raids-lab.github.io/crater/zh/docs/admin/
-- Admin guide (English): https://raids-lab.github.io/crater/en/docs/admin/
+- Admin guide (中文): https://raids-lab.github.io/orbit/zh/docs/admin/
+- Admin guide (English): https://raids-lab.github.io/orbit/en/docs/admin/
 
 Deployment guides:
 
-If you want to quickly deploy a basic Crater using Kind, please refer to [Minimal Deployment](https://raids-lab.github.io/crater/zh/docs/admin/kind-start/).
+If you want to quickly deploy a basic Orbit using Kind, please refer to [Minimal Deployment](https://raids-lab.github.io/orbit/zh/docs/admin/kind-start/).
 
-If you want to deploy a full Crater in a cluster, please refer to [Cluster Deployment Guide](https://raids-lab.github.io/crater/zh/docs/admin/deploy-on-cluster/).
+If you want to deploy a full Orbit in a cluster, please refer to [Cluster Deployment Guide](https://raids-lab.github.io/orbit/zh/docs/admin/deploy-on-cluster/).
 
 English versions:
 
-- [Minimal Deployment](https://raids-lab.github.io/crater/en/docs/admin/kind-start/)
-- [Cluster Deployment Guide](https://raids-lab.github.io/crater/en/docs/admin/deploy-on-cluster/)
+- [Minimal Deployment](https://raids-lab.github.io/orbit/en/docs/admin/kind-start/)
+- [Cluster Deployment Guide](https://raids-lab.github.io/orbit/en/docs/admin/deploy-on-cluster/)
 
 ## Getting Started
 
@@ -87,7 +91,7 @@ English versions:
 - `kubectl`
 - Helm v3
 
-To get started with **Crater**, you first need to have a running Kubernetes cluster. You can set up a cluster using one of the following methods:
+To get started with **Orbit**, you first need to have a running Kubernetes cluster. You can set up a cluster using one of the following methods:
 
 ### 🐳 1. Local Cluster with Kind
 
@@ -103,17 +107,17 @@ Minikube runs a single-node Kubernetes cluster locally, ideal for development an
 
 ### ☁️ 3. Production-grade Kubernetes Cluster
 
-For deploying Crater in a production or large-scale test environment, you can use any standard Kubernetes setup.
+For deploying Orbit in a production or large-scale test environment, you can use any standard Kubernetes setup.
 
 📖 [https://kubernetes.io/docs/setup/](https://kubernetes.io/docs/setup/)
 
 ### Install via Helm (OCI)
 
-> Use the docs above for a full guide. The chart version can be found in `charts/crater/Chart.yaml` (field `version`) or GitHub releases.
+> Use the docs above for a full guide. The chart version can be found in `charts/orbit/Chart.yaml` (field `version`) or GitHub releases.
 
 ```bash
 helm registry login ghcr.io
-helm install crater oci://ghcr.io/raids-lab/crater --version <chart-version>
+helm install orbit oci://ghcr.io/raids-lab/orbit --version <chart-version>
 ```
 
 ## Repository Structure
@@ -121,35 +125,35 @@ helm install crater oci://ghcr.io/raids-lab/crater --version <chart-version>
 - `backend/`: Backend services
 - `frontend/`: Web UI
 - `backend/internal/storage/`: Storage service (integrated in backend module)
-- `charts/`: Helm charts for deploying Crater
+- `charts/`: Helm charts for deploying Orbit
 - `website/`: Documentation website source
-- `grafana-dashboards/`: Grafana dashboards used by Crater
+- `grafana-dashboards/`: Grafana dashboards used by Orbit
 - `docs/`: Documentation entrypoints and localization resources
 - `hack/`: Developer tooling and scripts
 
 ## Contributing
 
-We welcome community contributions! If you would like to contribute to the Crater project, please follow the workflow below.
+We welcome community contributions! If you would like to contribute to the Orbit project, please follow the workflow below.
 
 ### 1) Fork and clone
 
 1. **Fork the repository**
-   - Visit the [Crater main repository](https://github.com/raids-lab/crater)
+   - Visit the [Orbit main repository](https://github.com/raids-lab/orbit)
    - Click **Fork** in the top right corner
 
 2. **Clone your fork**
 
    ```bash
    # Replace YOUR_USERNAME with your GitHub username
-   git clone https://github.com/YOUR_USERNAME/crater.git
-   cd crater
+   git clone https://github.com/YOUR_USERNAME/orbit.git
+   cd orbit
    ```
 
 3. **Add upstream (optional)**
 
    ```bash
    # Add upstream repository to sync latest changes
-   git remote add upstream https://github.com/raids-lab/crater.git
+   git remote add upstream https://github.com/raids-lab/orbit.git
 
    # Verify remote repository configuration
    git remote -v
@@ -185,7 +189,7 @@ Then set up the environment for the component you want to work on:
 
 ### 4) Configuration files (optional)
 
-Crater provides a unified configuration management workflow to centralize configs and create symlinks per component.
+Orbit provides a unified configuration management workflow to centralize configs and create symlinks per component.
 
 Example structure:
 
@@ -204,7 +208,7 @@ Make targets:
 - `make config-link`: Create symlinks for config files (backs up existing files with `.bak`)
 
   ```bash
-  make config-link CONFIG_DIR=~/develop/crater/config
+  make config-link CONFIG_DIR=~/develop/orbit/config
   ```
 
 - `make config-status`: Show config file status
@@ -291,4 +295,4 @@ If you haven't configured `upstream`, you can use GitHub's **Sync fork** feature
 
 ## License
 
-Crater is licensed under the Apache License 2.0. See [LICENSE](LICENSE).
+Orbit is licensed under the Apache License 2.0. See [LICENSE](LICENSE).

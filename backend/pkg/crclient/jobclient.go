@@ -15,11 +15,11 @@ import (
 	"k8s.io/klog/v2"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/raids-lab/crater/dao/model"
+	"github.com/raids-lab/orbit/dao/model"
 
-	aijobapi "github.com/raids-lab/crater/pkg/apis/aijob/v1alpha1"
-	"github.com/raids-lab/crater/pkg/config"
-	craterUtils "github.com/raids-lab/crater/pkg/utils"
+	aijobapi "github.com/raids-lab/orbit/pkg/apis/aijob/v1alpha1"
+	"github.com/raids-lab/orbit/pkg/config"
+	orbitUtils "github.com/raids-lab/orbit/pkg/utils"
 )
 
 type JobControl struct {
@@ -73,7 +73,7 @@ func (c *JobControl) createTrainingJobFromTask(task *model.AITask) (jobname stri
 	// convert metadata to lower case
 	taskName := strings.ToLower(task.TaskName)
 	// generate date in yymmdd format
-	dateStr := craterUtils.FormatDateYYMMDD(time.Now())
+	dateStr := orbitUtils.FormatDateYYMMDD(time.Now())
 	// format: {taskName}-{date}-{taskID}
 	jobname = fmt.Sprintf("%s-%s-%d", taskName, dateStr, task.ID)
 	// replace underscores to comply with DNS label requirements
@@ -152,7 +152,7 @@ func (c *JobControl) createJupyterJobFromTask(task *model.AITask) (jobname strin
 	// convert metadata to lower case
 	taskName := strings.ToLower(task.TaskName)
 	// generate date in yymmdd format
-	dateStr := craterUtils.FormatDateYYMMDD(time.Now())
+	dateStr := orbitUtils.FormatDateYYMMDD(time.Now())
 	// format: {taskName}-{date}-{taskID}
 	jobname = fmt.Sprintf("%s-%s-%d", taskName, dateStr, task.ID)
 	// replace underscores to comply with DNS label requirements

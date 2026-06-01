@@ -1,11 +1,11 @@
 ---
 title: "CloudNativePG デプロイガイド"
-description: "Crater に OpenEBS ストレージを使用した CloudNativePG Operator を使って PostgreSQL を統合します。"
+description: "Orbit に OpenEBS ストレージを使用した CloudNativePG Operator を使って PostgreSQL を統合します。"
 ---
 
 ## 概要
 
-Crater はユーザー セッション、ジョブメタデータ、スケジューリング状態、プラットフォーム構成を管理するために、**PostgreSQL** をバックエンドデータベースとして使用しています。
+Orbit はユーザー セッション、ジョブメタデータ、スケジューリング状態、プラットフォーム構成を管理するために、**PostgreSQL** をバックエンドデータベースとして使用しています。
 
 生産環境レベルでの Kubernetes ネイティブな PostgreSQL 管理を実現するために、[CloudNativePG Operator](https://cloudnative-pg.io/) を採用しています。これは以下を提供します：
 
@@ -23,7 +23,7 @@ CloudNativePG を選んだ理由は以下の通りです：
 - **PostgreSQL の構成** と **Kubernetes ネイティブなオーケストレーション** の間に明確な分離を提供します。  
 - PostgreSQL のデプロイを簡素化しながら、高度な調整にも柔軟に対応できます。
 
-Crater スタックでは、各 PostgreSQL クラスターはカスタム `Cluster` リソースとして定義され、オペレーターによって管理されます。
+Orbit スタックでは、各 PostgreSQL クラスターはカスタム `Cluster` リソースとして定義され、オペレーターによって管理されます。
 
 ## ストレージ設定
 

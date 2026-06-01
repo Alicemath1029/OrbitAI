@@ -7,11 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 	imrocreq "github.com/imroc/req/v3"
 
-	"github.com/raids-lab/crater/internal/handler"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/crclient"
-	"github.com/raids-lab/crater/pkg/imageregistry"
-	"github.com/raids-lab/crater/pkg/packer"
+	"github.com/raids-lab/orbit/internal/handler"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/crclient"
+	"github.com/raids-lab/orbit/pkg/imageregistry"
+	"github.com/raids-lab/orbit/pkg/packer"
 )
 
 //nolint:gochecknoinits // This is the standard way to register a gin handler.

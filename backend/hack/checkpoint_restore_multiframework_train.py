@@ -27,11 +27,11 @@ def sha256_json(value):
 
 
 def framework():
-    return os.getenv("CRATER_CHECKPOINT_FRAMEWORK", "custom").strip()
+    return os.getenv("ORBIT_CHECKPOINT_FRAMEWORK", "custom").strip()
 
 
 def checkpoint_root():
-    return Path(os.environ["CRATER_CHECKPOINT_DIR"])
+    return Path(os.environ["ORBIT_CHECKPOINT_DIR"])
 
 
 def initial_state():
@@ -100,7 +100,7 @@ def save_checkpoint(state, dataset):
     checksum = state_checksum(state)
     manifest = {
         "framework": fw,
-        "job": os.getenv("CRATER_JOB_NAME", ""),
+        "job": os.getenv("ORBIT_JOB_NAME", ""),
         "step": state["step"],
         "checkpointDir": str(root),
         "datasetVersion": DATASET_VERSION,
@@ -178,13 +178,13 @@ def proof(before, after, source_manifest, final_manifest, resume_from):
         "datasetChecksum": final_manifest["datasetChecksum"],
         "lossBefore": before["lossHistory"][-1] if before["lossHistory"] else None,
         "lossAfter": after["lossHistory"][-1],
-        "job": os.getenv("CRATER_JOB_NAME", ""),
+        "job": os.getenv("ORBIT_JOB_NAME", ""),
     }
 
 
 def main():
     dataset = rows()
-    resume_from = os.getenv("CRATER_RESUME_FROM", "").strip()
+    resume_from = os.getenv("ORBIT_RESUME_FROM", "").strip()
     if resume_from:
         state, source_manifest = load_checkpoint(resume_from)
         before = json.loads(json.dumps(state))

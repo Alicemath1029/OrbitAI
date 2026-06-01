@@ -1,13 +1,13 @@
 ---
 title: OpenEBS 配置ガイド
-description: OpenEBS は Crater で Local PV HostPath ボリュームを通じてローカル永続ストレージを管理するために使用され、効率的なノードローカルストレージ管理を可能にします。
+description: OpenEBS は Orbit で Local PV HostPath ボリュームを通じてローカル永続ストレージを管理するために使用され、効率的なノードローカルストレージ管理を可能にします。
 ---
 
 ## 概要
 
-Crater は **Kubernetes ノード全体にわたるローカル永続ストレージの管理**に **OpenEBS** を依存しています。我々の主な目標は次の通りです：
+Orbit は **Kubernetes ノード全体にわたるローカル永続ストレージの管理**に **OpenEBS** を依存しています。我々の主な目標は次の通りです：
 
-- **CRD 基盤のローカルストレージリソース管理**を実現し、Crater がローカルディスクを一等 Citizen として、宣言型リソースとして扱えるようにします。
+- **CRD 基盤のローカルストレージリソース管理**を実現し、Orbit がローカルディスクを一等 Citizen として、宣言型リソースとして扱えるようにします。
 - **OpenEBS Local PV HostPath** を使用して、ノードローカルパスからボリュームを直接プロビジョニングし、予測可能で効率的なデータローカリティを実現します。
 
 この構成は、以下の条件を満たすワークロードに最適です：
@@ -33,7 +33,7 @@ OpenEBS は複数のストレージエンジンをサポートしています。
 
 ## インストール
 
-Crater のストレージニーズに合わせてカスタマイズされた Helm 設定を OpenEBS に対して提供しています。
+Orbit のストレージニーズに合わせてカスタマイズされた Helm 設定を OpenEBS に対して提供しています。
 
 📦 Helm バリュー: [`deployments/openebs/values.yaml`](../deployments/openebs/values.yaml)  
 📖 詳細ガイド：[`deployments/openebs/README.md`](../deployments/openebs/README.md)

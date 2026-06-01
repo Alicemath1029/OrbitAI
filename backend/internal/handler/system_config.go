@@ -11,12 +11,12 @@ import (
 
 	"strings"
 
-	"github.com/raids-lab/crater/dao/query"
+	"github.com/raids-lab/orbit/dao/query"
 
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/service"
-	"github.com/raids-lab/crater/pkg/cronjob"
-	"github.com/raids-lab/crater/pkg/prequeuewatcher"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/service"
+	"github.com/raids-lab/orbit/pkg/cronjob"
+	"github.com/raids-lab/orbit/pkg/prequeuewatcher"
 )
 
 //nolint:gochecknoinits // This is the standard way to register a gin handler.
@@ -288,7 +288,7 @@ func (mgr *SystemConfigMgr) SetGpuAnalysisStatus(c *gin.Context) {
 
 // GetPrequeueConfig godoc
 // @Summary		获取新版排队配置
-// @Description	获取当前回填提交开关、Crater 队内资源配额开关、普通作业等待忍耐时间和 watcher 运行参数
+// @Description	获取当前回填提交开关、Orbit 队内资源配额开关、普通作业等待忍耐时间和 watcher 运行参数
 // @Tags			SystemConfig
 // @Produce		json
 // @Security		Bearer
@@ -314,7 +314,7 @@ func (mgr *SystemConfigMgr) GetPrequeueConfig(c *gin.Context) {
 
 // UpdatePrequeueConfig godoc
 // @Summary		更新新版排队配置
-// @Description	更新回填提交开关、Crater 队内资源配额开关、普通作业等待忍耐时间和 watcher 运行参数
+// @Description	更新回填提交开关、Orbit 队内资源配额开关、普通作业等待忍耐时间和 watcher 运行参数
 // @Tags			SystemConfig
 // @Accept			json
 // @Produce		json

@@ -8,8 +8,8 @@ import (
 
 	"github.com/samber/lo"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
 )
 
 func (cm *CronJobManager) GetCronjobConfigs(

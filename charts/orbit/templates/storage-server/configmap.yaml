@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ss-config
+  namespace: {{ .Values.namespaces.job }}
+data:
+  config.yaml: |
+{{ include "orbit.storageServerConfig" . | nindent 4 }}

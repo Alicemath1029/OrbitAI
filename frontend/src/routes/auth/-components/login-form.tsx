@@ -19,7 +19,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { HTTPError } from 'ky'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { type FieldErrors, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -206,6 +206,17 @@ export function LoginForm({
     }
   }
 
+  const onInvalidSubmit = (errors: FieldErrors<z.infer<typeof formSchema>>) => {
+    if (errors.acceptPrivacy) {
+      toast.error('请先勾选并同意隐私政策')
+      return
+    }
+
+    if (errors.username || errors.password) {
+      toast.error('请检查账号和密码')
+    }
+  }
+
   useEffect(() => {
     if (searchParams.token) {
       loginUser({
@@ -218,7 +229,7 @@ export function LoginForm({
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="username"
@@ -240,7 +251,7 @@ export function LoginForm({
                 <div className="flex items-center justify-between">
                   <FormLabel>密码</FormLabel>
                   <button
-                    className="text-muted-foreground p-0 text-sm underline"
+                    className="text-muted-foreground hover:text-primary p-0 text-sm underline-offset-4 transition-colors hover:underline"
                     type="button"
                     tabIndex={-1}
                     onClick={onForgotPasswordClick}
@@ -262,10 +273,11 @@ export function LoginForm({
             name="acceptPrivacy"
             render={({ field }) => (
               <FormItem>
-                <div className="flex items-start gap-2">
+                <div className="hover:border-primary/35 border-border/60 bg-card/35 hover:bg-card/55 flex items-start gap-3 rounded-md border p-3 transition-[background-color,border-color]">
                   <FormControl>
                     <Checkbox
                       id="acceptPrivacy"
+                      className="mt-0.5"
                       checked={field.value}
                       onCheckedChange={(checked) => {
                         const value = checked === true
@@ -274,9 +286,12 @@ export function LoginForm({
                       }}
                     />
                   </FormControl>
-                  <p className="text-muted-foreground text-xs leading-snug">
-                    我已阅读并同意 <PrivacyPolicyDialog />
-                  </p>
+                  <div className="text-muted-foreground text-xs leading-snug">
+                    <label htmlFor="acceptPrivacy" className="cursor-pointer">
+                      我已阅读并同意
+                    </label>{' '}
+                    <PrivacyPolicyDialog />
+                  </div>
                 </div>
                 <FormMessage />
               </FormItem>

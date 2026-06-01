@@ -1,6 +1,6 @@
 ---
 title: Harbor のデプロイメントガイド
-description: Crater は、クラスター内でイメージのビルド、ストレージ、セキュアな配布をサポートするために、内部の Harbor レジストリに依存しています。
+description: Orbit は、クラスター内でイメージのビルド、ストレージ、セキュアな配布をサポートするために、内部の Harbor レジストリに依存しています。
 
 ---
 
@@ -12,19 +12,19 @@ description: Crater は、クラスター内でイメージのビルド、スト
 helm repo add harbor https://helm.goharbor.io
 helm pull harbor/harbor --version 1.14.0
 # 必要に応じてvalues.yamlを編集してください（下記を参照）
-helm install crater-harbor harbor/harbor -f values.yaml -n harbor-system --create-namespace
+helm install orbit-harbor harbor/harbor -f values.yaml -n harbor-system --create-namespace
 ```
 
 ## 注意：以下の点を確認してください：
 
-ドメイン名（例：crater-harbor.act.buaa.edu.cn）はクラスターまたは内部 DNS 内で解決可能である必要があります。
+ドメイン名（例：orbit-harbor.act.buaa.edu.cn）はクラスターまたは内部 DNS 内で解決可能である必要があります。
 
 有効な TLS 設定があるか、または HTTP での公開のために expose.tls.enabled=false を設定している必要があります。
 
 ## 設定のヒント
 values.yaml で externalURL を正しく設定してください：
 ```yaml
-externalURL: https://crater-harbor.act.buaa.edu.cn
+externalURL: https://orbit-harbor.act.buaa.edu.cn
 ```
 適切なクラス（ingress-nginx）とホスト名を持つイングレスを設定してください。
 
@@ -36,10 +36,10 @@ expose:
 ```
 
 ## イメージプルシークレット
-Crater コンポーネントが Harbor からイメージをプルできるようにするには：
+Orbit コンポーネントが Harbor からイメージをプルできるようにするには：
 ```bash
-kubectl create secret docker-registry crater-harbor-auth \
-  --docker-server=crater-harbor.act.buaa.edu.cn \
+kubectl create secret docker-registry orbit-harbor-auth \
+  --docker-server=orbit-harbor.act.buaa.edu.cn \
   --docker-username=<user> \
   --docker-password=<password> \
   -n <target-namespace>
@@ -50,17 +50,17 @@ kubectl create secret docker-registry crater-harbor-auth \
 プロジェクトは以下の通りに整理されています：
 | プロジェクト       | 目的                    |
 | ------------- | -------------------------- |
-| crater/base   | ベース OS とユーティリティ      |
-| crater/jobs   | ユーザーが送信したジョブイメージ |
-| crater/charts | Helm チャートのミラー        |
-| crater/models | 推論用の大規模モデル        |
+| orbit/base   | ベース OS とユーティリティ      |
+| orbit/jobs   | ユーザーが送信したジョブイメージ |
+| orbit/charts | Helm チャートのミラー        |
+| orbit/models | 推論用の大規模モデル        |
 
-## Crater との統合
+## Orbit との統合
 ほとんどのシステムコンポーネント（例：gpu-operator, ingress-nginx, prometheus）は、Harbor ミラーを使用するように事前に設定されています。
 
 イメージのパスは以下のようになります：
 ```ruby
-crater-harbor.act.buaa.edu.cn/crater/<component>:<tag>
+orbit-harbor.act.buaa.edu.cn/orbit/<component>:<tag>
 ```
 Helm チャートのカスタマイズ時に image.repository と imagePullSecrets を更新してください。
 

@@ -7,10 +7,10 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/crclient"
-	utils "github.com/raids-lab/crater/pkg/util"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/crclient"
+	utils "github.com/raids-lab/orbit/pkg/util"
 )
 
 //nolint:gochecknoinits // This is the standard way to register a gin handler.

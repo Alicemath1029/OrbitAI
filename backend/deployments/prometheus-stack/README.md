@@ -1,6 +1,6 @@
 # Prometheus Stack Deployment Guide
 
-This deployment uses the official `kube-prometheus-stack` Helm chart with customized values and subcharts tailored for Crater's observability needs.
+This deployment uses the official `kube-prometheus-stack` Helm chart with customized values and subcharts tailored for Orbit's observability needs.
 
 We pin the version to ensure compatibility with our configurations and dependencies.
 

@@ -29,7 +29,7 @@ env:
   REGISTRY: ghcr.io
   # Set your Docker Hub username and repository name
   REPOSITORY: raids-lab
-  IMAGE_NAME: crater-frontend
+  IMAGE_NAME: orbit-frontend
 
 jobs:
   lint:
@@ -142,10 +142,10 @@ jobs:
       # 3. 合并产物 (关键点：使用明确的相对根目录路径)
       - name: Merge Docs into Frontend Dist
         run: |
-          mkdir -p frontend/dist/crater
-          cp -r website/out/* frontend/dist/crater/
+          mkdir -p frontend/dist/orbit
+          cp -r website/out/* frontend/dist/orbit/
           # 验证目录是否存在，防止上传了空的 dist
-          ls -R frontend/dist/crater
+          ls -R frontend/dist/orbit
 
       # 4. 上传整个 dist 目录
       - name: Upload artifacts
@@ -171,9 +171,9 @@ jobs:
           name: dist
           path: frontend/dist/ # 将下载的内容放入 frontend/dist 文件夹
 
-      # 检查一下确保 crater 存在 (Debug)
+      # 检查一下确保 orbit 存在 (Debug)
       - name: Verify structure
-        run: ls -d frontend/dist/crater
+        run: ls -d frontend/dist/orbit
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

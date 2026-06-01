@@ -24,15 +24,15 @@ NodePort ルールにおいて、**Kubernetes は自動的にポート範囲 300
 
 ![nodeport-intro](./img/nodeport-intro.webp)
 
-設定後、対応する Pod の`Annotations`に以下の内容が表示されます。`nodeport.crater.raids.io`を`key`として使用します：
+設定後、対応する Pod の`Annotations`に以下の内容が表示されます。`nodeport.orbit.raids.io`を`key`として使用します：
 
 ```yaml
 metadata:
   annotations:
-    crater.raids.io/task-name: tensorboard-example
-    nodeport.crater.raids.io/smtp: '{"name":"smtp","containerPort":25,"address":"192.168.5.82","nodePort":30631}'
-    nodeport.crater.raids.io/ssh: '{"name":"ssh","containerPort":22,"address":"192.168.5.82","nodePort":32513}'
-    nodeport.crater.raids.io/telnet: '{"name":"telnet","containerPort":23,"address":"192.168.5.82","nodePort":32226}'
+    orbit.raids.io/task-name: tensorboard-example
+    nodeport.orbit.raids.io/smtp: '{"name":"smtp","containerPort":25,"address":"192.168.5.82","nodePort":30631}'
+    nodeport.orbit.raids.io/ssh: '{"name":"ssh","containerPort":22,"address":"192.168.5.82","nodePort":32513}'
+    nodeport.orbit.raids.io/telnet: '{"name":"telnet","containerPort":23,"address":"192.168.5.82","nodePort":32226}'
 ```
 
 ## 2.2 使用例

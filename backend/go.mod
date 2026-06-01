@@ -1,4 +1,4 @@
-module github.com/raids-lab/crater
+module github.com/raids-lab/orbit
 
 go 1.25.4
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/raids-lab/crater/dao/query"
+	"github.com/raids-lab/orbit/dao/query"
 )
 
 func CheckUserEmail(c context.Context, userID uint) bool {

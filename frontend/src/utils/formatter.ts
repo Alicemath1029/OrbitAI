@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// crater-harbor.crater.example.io/docker.io/jupyter/base-notebook:ubuntu-22.04 -> base-notebook:ubuntu-22.04
+// orbit-harbor.orbit.example.io/docker.io/jupyter/base-notebook:ubuntu-22.04 -> base-notebook:ubuntu-22.04
 export const shortenImageName = (imageName: string): string => {
   return imageName.split('/').slice(-2).join('/').replace('docker.io/', '')
 }

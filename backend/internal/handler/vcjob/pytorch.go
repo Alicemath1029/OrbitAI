@@ -10,11 +10,11 @@ import (
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 	bus "volcano.sh/apis/pkg/apis/bus/v1alpha1"
 
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/utils"
-	"github.com/raids-lab/crater/pkg/vcqueue"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/utils"
+	"github.com/raids-lab/orbit/pkg/vcqueue"
 )
 
 func (mgr *VolcanojobMgr) CreatePytorchJob(c *gin.Context) {
@@ -88,7 +88,7 @@ func (mgr *VolcanojobMgr) CreatePytorchJob(c *gin.Context) {
 
 	// 3. Labels and Annotations
 	labels, jobAnnotations, podAnnotations := getLabelAndAnnotations(
-		CraterJobTypePytorch,
+		OrbitJobTypePytorch,
 		token,
 		baseURL,
 		&req.CreateJobCommon,

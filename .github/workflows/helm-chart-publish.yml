@@ -57,16 +57,16 @@ jobs:
           cd charts
 
           # Package the chart
-          helm package crater/
+          helm package orbit/
 
           # Get the chart version from Chart.yaml
-          CHART_VERSION=$(helm show chart crater/ | grep '^version:' | awk '{print $2}')
+          CHART_VERSION=$(helm show chart orbit/ | grep '^version:' | awk '{print $2}')
           echo "Chart version: $CHART_VERSION"
 
           # Push to GHCR OCI registry
-          helm push crater-${CHART_VERSION}.tgz oci://${{ env.REGISTRY }}/${{ env.REPOSITORY }}
+          helm push orbit-${CHART_VERSION}.tgz oci://${{ env.REGISTRY }}/${{ env.REPOSITORY }}
 
-          echo "Successfully published Helm chart crater:${CHART_VERSION} to ${{ env.REGISTRY }}/${{ env.REPOSITORY }}"
+          echo "Successfully published Helm chart orbit:${CHART_VERSION} to ${{ env.REGISTRY }}/${{ env.REPOSITORY }}"
 
   cleanup-old-versions:
     runs-on: ubuntu-latest
@@ -82,7 +82,7 @@ jobs:
           owner-type: org
           token: ${{ secrets.PAT_TOKEN }}
           repository-owner: ${{ github.repository_owner }}
-          package-name: crater
+          package-name: orbit
           delete-untagged: true
           keep-at-most: 10
           skip-tags: latest

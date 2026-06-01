@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenuLabel } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-import CraterIcon from '@/components/icon/crater-icon'
+import OrbitIcon from '@/components/icon/orbit-icon'
 
 export default function FloatingBall({
   handleShowLog,
@@ -63,7 +63,7 @@ export default function FloatingBall({
         <TooltipProvider delayDuration={200}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <CraterIcon
+              <OrbitIcon
                 style={{ filter: 'drop-shadow(1px 1px 4px rgba(0,0,0,0.5))' }}
                 className="h-12 w-12"
               />

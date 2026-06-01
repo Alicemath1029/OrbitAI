@@ -2,7 +2,7 @@
 
 ## Installation
 
-We recommend installing Volcano using Helm with preconfigured values from Crater.
+We recommend installing Volcano using Helm with preconfigured values from Orbit.
 
 ```bash
 helm repo add volcano-sh https://volcano-sh.github.io/helm-charts
@@ -28,7 +28,7 @@ helm upgrade --install volcano volcano-sh/volcano \
   -f volcano/values.yaml --dry-run
 ```
 
-📌 Note: The provided values.yaml contains customized configurations for Crater, including:
+📌 Note: The provided values.yaml contains customized configurations for Orbit, including:
 
 * Enabling queue-based scheduling
 

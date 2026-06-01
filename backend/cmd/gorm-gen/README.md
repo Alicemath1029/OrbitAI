@@ -1,4 +1,4 @@
-# Crater Gorm Gen
+# Orbit Gorm Gen
 
 Before generating code, first use `kubectl` to port-forward the database in the cluster to your local machine. Alternatively, if port forwarding is already configured in the cluster, you can directly connect to the database in the cluster.
 

@@ -79,7 +79,7 @@ curl http://localhost:8000/v1/chat/completions \
 
 ![](./img/sin-deepseek-7b/openweb-submit.webp)
 
-使用 **DeepSeek R1 单机推理** 的任务模板在 Crater 平台启动大模型推理服务后，您需要修改环境变量第一条，OpenAI 服务的地址：
+使用 **DeepSeek R1 单机推理** 的任务模板在 Orbit 平台启动大模型推理服务后，您需要修改环境变量第一条，OpenAI 服务的地址：
 
 对于单机部署模型的情况，对应于作业的 **「基本信息」处的「内网 IP」**
 

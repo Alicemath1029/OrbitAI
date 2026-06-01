@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Crater
+ * Copyright 2025 Orbit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ export function HeroSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <a
-              href={`/crater/${lang}/docs/admin/|||https://gpu.act.buaa.edu.cn/portal`}
+              href={`/orbit/${lang}/docs/admin/|||https://gpu.act.buaa.edu.cn/portal`}
               className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
             >
               {t("buttons.getStarted")}

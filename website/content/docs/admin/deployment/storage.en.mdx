@@ -1,6 +1,6 @@
 ---
 title: Storage Architecture
-description: Crater utilizes a hybrid storage architecture to address both high-performance local workloads and persistent shared data access across pods and nodes. This document outlines the storage solutions used in the cluster.
+description: Orbit utilizes a hybrid storage architecture to address both high-performance local workloads and persistent shared data access across pods and nodes. This document outlines the storage solutions used in the cluster.
 ---
 
 ## 1. Local Persistent Volumes (LocalPV via OpenEBS)
@@ -11,7 +11,7 @@ We use [OpenEBS LocalPV](https://openebs.io/docs/user-guides/localpv) to manage 
 
 - **CRD-Based Management**: Allows Kubernetes-native declarative management of local disks.
 - **Performance**: Data remains on the same node, minimizing network overhead.
-- **Use Case in Crater**:
+- **Use Case in Orbit**:
   - Job cache directories
   - Local dataset staging areas
   - Per-node inference or training scratch space
@@ -28,13 +28,13 @@ See: [`deployments/openebs`](../deployments/openebs)
 
 ## 2. Shared Block Storage (Ceph RBD via Rook)
 
-For persistent, multi-node accessible volumes, Crater uses [Rook-Ceph RBD](https://rook.io/docs/rook/latest/ceph-block.html). RBD volumes are dynamically provisioned and support:
+For persistent, multi-node accessible volumes, Orbit uses [Rook-Ceph RBD](https://rook.io/docs/rook/latest/ceph-block.html). RBD volumes are dynamically provisioned and support:
 
 - ReadWriteOnce access with migration support
 - Replication and failure recovery
 - Suitable for:
   - Prometheus TSDB storage
-  - Crater internal services requiring persistence
+  - Orbit internal services requiring persistence
   - Datasets shared across nodes
 
 Ceph was selected due to its:
@@ -51,7 +51,7 @@ Ceph was selected due to its:
 
 | Component             | Type               | Storage Backend       | Notes                                  |
 |-----------------------|--------------------|----------------------|----------------------------------------|
-| PostgreSQL (Crater DB) | Persistent         | LocalPV (OpenEBS)    | High-speed, node-specific              |
+| PostgreSQL (Orbit DB) | Persistent         | LocalPV (OpenEBS)    | High-speed, node-specific              |
 | Prometheus TSDB        | Persistent         | Ceph RBD (Rook)      | Multi-node, highly durable             |
 | User Jobs             | Ephemeral / Persistent | LocalPV / Ceph RBD | Based on configuration                 |
 | Grafana Dashboards     | Ephemeral / Persistent | Ceph RBD           | Optional, depending on dashboard config|
@@ -75,6 +75,6 @@ Ceph was selected due to its:
 
 ## Installation
 
-We recommend leveraging NFS as the storage provisioner and using official Helm chart with Crater's preconfigured values.
+We recommend leveraging NFS as the storage provisioner and using official Helm chart with Orbit's preconfigured values.
  
 📖 Detailed guide: [`deployments/nfs/README.md`](../deployments/nfs/README.md)

@@ -11,10 +11,10 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/pkg/cleaner"
-	"github.com/raids-lab/crater/pkg/patrol"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/pkg/cleaner"
+	"github.com/raids-lab/orbit/pkg/patrol"
 )
 
 // AddCronJob adds a cron job to the scheduler based on job type

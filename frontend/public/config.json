@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "url": {
     "apiPrefix": "/api/v1",
-    "document": "https://raids-lab.github.io/crater/zh"
+    "document": "https://raids-lab.github.io/orbit/zh"
   },
   "grafana": {
     "overview": {
-      "main": "https://gpu-grafana.crater.example.io/d/f33ade9f-821d-4e96-a7f2-eb16c8b9c447/838ffad",
-      "schedule": "https://gpu-grafana.crater.example.io/d/be9oh7yk24jy8f/crater-gpu-e8b083-e5baa6-e58f82-e88083",
-      "network": "https://gpu-grafana.crater.example.io/d/8b7a8b326d7a6f1f04y7fh66368c67af/networking"
+      "main": "https://gpu-grafana.orbit.example.io/d/f33ade9f-821d-4e96-a7f2-eb16c8b9c447/838ffad",
+      "schedule": "https://gpu-grafana.orbit.example.io/d/be9oh7yk24jy8f/orbit-gpu-e8b083-e5baa6-e58f82-e88083",
+      "network": "https://gpu-grafana.orbit.example.io/d/8b7a8b326d7a6f1f04y7fh66368c67af/networking"
     },
     "node": {
-      "basic": "https://gpu-grafana.crater.example.io/d/k8s_views_nodes/crater-node-basic-dashboard",
-      "nvidia": "https://gpu-grafana.crater.example.io/d/nvidia-dcgm-dashboard/crater-node-nvidia-dashboard"
+      "basic": "https://gpu-grafana.orbit.example.io/d/k8s_views_nodes/orbit-node-basic-dashboard",
+      "nvidia": "https://gpu-grafana.orbit.example.io/d/nvidia-dcgm-dashboard/orbit-node-nvidia-dashboard"
     },
     "job": {
-      "basic": "https://gpu-grafana.crater.example.io/d/R4ZPFfyIz/crater-job-basic-dashboard",
-      "nvidia": "https://gpu-grafana.crater.example.io/d/2CDE0AC7/crater-job-nvidia-dashboard",
-      "pod": "https://gpu-grafana.crater.example.io/d/MhnFUFLSz/crater-pod-dashboard"
+      "basic": "https://gpu-grafana.orbit.example.io/d/R4ZPFfyIz/orbit-job-basic-dashboard",
+      "nvidia": "https://gpu-grafana.orbit.example.io/d/2CDE0AC7/orbit-job-nvidia-dashboard",
+      "pod": "https://gpu-grafana.orbit.example.io/d/MhnFUFLSz/orbit-pod-dashboard"
     },
     "user": {
-      "nvidia": "https://gpu-grafana.crater.example.io/d/user-nvidia-dcgm-dashboard/crater-user-nvidia-dashboard"
+      "nvidia": "https://gpu-grafana.orbit.example.io/d/user-nvidia-dcgm-dashboard/orbit-user-nvidia-dashboard"
     }
   }
 }

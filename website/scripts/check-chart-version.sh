@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Check for hardcoded Crater Helm Chart versions in staged documentation files
+# Check for hardcoded Orbit Helm Chart versions in staged documentation files
 # This script ensures that developers use components or <chart-version> placeholders
 # instead of hardcoding version numbers (e.g., 0.1.0).
 
@@ -24,14 +24,14 @@ fi
 
 FOUND_HARDCODED=0
 
-# Pattern to detect hardcoded versions in Helm commands related to Crater
-# Matches: ghcr.io/raids-lab/crater ... --version 0.1.0
-# Matches: --version 0.1.0 ... ghcr.io/raids-lab/crater
+# Pattern to detect hardcoded versions in Helm commands related to Orbit
+# Matches: ghcr.io/raids-lab/orbit ... --version 0.1.0
+# Matches: --version 0.1.0 ... ghcr.io/raids-lab/orbit
 # Uses [[:space:]] instead of \s for compatibility with BSD grep
 SEMVER='[0-9]+\.[0-9]+\.[0-9]+([-][a-zA-Z0-9.]+)?([+][a-zA-Z0-9.]+)?'
-PATTERN="ghcr.io/raids-lab/crater.*--version[[:space:]]+$SEMVER|--version[[:space:]]+$SEMVER.*ghcr.io/raids-lab/crater"
+PATTERN="ghcr.io/raids-lab/orbit.*--version[[:space:]]+$SEMVER|--version[[:space:]]+$SEMVER.*ghcr.io/raids-lab/orbit"
 
-echo "🔍 Checking for hardcoded Crater Chart versions in staged docs..."
+echo "🔍 Checking for hardcoded Orbit Chart versions in staged docs..."
 
 for file in $STAGED_DOC_FILES; do
     # Skip if file was deleted
@@ -43,7 +43,7 @@ for file in $STAGED_DOC_FILES; do
     MATCHES=$(grep -nE "$PATTERN" "$file")
     
     if [ -n "$MATCHES" ]; then
-        echo "❌ Error: Found hardcoded Crater Chart version in '$file':"
+        echo "❌ Error: Found hardcoded Orbit Chart version in '$file':"
         echo "$MATCHES" | sed 's/^/   /'
         FOUND_HARDCODED=1
     fi
@@ -51,11 +51,11 @@ done
 
 if [ $FOUND_HARDCODED -eq 1 ]; then
     echo ""
-    echo "❌ Pre-commit check failed: Hardcoded Crater Helm Chart versions detected."
-    echo "💡 Please use <CraterChartVersionNotice /> component or <chart-version> placeholder instead."
+    echo "❌ Pre-commit check failed: Hardcoded Orbit Helm Chart versions detected."
+    echo "💡 Please use <OrbitChartVersionNotice /> component or <chart-version> placeholder instead."
     echo "   See .github/instructions/docs.instructions.md for details."
     exit 1
 fi
 
-echo "✅ No hardcoded Crater Chart versions found in staged docs."
+echo "✅ No hardcoded Orbit Chart versions found in staged docs."
 exit 0

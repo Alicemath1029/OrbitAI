@@ -16,11 +16,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
-	"github.com/raids-lab/crater/dao/model"
-	checkpointsvc "github.com/raids-lab/crater/internal/service/vcjob/checkpoint"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/crclient"
-	"github.com/raids-lab/crater/pkg/utils"
+	"github.com/raids-lab/orbit/dao/model"
+	checkpointsvc "github.com/raids-lab/orbit/internal/service/vcjob/checkpoint"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/crclient"
+	"github.com/raids-lab/orbit/pkg/utils"
 )
 
 type ForwardType uint
@@ -38,13 +38,13 @@ type Forward struct {
 }
 
 const (
-	annotationKeyTaskName     = "crater.raids.io/task-name"
-	annotationKeyTaskTemplate = "crater.raids.io/task-template"
-	annotationKeyAlertEnabled = "crater.raids.io/alert-enabled"
-	annotationKeyUserID       = "crater.raids.io/user-id"
-	annotationKeyForwards     = "crater.raids.io/forwards"
+	annotationKeyTaskName     = "orbit.raids.io/task-name"
+	annotationKeyTaskTemplate = "orbit.raids.io/task-template"
+	annotationKeyAlertEnabled = "orbit.raids.io/alert-enabled"
+	annotationKeyUserID       = "orbit.raids.io/user-id"
+	annotationKeyForwards     = "orbit.raids.io/forwards"
 	// AnnotationKeyMountedDatasetIDs stores mounted dataset IDs as JSON array on job annotations.
-	AnnotationKeyMountedDatasetIDs = "crater.raids.io/mounted-dataset-ids"
+	AnnotationKeyMountedDatasetIDs = "orbit.raids.io/mounted-dataset-ids"
 
 	jobTypeJupyter = "jupyter"
 	jobTypeWebIDE  = "webide"

@@ -12,21 +12,21 @@ import (
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 	bus "volcano.sh/apis/pkg/apis/bus/v1alpha1"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/crclient"
-	"github.com/raids-lab/crater/pkg/packer"
-	"github.com/raids-lab/crater/pkg/utils"
-	"github.com/raids-lab/crater/pkg/vcqueue"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/crclient"
+	"github.com/raids-lab/orbit/pkg/packer"
+	"github.com/raids-lab/orbit/pkg/utils"
+	"github.com/raids-lab/orbit/pkg/vcqueue"
 )
 
 const (
 	ThreeDaySeconds    int32 = 259200
 	SevenDaySeconds    int32 = 604800
-	IngressLabelPrefix       = "ingress.crater.raids.io/" // Annotation Ingress Key
-	NodePortLabelKey         = "nodeport.crater.raids.io/"
+	IngressLabelPrefix       = "ingress.orbit.raids.io/" // Annotation Ingress Key
+	NodePortLabelKey         = "nodeport.orbit.raids.io/"
 )
 
 type (
@@ -109,7 +109,7 @@ func (mgr *VolcanojobMgr) CreateJupyterJob(c *gin.Context) {
 
 	// 4. Labels and Annotations
 	labels, jobAnnotations, podAnnotations := getLabelAndAnnotations(
-		CraterJobTypeJupyter,
+		OrbitJobTypeJupyter,
 		token,
 		baseURL,
 		&req.CreateJobCommon,
@@ -125,7 +125,7 @@ func (mgr *VolcanojobMgr) CreateJupyterJob(c *gin.Context) {
 		req.Image,
 		commandArgs,
 		JupyterPort,
-		string(CraterJobTypeJupyter),
+		string(OrbitJobTypeJupyter),
 		req.CpuPinningEnabled,
 		jobName,
 	)
@@ -369,7 +369,7 @@ func (mgr *VolcanojobMgr) CreateSnapshot(c *gin.Context) {
 
 	tolerations := []v1.Toleration{
 		{
-			Key:      "crater.raids.io/account",
+			Key:      "orbit.raids.io/account",
 			Operator: v1.TolerationOpExists,
 			Effect:   v1.TaintEffectNoSchedule,
 		},

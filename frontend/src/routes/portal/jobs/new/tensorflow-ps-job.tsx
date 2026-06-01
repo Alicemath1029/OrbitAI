@@ -189,18 +189,18 @@ be **deprecated** in the future releases.
 
 自定义作业默认以 \`root\` 用户运行，这种情况下，由于 Jupyter 交互式作业默认以普通用户运行，可能会导致权限问题。
 
-为了帮助您以普通用户运行自定义作业，我们在容器内注入了 \`/crater-start.sh\` 脚本，您可以通过以下方式使用：
+为了帮助您以普通用户运行自定义作业，我们在容器内注入了 \`/orbit-start.sh\` 脚本，您可以通过以下方式使用：
 
 ### 方法1：直接执行命令
 在批处理命令前加上脚本调用：
 \`\`\`bash
-/crater-start.sh python your_script.py
+/orbit-start.sh python your_script.py
 \`\`\`
 
 ### 方法2：多步骤执行
 执行脚本后，指定以普通用户权限运行命令，若直接执行命令，则仍以root权限执行：
 \`\`\`bash
-/crater-start.sh
+/orbit-start.sh
 su - \${NB_USER} -c 'your_command_1'
 su - \${NB_USER} -c 'your_command_2'
 ...

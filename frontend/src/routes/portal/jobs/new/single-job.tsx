@@ -225,7 +225,7 @@ function RouteComponent() {
           imageLink: '',
           archs: [],
         },
-        shell: '/crater-start.sh',
+        shell: '/orbit-start.sh',
         command: '',
         workingDir: '/home/' + user?.name,
         ports: [],
@@ -359,7 +359,7 @@ function RouteComponent() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem
-                              value="/crater-start.sh"
+                              value="/orbit-start.sh"
                               className="flex items-center justify-between"
                             >
                               <span className="font-mono">bash</span>

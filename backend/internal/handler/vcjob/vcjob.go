@@ -21,22 +21,22 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/handler"
-	"github.com/raids-lab/crater/internal/resputil"
-	"github.com/raids-lab/crater/internal/service"
-	vcjobservice "github.com/raids-lab/crater/internal/service/vcjob"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/aitaskctl"
-	"github.com/raids-lab/crater/pkg/config"
-	"github.com/raids-lab/crater/pkg/constants"
-	"github.com/raids-lab/crater/pkg/crclient"
-	"github.com/raids-lab/crater/pkg/imageregistry"
-	"github.com/raids-lab/crater/pkg/monitor"
-	"github.com/raids-lab/crater/pkg/packer"
-	"github.com/raids-lab/crater/pkg/prequeuewatcher"
-	"github.com/raids-lab/crater/pkg/utils"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/handler"
+	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/internal/service"
+	vcjobservice "github.com/raids-lab/orbit/internal/service/vcjob"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/aitaskctl"
+	"github.com/raids-lab/orbit/pkg/config"
+	"github.com/raids-lab/orbit/pkg/constants"
+	"github.com/raids-lab/orbit/pkg/crclient"
+	"github.com/raids-lab/orbit/pkg/imageregistry"
+	"github.com/raids-lab/orbit/pkg/monitor"
+	"github.com/raids-lab/orbit/pkg/packer"
+	"github.com/raids-lab/orbit/pkg/prequeuewatcher"
+	"github.com/raids-lab/orbit/pkg/utils"
 )
 
 //nolint:gochecknoinits // This is the standard way to register a gin handler.
@@ -137,20 +137,20 @@ func (mgr *VolcanojobMgr) RegisterAdmin(g *gin.RouterGroup) {
 const (
 	VolcanoSchedulerName = "volcano"
 
-	AnnotationKeyUser                    = "crater.raids.io/user"          // 用户名，以小写字母开头
-	AnnotationKeyTaskName                = "crater.raids.io/task-name"     // 任务名称（可能是中文）
-	AnnotationKeyTaskTemplate            = "crater.raids.io/task-template" // 任务模板
-	AnnotationKeyJupyter                 = "crater.raids.io/jupyter-token" // Jupyter token cache
-	AnnotationKeyWebIDE                  = "crater.raids.io/webide-token"  // WebIDE token cache
-	AnnotationKeyAlertEnabled            = "crater.raids.io/alert-enabled" // 是否开启告警
-	AnnotationKeySSHEnabled              = "crater.raids.io/ssh-enabled"   // SSH 缓存，格式为 "ip:port"
-	AnnotationKeyUserID                  = "crater.raids.io/user-id"
-	AnnotationKeyForwards                = "crater.raids.io/forwards"
+	AnnotationKeyUser                    = "orbit.raids.io/user"          // 用户名，以小写字母开头
+	AnnotationKeyTaskName                = "orbit.raids.io/task-name"     // 任务名称（可能是中文）
+	AnnotationKeyTaskTemplate            = "orbit.raids.io/task-template" // 任务模板
+	AnnotationKeyJupyter                 = "orbit.raids.io/jupyter-token" // Jupyter token cache
+	AnnotationKeyWebIDE                  = "orbit.raids.io/webide-token"  // WebIDE token cache
+	AnnotationKeyAlertEnabled            = "orbit.raids.io/alert-enabled" // 是否开启告警
+	AnnotationKeySSHEnabled              = "orbit.raids.io/ssh-enabled"   // SSH 缓存，格式为 "ip:port"
+	AnnotationKeyUserID                  = "orbit.raids.io/user-id"
+	AnnotationKeyForwards                = "orbit.raids.io/forwards"
 	AnnotationKeyScheduleType            = vcjobservice.AnnotationKeyScheduleType
 	AnnotationKeyWaitingToleranceSeconds = vcjobservice.AnnotationKeyWaitingToleranceSeconds
 
-	// VolumeData  = "crater-rw-workspace"
-	VolumeCache = "crater-cache"
+	// VolumeData  = "orbit-rw-workspace"
+	VolumeCache = "orbit-cache"
 	JYCache     = "jycache"
 
 	JupyterPort     = 8888
@@ -1202,7 +1202,7 @@ func (mgr *VolcanojobMgr) GetJobPods(c *gin.Context) {
 		return
 	}
 
-	// every pod has label crater.raids.io/base-url: tf-liyilong-1314c
+	// every pod has label orbit.raids.io/base-url: tf-liyilong-1314c
 	// get pods with label selector
 	vcjob := job.Attributes.Data()
 	var podList = &v1.PodList{}

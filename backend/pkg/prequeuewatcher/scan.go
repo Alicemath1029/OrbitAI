@@ -7,8 +7,8 @@ import (
 	v1 "k8s.io/api/core/v1"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/pkg/utils"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/pkg/utils"
 )
 
 const defaultPageSize = 50

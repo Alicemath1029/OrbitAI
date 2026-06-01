@@ -23,7 +23,7 @@ import { atomBackendVersion } from '@/utils/store'
 /**
  * VersionPage - Version information business component
  *
- * This is a business logic component specific to the Crater platform
+ * This is a business logic component specific to the Orbit platform
  * Displays application version information
  */
 export default function VersionPage() {
@@ -49,8 +49,8 @@ export default function VersionPage() {
         {/* First section: Logo */}
         <div className="mb-8 flex justify-center md:mb-16">
           <img
-            src="/crater.svg"
-            alt="Crater"
+            src="/orbit.svg"
+            alt="Orbit"
             className="h-32 w-32 drop-shadow-[0_0_20px_rgba(251,146,60,0.3)] filter md:h-40 md:w-40 dark:drop-shadow-[0_0_25px_rgba(96,165,250,0.4)]"
           />
         </div>
@@ -106,7 +106,7 @@ export default function VersionPage() {
               </span>
               {frontendCommitSha ? (
                 <a
-                  href={`https://github.com/raids-lab/crater/commit/${frontendCommitSha}`}
+                  href={`https://github.com/raids-lab/orbit/commit/${frontendCommitSha}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
@@ -166,7 +166,7 @@ export default function VersionPage() {
               </span>
               {backendVersion?.commitSHA ? (
                 <a
-                  href={`https://github.com/raids-lab/crater/commit/${backendVersion.commitSHA}`}
+                  href={`https://github.com/raids-lab/orbit/commit/${backendVersion.commitSHA}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
@@ -192,7 +192,7 @@ export default function VersionPage() {
             <span>{t('about.copyright')}</span>
             <span>•</span>
             <a
-              href="https://github.com/raids-lab/crater"
+              href="https://github.com/raids-lab/orbit"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"

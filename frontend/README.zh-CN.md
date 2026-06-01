@@ -1,6 +1,8 @@
-# 🌋 Crater 前端开发文档（中文）
+# 🌋 Orbit 前端开发文档（中文）
 
-Crater 是一个基于 Kubernetes 的 GPU 集群管理系统，本仓库为其前端项目，主要用于提供：算力编排、作业管理、监控可视化、模型与数据集管理等一体化 Web 控制台。
+Orbit 是一个基于 Kubernetes 的 GPU 集群管理系统，本仓库为其前端项目，主要用于提供：算力编排、作业管理、监控可视化、模型与数据集管理等一体化 Web 控制台。
+
+Orbit Frontend 基于 RAIDS Lab 开源的 [Crater](https://github.com/raids-lab/crater) 项目演进而来，当前已将界面品牌、路由资产和说明文档统一适配为 Orbit 平台。
 
 ## 🛠️ 环境准备
 
@@ -43,8 +45,8 @@ pnpm -v  # 推荐 v10.x 或更高
 ### 2. 克隆与初始化项目
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/crater.git
-cd crater/frontend
+git clone https://github.com/YOUR_USERNAME/orbit.git
+cd orbit/frontend
 pnpm install
 ```
 
@@ -73,7 +75,7 @@ http://localhost:5180
 
 ## 🚀 核心技术栈
 
-Crater Frontend 基于现代 React 技术栈构建，主要包括：
+Orbit Frontend 基于现代 React 技术栈构建，主要包括：
 
 - **语言**：TypeScript
 - **框架**：React 19
@@ -145,19 +147,19 @@ done
 
 ## 🚀 部署说明
 
-生产环境推荐搭配 Crater 后端与 Kubernetes 集群，以 Helm 方式部署完整系统。
+生产环境推荐搭配 Orbit 后端与 Kubernetes 集群，以 Helm 方式部署完整系统。
 
-Crater 的 Helm Chart 仓库：
+Orbit 的 Helm Chart 仓库：
 
-- `https://github.com/raids-lab/crater`
+- `https://github.com/raids-lab/orbit`
 
 部署步骤（简要）：
 
 1. 在目标集群中安装并配置 Helm
-2. 按 Crater 主项目文档配置后端、存储及相关依赖
+2. 按 Orbit 主项目文档配置后端、存储及相关依赖
 3. 构建前端产物并挂载至 Nginx/Ingress 等组件中对外提供访问
 
-> 具体部署流程请参考 Crater 主项目（后端与 Helm Chart）文档。
+> 具体部署流程请参考 Orbit 主项目（后端与 Helm Chart）文档。
 
 ---
 

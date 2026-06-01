@@ -1,6 +1,6 @@
 ---
-title: Crater Cluster Deployment Guide
-description: This guide outlines the standardized deployment process of the Crater platform on a production-grade Kubernetes cluster, including environment preparation, dependency component installation, core service deployment, and common troubleshooting.
+title: Orbit Cluster Deployment Guide
+description: This guide outlines the standardized deployment process of the Orbit platform on a production-grade Kubernetes cluster, including environment preparation, dependency component installation, core service deployment, and common troubleshooting.
 ---
 
 ## 1. Environment and Prerequisites
@@ -32,7 +32,7 @@ node-3     Ready    <none>          v1.31.2   <your-node-ip>  Ubuntu 22.04.5 LTS
 
 ## 2. Installation of Cluster Dependencies
 
-Crater platform relies on the following foundational components to enable scheduling, monitoring, networking, and storage functionality.  
+Orbit platform relies on the following foundational components to enable scheduling, monitoring, networking, and storage functionality.  
 This section includes installation commands and image information for each component.
 
 ### 2.1 Metrics Server
@@ -124,7 +124,7 @@ cat <<EOF | kubectl apply -f -
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: crater-postgresql
+  name: orbit-postgresql
   namespace: cnpg-system
 spec:
   instances: 3
@@ -305,7 +305,7 @@ EOF
 
 ### 2.8 ingress-nginx (Ingress Controller)
 
-**Function:** Provides external access points for Crater frontend and API.
+**Function:** Provides external access points for Orbit frontend and API.
 
 ```bash
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -380,17 +380,17 @@ http://<your-node-ip>:30002
 
 ---
 
-## 4. Crater Platform Deployment
+## 4. Orbit Platform Deployment
 
 Pull the Helm Chart:
 
-<CraterChartVersionNotice />
+<OrbitChartVersionNotice />
 
 ```bash
-helm pull oci://ghcr.io/raids-lab/crater --version <chart-version> --untar
+helm pull oci://ghcr.io/raids-lab/orbit --version <chart-version> --untar
 ```
 
-The core configuration file for the Crater platform is `values.yaml`.  
+The core configuration file for the Orbit platform is `values.yaml`.  
 This file defines cluster domain name, database connection, monitoring service addresses, storage PVCs, and connection parameters for external dependencies such as Harbor.
 
 Before running `helm install`, update the relevant fields according to the following instructions.
@@ -401,18 +401,18 @@ Before running `helm install`, update the relevant fields according to the follo
 
 ```yaml
 # Platform access domain name
-host: crater.example.com
+host: orbit.example.com
 
 # Protocol type: "http" or "https"
 protocol: http
 
 # Initial admin account
 firstUser:
-  username: crater-admin
+  username: orbit-admin
   password: <MUSTEDIT>
 ```
 
-If Ingress and DNS are configured, use a real domain name (e.g., `crater.mycluster.local`).  
+If Ingress and DNS are configured, use a real domain name (e.g., `orbit.mycluster.local`).  
 For testing environments only, use the control node IP.
 
 ---
@@ -426,22 +426,22 @@ storage:
   create: true
   request: 10Gi
   storageClass: "nfs"          # Use the NFS StorageClass created earlier
-  pvcName: "crater-rw-storage" # Name of the shared PVC mounted behind
+  pvcName: "orbit-rw-storage" # Name of the shared PVC mounted behind
 ```
 
-The Crater backend will automatically mount this PVC for user space and public directories (`users/`, `accounts/`, `public/`).
+The Orbit backend will automatically mount this PVC for user space and public directories (`users/`, `accounts/`, `public/`).
 
 ---
 
 ### 4.3 PostgreSQL Database Configuration (CloudNativePG)
 
-Crater uses a database cluster deployed via CloudNativePG.  
+Orbit uses a database cluster deployed via CloudNativePG.  
 Set the database connection parameters to point to the corresponding service:
 
 ```yaml
 backendConfig:
   postgres:
-    host: crater-postgresql.cnpg-system.svc.cluster.local  # Service name of CloudNativePG Cluster
+    host: orbit-postgresql.cnpg-system.svc.cluster.local  # Service name of CloudNativePG Cluster
     port: 5432
     dbname: postgres
     user: postgres
@@ -454,14 +454,14 @@ backendConfig:
 > 
 > - The `host` can be found using `kubectl get svc -n cnpg-system`.
 > 
-> - If the default CloudNativePG cluster name is `crater-postgresql`, the service name should be:  
->     `crater-postgresql-rw.cnpg-system.svc.cluster.local`.
+> - If the default CloudNativePG cluster name is `orbit-postgresql`, the service name should be:  
+>     `orbit-postgresql-rw.cnpg-system.svc.cluster.local`.
 
 ---
 
 ### 4.4 Monitoring System Configuration (Prometheus Stack)
 
-Crater backend retrieves GPU and job metrics via the Prometheus API.  
+Orbit backend retrieves GPU and job metrics via the Prometheus API.  
 Set `backendConfig.prometheusAPI` to the Prometheus service address in `kube-prometheus-stack`:
 
 ```yaml
@@ -490,7 +490,7 @@ grafanaProxy:
 ### 4.5 Harbor Registry Configuration
 
 If Harbor is already deployed in the cluster, enable the Registry integration.  
-After enabling, Crater can automatically push built images to the Harbor registry.
+After enabling, Orbit can automatically push built images to the Harbor registry.
 
 ```yaml
 backendConfig:
@@ -513,22 +513,22 @@ backendConfig:
 
 ### 4.6 Ingress and TLS Configuration (ingress-nginx + cert-manager)
 
-Crater exposes services via Ingress by default.  
+Orbit exposes services via Ingress by default.  
 If `ingress-nginx` is enabled and certificates are prepared, specify them in `backendConfig.secrets`:
 
 ```yaml
 backendConfig:
   secrets:
-    tlsSecretName: crater-tls-secret
-    tlsForwardSecretName: crater-tls-forward-secret
+    tlsSecretName: orbit-tls-secret
+    tlsForwardSecretName: orbit-tls-forward-secret
     imagePullSecretName: ""
 ```
 
 Create the certificate with:
 
 ```bash
-kubectl create secret tls crater-tls-secret \
-  --cert=tls.crt --key=tls.key -n crater-system
+kubectl create secret tls orbit-tls-secret \
+  --cert=tls.crt --key=tls.key -n orbit-system
 ```
 
 If HTTPS is not enabled, keep the default values; the protocol remains HTTP.
@@ -537,7 +537,7 @@ If HTTPS is not enabled, keep the default values; the protocol remains HTTP.
 
 ### 4.7 LDAP Configuration
 
-If your organization already has an existing LDAP directory service (such as OpenLDAP or Active Directory), you can configure Crater to integrate with this service for unified identity authentication.
+If your organization already has an existing LDAP directory service (such as OpenLDAP or Active Directory), you can configure Orbit to integrate with this service for unified identity authentication.
 
 If LDAP is enabled, the system will automatically complete account registration upon the user's first login and continuously synchronize information such as nickname and email from LDAP.
 
@@ -603,25 +603,25 @@ For more detailed instructions, please refer to the [Configuration Guide](/en/do
 After confirming all configurations:
 
 ```bash
-helm install crater oci://ghcr.io/raids-lab/crater \
+helm install orbit oci://ghcr.io/raids-lab/orbit \
   --version <chart-version> \
-  -n crater-system \
+  -n orbit-system \
   -f values.yaml
 ```
 
 Verification:
 
 ```bash
-kubectl get pods -n crater-system
-kubectl get ingress -n crater-system
+kubectl get pods -n orbit-system
+kubectl get ingress -n orbit-system
 ```
 
 Access URL:
 
 ```
-http://crater.example.com
+http://orbit.example.com
 ```
 
 ---
 
-This document applies to Crater v0.1.0 and above.
+This document applies to Orbit v0.1.0 and above.

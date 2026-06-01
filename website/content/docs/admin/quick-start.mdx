@@ -1,46 +1,46 @@
 ---
 title: 快速开始
-description: 部署 Crater 并使用
+description: 部署 Orbit 并使用
 ---
 
-Crater 平台依赖 Kubernetes 集群进行运行，因此在部署前，需要准备一系列基础依赖组件。这些组件提供了监控、存储、网络、调度、镜像仓库等核心能力，确保平台能够正常启动与运行。
+Orbit 平台依赖 Kubernetes 集群进行运行，因此在部署前，需要准备一系列基础依赖组件。这些组件提供了监控、存储、网络、调度、镜像仓库等核心能力，确保平台能够正常启动与运行。
 
 在最小化部署方案中，我们尽量只保留最核心、不可或缺的依赖，避免引入过多复杂性。最终确定的依赖包括：
 
-- **NVIDIA GPU Operator**：负责安装 GPU 驱动、设备插件和监控组件，确保 Crater 可以调度 GPU 任务。
-- **Bitnami PostgreSQL**：不考虑高可用的 PostgreSQL 数据库服务，本方案中主要作为 Crater 的外部数据库。
+- **NVIDIA GPU Operator**：负责安装 GPU 驱动、设备插件和监控组件，确保 Orbit 可以调度 GPU 任务。
+- **Bitnami PostgreSQL**：不考虑高可用的 PostgreSQL 数据库服务，本方案中主要作为 Orbit 的外部数据库。
 - **IngressClass (Ingress-Nginx)**：负责处理外部流量路由，将用户请求转发到集群内部服务。
-- **Volcano**：面向批处理和 AI 工作负载的调度框架，是 Crater 的作业调度核心。
+- **Volcano**：面向批处理和 AI 工作负载的调度框架，是 Orbit 的作业调度核心。
 - **StorageClass (NFS)**：统一的分布式存储后端，为数据库和 Harbor 提供持久化存储能力。
 
-选择这些组件的原因在于：它们是 **Crater 平台最小可运行环境** 所需的关键支撑，没有它们，平台无法正常运作。而诸如 **Prometheus/Grafana 监控栈**、**MetalLB 负载均衡**、**OpenEBS 存储** 等功能更强但非必须的依赖，则被排除在最小版本之外，以降低部署门槛。
+选择这些组件的原因在于：它们是 **Orbit 平台最小可运行环境** 所需的关键支撑，没有它们，平台无法正常运作。而诸如 **Prometheus/Grafana 监控栈**、**MetalLB 负载均衡**、**OpenEBS 存储** 等功能更强但非必须的依赖，则被排除在最小版本之外，以降低部署门槛。
 
 ## Installation
 
 ### Install from GitHub Container Registry (Recommended)
 
-<CraterChartVersionNotice />
+<OrbitChartVersionNotice />
 
 ```bash
 # Add the Helm OCI repository
 helm registry login ghcr.io
 
 # Install the chart
-helm install crater oci://ghcr.io/raids-lab/crater --version <chart-version>
+helm install orbit oci://ghcr.io/raids-lab/orbit --version <chart-version>
 
 # Or upgrade an existing installation
-helm upgrade crater oci://ghcr.io/raids-lab/crater --version <chart-version>
+helm upgrade orbit oci://ghcr.io/raids-lab/orbit --version <chart-version>
 ```
 
 ### Install from Source
 
 ```bash
 # Clone the repository
-git clone https://github.com/raids-lab/crater.git
-cd crater/charts
+git clone https://github.com/raids-lab/orbit.git
+cd orbit/charts
 
 # Install the chart
-helm install crater crater/
+helm install orbit orbit/
 ```
 
 ## Configuration
@@ -62,7 +62,7 @@ backendConfig:
 Then install with your values:
 
 ```bash
-helm install crater oci://ghcr.io/raids-lab/crater --values values.yaml
+helm install orbit oci://ghcr.io/raids-lab/orbit --values values.yaml
 ```
 
 如果想了解详细的配置含义，可以阅读 [配置说明](../chart)。
@@ -96,7 +96,7 @@ helm install ingress-nginx ingress-nginx/ingress-nginx \
 
 ### Volcano
 
-Crater 的任务运行和调度依赖 Volcano 提供的批量计算调度能力。Volcano 针对 AI/大数据场景优化，支持队列、优先级、Gang 调度等特性。即使在最小部署环境中，Volcano 也是必不可少的核心组件，否则 Crater 无法调度和运行任务。
+Orbit 的任务运行和调度依赖 Volcano 提供的批量计算调度能力。Volcano 针对 AI/大数据场景优化，支持队列、优先级、Gang 调度等特性。即使在最小部署环境中，Volcano 也是必不可少的核心组件，否则 Orbit 无法调度和运行任务。
 
 ### 部署命令
 
@@ -113,7 +113,7 @@ helm upgrade --install volcano volcano-sh/volcano \
   -f volcano/values.yaml
 ```
 
-value.yaml 配置参考  https://github.com/raids-lab/crater-backend/blob/main/deployments/volcano/values.yaml
+value.yaml 配置参考  https://github.com/raids-lab/orbit-backend/blob/main/deployments/volcano/values.yaml
 
 ####  验证部署
 
@@ -247,9 +247,9 @@ CNPG 作为 Harbor 外部数据库管理组件。
 
 ### 部署 Harbor
 
-Harbor 是 Crater 平台依赖的镜像仓库。在内网或离线环境下，公共镜像库（如 DockerHub、ghcr.io）常常不可达，因此必须通过私有仓库来存放 Crater 前后端及依赖镜像。
+Harbor 是 Orbit 平台依赖的镜像仓库。在内网或离线环境下，公共镜像库（如 DockerHub、ghcr.io）常常不可达，因此必须通过私有仓库来存放 Orbit 前后端及依赖镜像。
  选择 Harbor 的原因是它具备 **镜像管理、权限控制、安全扫描** 等企业级能力，同时和 Kubernetes 原生集成良好。在最小部署环境中，Harbor 只需要依赖 **NFS 存储** 与 **CNPG 外部数据库** 即可运行，不再额外依赖 Redis/Postgres 内置版本，简化了整体架构。
- 这样不仅保证 Crater 的镜像可以本地化存储和分发，也为后续扩展（如多用户、多项目的镜像管理）提供了基础。
+ 这样不仅保证 Orbit 的镜像可以本地化存储和分发，也为后续扩展（如多用户、多项目的镜像管理）提供了基础。
 
 Harbor 使用上面的 **NFS** 存储和 **CNPG 外部数据库**。
 

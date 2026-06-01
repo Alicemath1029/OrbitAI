@@ -131,7 +131,7 @@ type Config struct {
 	// Optional: If not specified, default values will be used.
 	ModelDownload struct {
 		// Image is the container image used for model download jobs.
-		// Optional: Defaults to "crater-harbor.act.buaa.edu.cn/docker.io/python:3.11-slim" if not specified.
+		// Optional: Defaults to "orbit-harbor.act.buaa.edu.cn/docker.io/python:3.11-slim" if not specified.
 		Image string `json:"image"`
 	} `json:"modelDownload"`
 
@@ -604,7 +604,7 @@ func (c *Config) PrintConfig() {
 	if c.ModelDownload.Image != "" {
 		klog.Infof("Model Download Image: %s", c.ModelDownload.Image)
 	} else {
-		klog.Info("Model Download Image: <default: crater-harbor.act.buaa.edu.cn/crater/base/python:3.11-slim>")
+		klog.Info("Model Download Image: <default: orbit-harbor.act.buaa.edu.cn/orbit/base/python:3.11-slim>")
 	}
 
 	// Secrets
@@ -697,8 +697,8 @@ func initConfig() *Config {
 	config := &Config{}
 	var configPath string
 	if IsDebugMode() {
-		if os.Getenv("CRATER_DEBUG_CONFIG_PATH") != "" {
-			configPath = os.Getenv("CRATER_DEBUG_CONFIG_PATH")
+		if os.Getenv("ORBIT_DEBUG_CONFIG_PATH") != "" {
+			configPath = os.Getenv("ORBIT_DEBUG_CONFIG_PATH")
 		} else {
 			configPath = "./etc/debug-config.yaml"
 		}

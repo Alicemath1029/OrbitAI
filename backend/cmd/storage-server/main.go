@@ -8,9 +8,9 @@ import (
 	"github.com/joho/godotenv"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/storage"
-	"github.com/raids-lab/crater/pkg/config"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/storage"
+	"github.com/raids-lab/orbit/pkg/config"
 )
 
 var (
@@ -66,14 +66,14 @@ func main() {
 	_ = config.GetConfig()
 	query.SetDefault(query.GetDB())
 
-	port := firstNonEmptyEnv("CRATER_STORAGE_PORT", "PORT")
+	port := firstNonEmptyEnv("ORBIT_STORAGE_PORT", "PORT")
 	if port == "" {
 		port = "7320"
 	}
 
-	rootDir := firstNonEmptyEnv("CRATER_STORAGE_ROOT", "ROOTDIR")
+	rootDir := firstNonEmptyEnv("ORBIT_STORAGE_ROOT", "ROOTDIR")
 	if rootDir == "" {
-		rootDir = "/crater"
+		rootDir = "/orbit"
 	}
 	if err := os.MkdirAll(rootDir, os.ModePerm); err != nil {
 		klog.Fatalf("failed to create storage root directory %s: %v", rootDir, err)

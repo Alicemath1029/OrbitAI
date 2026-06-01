@@ -1,6 +1,8 @@
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-# Crater
+# Orbit
+
+This documentation site belongs to Orbit, a platform developed based on the open-source [Crater](https://github.com/raids-lab/crater) project from RAIDS Lab. The docs have been adapted to describe the Orbit-branded platform and deployment workflow.
 
 This is a Next.js application generated with
 [Create Fumadocs](https://github.com/fuma-nama/fumadocs).
@@ -15,16 +17,16 @@ pnpm install
 pnpm dev
 ```
 
-Open http://localhost:3000/crater/zh with your browser to see the result.
+Open http://localhost:3000/orbit/zh with your browser to see the result.
 
 ## Build and serve locally
 
 ```bash
 pnpm build
-pnpm dlx serve@latest out --serve-path /crater
+pnpm dlx serve@latest out --serve-path /orbit
 ```
 
-Open http://localhost:3000/crater/zh with your browser to see the result.
+Open http://localhost:3000/orbit/zh with your browser to see the result.
 
 ## Before commit
 

@@ -147,7 +147,7 @@ export function DataTablePagination<TData>({
   }
 
   return (
-    <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="tech-panel border-border/65 bg-card/50 flex w-full flex-col gap-3 rounded-md border px-3 py-2.5 shadow-xs backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-wrap items-center gap-1.5 text-xs">
         {table.getFilteredSelectedRowModel().rows.length > 0 &&
           multipleHandlers &&

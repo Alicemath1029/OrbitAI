@@ -79,7 +79,7 @@ After selection, you will be redirected to the new custom job interface, where y
 
 ![](./img/sin-deepseek-7b/openweb-submit.webp)
 
-After starting the large model inference service on the Crater platform using the **DeepSeek R1 Single-Machine Inference** task template, you need to modify the first environment variable, the address of the OpenAI service:
+After starting the large model inference service on the Orbit platform using the **DeepSeek R1 Single-Machine Inference** task template, you need to modify the first environment variable, the address of the OpenAI service:
 
 For the case of a single-machine deployed model, it corresponds to the **「Internal IP」** in the **「Basic Information」** section of the job.
 

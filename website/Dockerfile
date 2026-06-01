@@ -1,4 +1,4 @@
-# Copyright 2025 Crater
+# Copyright 2025 Orbit
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY ./deploy/nginx.conf /etc/nginx/nginx.conf
 
 # 复制构建产物到指定路径（注意末尾斜杠）
-COPY ./out/ /usr/share/nginx/html/crater/
+COPY ./out/ /usr/share/nginx/html/orbit/
 
 # 设置权限
 RUN chmod -R 755 /usr/share/nginx/html

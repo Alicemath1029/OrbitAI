@@ -268,7 +268,7 @@ Then, for the Ubuntu operating system, we perform a two-stage build:
 # LXCFS Builder Image
 # Builds LXCFS from source on Ubuntu 22.04
 
-FROM crater-harbor.act.buaa.edu.cn/docker.io/ubuntu:22.04 AS build
+FROM orbit-harbor.act.buaa.edu.cn/docker.io/ubuntu:22.04 AS build
 
 # Environment configuration
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -311,7 +311,7 @@ RUN wget https://linuxcontainers.org/downloads/lxcfs/lxcfs-${LXCFS_VERSION}.tar.
     make install && \
     rm -f /lxcfs-${LXCFS_VERSION}.tar.gz
 
-FROM crater-harbor.act.buaa.edu.cn/docker.io/ubuntu:22.04
+FROM orbit-harbor.act.buaa.edu.cn/docker.io/ubuntu:22.04
 
 STOPSIGNAL SIGINT
 

@@ -16,10 +16,10 @@ import (
 	"k8s.io/klog/v2"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/pkg/cronjob"
-	"github.com/raids-lab/crater/pkg/patrol"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/pkg/cronjob"
+	"github.com/raids-lab/orbit/pkg/patrol"
 )
 
 const (

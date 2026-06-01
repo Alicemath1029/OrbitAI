@@ -42,14 +42,14 @@ const PageTitle: FC<PageTitleProps> = ({
   return (
     <div
       className={cn(
-        'flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between',
-        title ? 'sm:h-12' : '',
+        'border-border/65 flex min-w-0 flex-col items-start gap-3 border-b pb-4 sm:flex-row sm:items-end sm:justify-between',
+        title ? 'min-h-12' : '',
         className
       )}
     >
-      <div className="min-w-0">
+      <div className="min-w-0 space-y-1">
         {title && (
-          <div className="flex min-w-0 items-center gap-1.5 text-xl font-bold">
+          <div className="flex min-w-0 items-center gap-1.5 text-2xl font-semibold tracking-tight">
             <p className="min-w-0 truncate">{title}</p>
             {tipComponent}
             {tipContent && <TipBadge title={tipContent} />}
@@ -58,7 +58,7 @@ const PageTitle: FC<PageTitleProps> = ({
         {description && (
           <p
             className={cn(
-              'text-muted-foreground hidden items-center gap-1 md:flex',
+              'text-muted-foreground hidden items-center gap-1 leading-relaxed md:flex',
               title ? 'text-sm' : 'text-base'
             )}
           >

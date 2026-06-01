@@ -1,6 +1,6 @@
 ---
 title: 最小化部署
-description: 本文档将指导您使用 Kind 在本地快速搭建一个 Crater 环境。Crater 是一个基于 Kubernetes 的分布式训练平台，本指南将涵盖从创建 Kind 集群到部署 Crater 所需各组件的完整流程。
+description: 本文档将指导您使用 Kind 在本地快速搭建一个 Orbit 环境。Orbit 是一个基于 Kubernetes 的分布式训练平台，本指南将涵盖从创建 Kind 集群到部署 Orbit 所需各组件的完整流程。
 ---
 
 ## 1. 环境准备
@@ -109,26 +109,26 @@ kubectl wait --namespace ingress-nginx \
 
 ```bash
 # 创建命名空间
-kubectl create namespace crater-system
+kubectl create namespace orbit-system
 
 # 设置当前命名空间上下文
-kubectl config set-context --current --namespace=crater-system
+kubectl config set-context --current --namespace=orbit-system
 
 # 添加 Bitnami Helm 仓库
 helm repo add bitnami https://charts.bitnami.com/bitnami
 
 # 安装 PostgreSQL
-helm install crater-postgresql bitnami/postgresql -n crater-system
+helm install orbit-postgresql bitnami/postgresql -n orbit-system
 ```
 
 **获取数据库密码：**
 ```bash
-export POSTGRES_PASSWORD=$(kubectl get secret --namespace crater-system crater-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
+export POSTGRES_PASSWORD=$(kubectl get secret --namespace orbit-system orbit-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
 echo "数据库密码: $POSTGRES_PASSWORD"
 ```
 
 <Callout type="info">
-    请妥善保存数据库密码，后续部署 Crater 时需要用到
+    请妥善保存数据库密码，后续部署 Orbit 时需要用到
 </Callout>
 
 ## 5. 部署 Volcano 调度器
@@ -183,14 +183,14 @@ NAME   PROVISIONER                                       RECLAIMPOLICY   VOLUMEB
 nfs    cluster.local/nfs-provisioner-nfs-server-provisioner   Delete          Immediate           true                   1m
 ```
 
-## 7. 部署 Crater
+## 7. 部署 Orbit
 
-### 7.1 获取 Crater Helm Chart 值文件
+### 7.1 获取 Orbit Helm Chart 值文件
 
-<CraterChartVersionNotice />
+<OrbitChartVersionNotice />
 
 ```bash
-helm show values oci://ghcr.io/raids-lab/crater --version <chart-version> > values.yaml
+helm show values oci://ghcr.io/raids-lab/orbit --version <chart-version> > values.yaml
 ```
 
 ### 7.2 配置数据库连接
@@ -199,7 +199,7 @@ helm show values oci://ghcr.io/raids-lab/crater --version <chart-version> > valu
 
 ```yaml
 postgres:
-  host: crater-postgresql.crater-system.svc.cluster.local
+  host: orbit-postgresql.orbit-system.svc.cluster.local
   port: 5432
   dbname: postgres
   user: postgres
@@ -208,27 +208,27 @@ postgres:
   TimeZone: Asia/Shanghai
 ```
 
-### 7.3 安装 Crater
+### 7.3 安装 Orbit
 
 ```bash
-helm install crater oci://ghcr.io/raids-lab/crater --version <chart-version> -n crater-system -f values.yaml
+helm install orbit oci://ghcr.io/raids-lab/orbit --version <chart-version> -n orbit-system -f values.yaml
 ```
 
 **验证安装：**
 ```bash
-kubectl get pods -n crater-system
+kubectl get pods -n orbit-system
 ```
 
 <Callout type="success">
-    如果所有 Pod 都处于 Running 状态，说明 Crater 环境已成功搭建！
+    如果所有 Pod 都处于 Running 状态，说明 Orbit 环境已成功搭建！
 </Callout>
 
-## 8. 访问 Crater
+## 8. 访问 Orbit
 
 ### 8.1 获取访问地址
 
 ```bash
-kubectl get ingress -n crater-system
+kubectl get ingress -n orbit-system
 ```
 
 ### 8.2 配置本地 hosts（如果需要）
@@ -236,12 +236,12 @@ kubectl get ingress -n crater-system
 如果使用本地 Kind 集群，可能需要在 `/etc/hosts` 中添加映射：
 
 ```
-127.0.0.1 crater.example.com
+127.0.0.1 orbit.example.com
 ```
 
 ### 8.3 访问 Web 界面
 
-打开浏览器访问：`http://crater.example.com:8080`（或根据您的 Ingress 配置）
+打开浏览器访问：`http://orbit.example.com:8080`（或根据您的 Ingress 配置）
 
 ## 9. 故障排除
 
@@ -254,10 +254,10 @@ kubectl get ingress -n crater-system
 **解决方案：**
 ```bash
 # 查看 Pod 日志
-kubectl logs <pod-name> -n crater-system
+kubectl logs <pod-name> -n orbit-system
 
 # 查看 Pod 详细信息
-kubectl describe pod <pod-name> -n crater-system
+kubectl describe pod <pod-name> -n orbit-system
 ```
 
 <Callout type="warn">
@@ -267,11 +267,11 @@ kubectl describe pod <pod-name> -n crater-system
 **解决方案：**
 ```bash
 # 检查数据库服务状态
-kubectl get svc -n crater-system | grep postgres
+kubectl get svc -n orbit-system | grep postgres
 
 # 测试数据库连接
 kubectl run postgres-test --rm -it --image=postgres:13 --restart=Never -- \
-  psql -h crater-postgresql.crater-system.svc.cluster.local -U postgres
+  psql -h orbit-postgresql.orbit-system.svc.cluster.local -U postgres
 ```
 
 ## 10. 清理环境
@@ -281,8 +281,8 @@ kubectl run postgres-test --rm -it --image=postgres:13 --restart=Never -- \
 kind delete cluster
 
 # 或者删除特定资源
-helm uninstall crater -n crater-system
-helm uninstall crater-postgresql -n crater-system
+helm uninstall orbit -n orbit-system
+helm uninstall orbit-postgresql -n orbit-system
 helm uninstall volcano -n volcano-system
 helm uninstall nfs-provisioner -n nfs-system
 ```
@@ -293,13 +293,13 @@ helm uninstall nfs-provisioner -n nfs-system
 
 ## 总结
 
-通过本指南，您已经成功在 Kind 集群上部署了一个完整的 Crater 环境，包括：
+通过本指南，您已经成功在 Kind 集群上部署了一个完整的 Orbit 环境，包括：
 
 - ✅ Kind Kubernetes 集群
 - ✅ Ingress-Nginx 控制器
 - ✅ PostgreSQL 数据库
 - ✅ Volcano 调度器
 - ✅ NFS 存储 provisioner
-- ✅ Crater 训练平台
+- ✅ Orbit 训练平台
 
-现在您可以开始使用 Crater 进行分布式训练任务了！如有任何问题，请参考各组件的官方文档或查看日志进行故障排除。
+现在您可以开始使用 Orbit 进行分布式训练任务了！如有任何问题，请参考各组件的官方文档或查看日志进行故障排除。

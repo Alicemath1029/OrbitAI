@@ -5,23 +5,23 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/raids-lab/crater/dao/model"
+	"github.com/raids-lab/orbit/dao/model"
 )
 
 const (
-	AnnotationKeyEnabled    = "crater.raids.io/checkpoint-enabled"
-	AnnotationKeyFramework  = "crater.raids.io/checkpoint-framework"
-	AnnotationKeyProject    = "crater.raids.io/checkpoint-project"
-	AnnotationKeyExperiment = "crater.raids.io/checkpoint-experiment"
-	AnnotationKeyDir        = "crater.raids.io/checkpoint-dir"
-	AnnotationKeyOutputDir  = "crater.raids.io/output-dir"
-	AnnotationKeyResumeMode = "crater.raids.io/resume-mode"
-	AnnotationKeyResumeFrom = "crater.raids.io/resume-from"
-	AnnotationKeySaveSteps  = "crater.raids.io/checkpoint-save-steps"
-	AnnotationKeyMaxToKeep  = "crater.raids.io/checkpoint-max-to-keep"
-	AnnotationKeyMaxBytes   = "crater.raids.io/checkpoint-max-bytes"
-	AnnotationKeyLatest     = "crater.raids.io/latest-checkpoint"
-	AnnotationKeyConfig     = "crater.raids.io/checkpoint-config"
+	AnnotationKeyEnabled    = "orbit.raids.io/checkpoint-enabled"
+	AnnotationKeyFramework  = "orbit.raids.io/checkpoint-framework"
+	AnnotationKeyProject    = "orbit.raids.io/checkpoint-project"
+	AnnotationKeyExperiment = "orbit.raids.io/checkpoint-experiment"
+	AnnotationKeyDir        = "orbit.raids.io/checkpoint-dir"
+	AnnotationKeyOutputDir  = "orbit.raids.io/output-dir"
+	AnnotationKeyResumeMode = "orbit.raids.io/resume-mode"
+	AnnotationKeyResumeFrom = "orbit.raids.io/resume-from"
+	AnnotationKeySaveSteps  = "orbit.raids.io/checkpoint-save-steps"
+	AnnotationKeyMaxToKeep  = "orbit.raids.io/checkpoint-max-to-keep"
+	AnnotationKeyMaxBytes   = "orbit.raids.io/checkpoint-max-bytes"
+	AnnotationKeyLatest     = "orbit.raids.io/latest-checkpoint"
+	AnnotationKeyConfig     = "orbit.raids.io/checkpoint-config"
 )
 
 func ApplyAnnotations(annotations map[string]string, info *model.CheckpointInfo) error {

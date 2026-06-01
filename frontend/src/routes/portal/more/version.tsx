@@ -22,7 +22,7 @@ export const Route = createFileRoute('/portal/more/version')({
   component: RouteComponent,
   loader: () => {
     return {
-      crumb: t('navigation.aboutCrater'),
+      crumb: t('navigation.aboutOrbit'),
     }
   },
 })

@@ -12,7 +12,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
-	"github.com/raids-lab/crater/pkg/monitor"
+	"github.com/raids-lab/orbit/pkg/monitor"
 )
 
 const (

@@ -81,10 +81,10 @@ prepare: ## Prepare development environment with updated configs
 	@echo "$(BLUE)Preparing development environment...$(RESET)"
 	@if [ ! -f .debug.env ]; then \
 		echo "$(YELLOW)Creating .debug.env file...$(RESET)"; \
-		echo 'CRATER_BE_PORT=:8088' > .debug.env; \
+		echo 'ORBIT_BE_PORT=:8088' > .debug.env; \
 		echo '# Storage server (optional for local debug)' >> .debug.env; \
-		echo '# CRATER_STORAGE_PORT=7320' >> .debug.env; \
-		echo '# CRATER_STORAGE_ROOT=./storage-data' >> .debug.env; \
+		echo '# ORBIT_STORAGE_PORT=7320' >> .debug.env; \
+		echo '# ORBIT_STORAGE_ROOT=./storage-data' >> .debug.env; \
 		echo "$(GREEN)✅ .debug.env created successfully!$(RESET)"; \
 	else \
 		echo "$(GREEN)✅ .debug.env already exists$(RESET)"; \
@@ -105,13 +105,13 @@ vet: fmt ## Run go vet.
 .PHONY: imports
 imports: goimports ## Run goimports on all go files.
 	@echo "$(BLUE)Running goimports...$(RESET)"
-	$(GOIMPORTS) -w -local github.com/raids-lab/crater .
+	$(GOIMPORTS) -w -local github.com/raids-lab/orbit .
 
-# if $(GOIMPORTS) -l -local github.com/raids-lab/crater .go, then error
+# if $(GOIMPORTS) -l -local github.com/raids-lab/orbit .go, then error
 .PHONY: import-check
 import-check: goimports ## Check if goimports is needed.
 	@echo "$(BLUE)Checking imports...$(RESET)"
-	@if [ -n "$$($(GOIMPORTS) -l -local github.com/raids-lab/crater .)" ]; then \
+	@if [ -n "$$($(GOIMPORTS) -l -local github.com/raids-lab/orbit .)" ]; then \
 		echo "$(RED)❌ goimports needs to be run, please run 'make imports'$(RESET)"; \
 		exit 1; \
 	else \
@@ -138,13 +138,13 @@ migrate: ## Migrate database.
 .PHONY: docs
 docs: swaggo ## Generate docs docs.
 	@echo "$(MAGENTA)Generating swagger docs...$(RESET)"
-	$(SWAGGO) init -g cmd/crater/main.go -q --parseInternal --parseDependency
+	$(SWAGGO) init -g cmd/orbit/main.go -q --parseInternal --parseDependency
 	@echo "$(GREEN)✅ Swagger docs generated$(RESET)"
 
 .PHONY: run
 run: prepare show-kubeconfig fmt docs imports ## Run a controller from your host.
-	@echo "$(GREEN)🚀 Starting crater backend server...$(RESET)"
-	KUBECONFIG="$(KUBECONFIG_PATH)" go run -ldflags="$(VERSION_LDFLAGS)" cmd/crater/main.go
+	@echo "$(GREEN)🚀 Starting orbit backend server...$(RESET)"
+	KUBECONFIG="$(KUBECONFIG_PATH)" go run -ldflags="$(VERSION_LDFLAGS)" cmd/orbit/main.go
 
 .PHONY: pre-commit-check
 pre-commit-check: lint docs ## Run pre-commit checks (lint and generate docs).
@@ -154,7 +154,7 @@ pre-commit-check: lint docs ## Run pre-commit checks (lint and generate docs).
 .PHONY: build
 build: fmt lint docs ## Build manager binary.
 	@echo "$(YELLOW)🔨 Building controller binary...$(RESET)"
-	go build -ldflags="-w -s $(VERSION_LDFLAGS)" -o bin/controller cmd/crater/main.go
+	go build -ldflags="-w -s $(VERSION_LDFLAGS)" -o bin/controller cmd/orbit/main.go
 	@echo "$(GREEN)✅ Controller binary built successfully: bin/controller$(RESET)"
 
 .PHONY: build-checkpoint-scanner
@@ -204,7 +204,7 @@ $(SWAGGO): $(LOCALBIN)
 
 .PHONY: run-storage
 run-storage: prepare fmt imports ## Run storage server from backend module.
-	@echo "$(GREEN)Starting crater storage server...$(RESET)"
+	@echo "$(GREEN)Starting orbit storage server...$(RESET)"
 	go run -ldflags="$(VERSION_LDFLAGS)" cmd/storage-server/main.go
 
 .PHONY: build-storage

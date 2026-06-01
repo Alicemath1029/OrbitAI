@@ -31,7 +31,7 @@ def sha256_json(value):
 
 
 def checkpoint_root():
-    return Path(os.environ["CRATER_CHECKPOINT_DIR"])
+    return Path(os.environ["ORBIT_CHECKPOINT_DIR"])
 
 
 def checkpoint_path(step):
@@ -90,8 +90,8 @@ def save_checkpoint(state, rows):
     })
     (target / "trainer_state.json").write_text(json.dumps(state_payload, indent=2, sort_keys=True))
     manifest = {
-        "framework": os.getenv("CRATER_CHECKPOINT_FRAMEWORK", ""),
-        "job": os.getenv("CRATER_JOB_NAME", ""),
+        "framework": os.getenv("ORBIT_CHECKPOINT_FRAMEWORK", ""),
+        "job": os.getenv("ORBIT_JOB_NAME", ""),
         "checkpointDir": str(checkpoint_root()),
         "path": str(target),
         "step": state["step"],
@@ -150,7 +150,7 @@ def build_continuity_proof(before, after, source_manifest, final_manifest, resum
         "datasetChecksum": final_manifest["datasetChecksum"],
         "lossBefore": before["lossHistory"][-1] if before["lossHistory"] else None,
         "lossAfter": after["lossHistory"][-1],
-        "job": os.getenv("CRATER_JOB_NAME", ""),
+        "job": os.getenv("ORBIT_JOB_NAME", ""),
     }
 
 
@@ -158,7 +158,7 @@ def main():
     root = checkpoint_root()
     root.mkdir(parents=True, exist_ok=True)
     rows = dataset()
-    resume_from = os.getenv("CRATER_RESUME_FROM", "").strip()
+    resume_from = os.getenv("ORBIT_RESUME_FROM", "").strip()
 
     if resume_from:
         state, source_manifest = load_checkpoint(resume_from)

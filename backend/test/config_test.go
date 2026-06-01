@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	config2 "github.com/raids-lab/crater/pkg/config"
+	config2 "github.com/raids-lab/orbit/pkg/config"
 )
 
 func TestYamlConfig(_ *testing.T) {

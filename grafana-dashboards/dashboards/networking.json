@@ -1006,8 +1006,8 @@
         {
           "allValue": ".+",
           "current": {
-            "text": "crater-workspace",
-            "value": "crater-workspace"
+            "text": "orbit-workspace",
+            "value": "orbit-workspace"
           },
           "datasource": {
             "type": "prometheus",

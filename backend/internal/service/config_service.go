@@ -17,12 +17,12 @@ import (
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/dao/query"
-	"github.com/raids-lab/crater/internal/util"
-	"github.com/raids-lab/crater/pkg/cronjob"
-	"github.com/raids-lab/crater/pkg/crypto"
-	"github.com/raids-lab/crater/pkg/patrol"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/cronjob"
+	"github.com/raids-lab/orbit/pkg/crypto"
+	"github.com/raids-lab/orbit/pkg/patrol"
 )
 
 // 定义掩码常量

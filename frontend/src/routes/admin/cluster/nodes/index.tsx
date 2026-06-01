@@ -210,7 +210,7 @@ function NodesForAdmin() {
     }
 
     const taintContent: IClusterNodeTaint = {
-      key: 'crater.raids.io/account',
+      key: 'orbit.raids.io/account',
       value: selectedAccount,
       effect: 'NoSchedule',
       reason: occupationReason || '',
@@ -312,8 +312,8 @@ function NodesForAdmin() {
             taints?.some(
               (t) => t.key === 'node.kubernetes.io/unschedulable' && t.effect === 'NoSchedule'
             ) || false
-          const drainedTaint = taints?.some((t) => t.key === 'crater.raids.io/drained') || false
-          const occupiedTaint = taints?.find((t) => t.key === 'crater.raids.io/account')
+          const drainedTaint = taints?.some((t) => t.key === 'orbit.raids.io/drained') || false
+          const occupiedTaint = taints?.find((t) => t.key === 'orbit.raids.io/account')
           const occupiedaccount = occupiedTaint?.value
           const occupiedAccountNickname = occupiedaccount
             ? getNicknameByName(occupiedaccount) || occupiedaccount

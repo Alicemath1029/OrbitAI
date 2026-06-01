@@ -1,13 +1,13 @@
 ---
 title: "設定の説明"
-description: "Crater プラットフォーム Helm Chart の詳細な設定パラメータの説明。バックエンド、フロントエンド、ストレージ、監視、認証などのコアモジュールを網羅しています。"
+description: "Orbit プラットフォーム Helm Chart の詳細な設定パラメータの説明。バックエンド、フロントエンド、ストレージ、監視、認証などのコアモジュールを網羅しています。"
 ---
 
 <ChartBadge />
 
-Crater は Kubernetes 向けに設計された総合的な AI 開発プラットフォームであり、GPU リソース管理、コンテナ化された開発環境、およびワークフローのオーケストレーション機能を提供します。本ドキュメントでは、Helm を使用して Crater をデプロイする際の設定可能なすべての項目について詳しく説明します。
+Orbit は Kubernetes 向けに設計された総合的な AI 開発プラットフォームであり、GPU リソース管理、コンテナ化された開発環境、およびワークフローのオーケストレーション機能を提供します。本ドキュメントでは、Helm を使用して Orbit をデプロイする際の設定可能なすべての項目について詳しく説明します。
 
-**プロジェクトホームページ：** [https://github.com/raids-lab/crater](https://github.com/raids-lab/crater)
+**プロジェクトホームページ：** [https://github.com/raids-lab/orbit](https://github.com/raids-lab/orbit)
 
 ## メンテナ
 
@@ -17,24 +17,24 @@ Crater は Kubernetes 向けに設計された総合的な AI 開発プラット
 
 ## ソースコード
 
-* [https://github.com/raids-lab/crater/tree/main/charts/crater](https://github.com/raids-lab/crater/tree/main/charts/crater)
+* [https://github.com/raids-lab/orbit/tree/main/charts/orbit](https://github.com/raids-lab/orbit/tree/main/charts/orbit)
 
 ## 基本設定 (Global Values)
 
 | パラメータ | 型 | デフォルト値 | 説明 |
 |-----|------|---------|-------------|
-| host | string | `"crater.example.com"` | プラットフォームにアクセスするためのドメイン名または IP アドレス |
+| host | string | `"orbit.example.com"` | プラットフォームにアクセスするためのドメイン名または IP アドレス |
 | protocol | string | `"http"` | アクセスプロトコルの種類（`http` または `https`） |
-| firstUser.username | string | `"crater-admin"` | 初回管理者ユーザー名 |
+| firstUser.username | string | `"orbit-admin"` | 初回管理者ユーザー名 |
 | firstUser.password | string | `"Masked@Password"` | 初回管理者パスワード（必ず変更してください） |
 | imagePullPolicy | string | `"Always"` | コンテナイメージのプルポリシー |
 | namespaces.create | bool | `true` | 名前空間を自動的に作成するかどうか |
-| namespaces.job | string | `"crater-workspace"` | ジョブタスクを実行するための名前空間 |
-| namespaces.image | string | `"crater-images"` | イメージをビルドするための名前空間 |
+| namespaces.job | string | `"orbit-workspace"` | ジョブタスクを実行するための名前空間 |
+| namespaces.image | string | `"orbit-images"` | イメージをビルドするための名前空間 |
 | storage.create | bool | `true` | 基本的な永続ストレージ（PVC）を自動的に作成するかどうか |
 | storage.request | string | `"10Gi"` | ストレージの申請容量 |
 | storage.storageClass | string | `"nfs"` | ストレージクラス名（ReadWriteMany をサポートしている必要があります） |
-| storage.pvcName | string | `"crater-rw-storage"` | 共有 PVC の名前 |
+| storage.pvcName | string | `"orbit-rw-storage"` | 共有 PVC の名前 |
 
 ## 監視の基本設定 (Monitoring)
 
@@ -85,8 +85,8 @@ Crater は Kubernetes 向けに設計された総合的な AI 開発プラット
 
 | パラメータ | 型 | デフォルト値 | 説明 |
 |-----|------|---------|-------------|
-| backendConfig.secrets.tlsSecretName | string | `"crater-tls-secret"` | HTTPS 用の TLS 証明書 Secret 名 |
-| backendConfig.secrets.tlsForwardSecretName | string | `"crater-tls-forward-secret"` | 転送用の TLS 証明書 Secret 名 |
+| backendConfig.secrets.tlsSecretName | string | `"orbit-tls-secret"` | HTTPS 用の TLS 証明書 Secret 名 |
+| backendConfig.secrets.tlsForwardSecretName | string | `"orbit-tls-forward-secret"` | 転送用の TLS 証明書 Secret 名 |
 | backendConfig.secrets.imagePullSecretName | string | `""` | プライベートイメージをプルするための Secret 名 |
 
 ### 認証方式の設定 (backendConfig.auth)

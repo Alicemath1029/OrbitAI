@@ -4,12 +4,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type CraterResourceType string
+type OrbitResourceType string
 
 const (
-	ResourceTypeGPU  CraterResourceType = "gpu"
-	ResourceTypeRDMA CraterResourceType = "rdma"
-	ResourceTypeVGPU CraterResourceType = "vgpu"
+	ResourceTypeGPU  OrbitResourceType = "gpu"
+	ResourceTypeRDMA OrbitResourceType = "rdma"
+	ResourceTypeVGPU OrbitResourceType = "vgpu"
 )
 
 // Resource model
@@ -32,7 +32,7 @@ type Resource struct {
 	UnitPrice       int64  `gorm:"not null;default:0;comment:资源单位价格(内部微点, 展示为点数/单位/小时)" json:"unitPrice"`
 
 	// Resource relationship
-	Type     *CraterResourceType `gorm:"type:varchar(32);comment:资源类型" json:"type"`
+	Type     *OrbitResourceType `gorm:"type:varchar(32);comment:资源类型" json:"type"`
 	Networks []*Resource         `gorm:"many2many:resource_networks;" json:"networks"`
 }
 

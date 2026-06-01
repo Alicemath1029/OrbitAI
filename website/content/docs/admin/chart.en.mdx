@@ -1,13 +1,13 @@
 ---
 title: "Configuration Guide"
-description: "Detailed explanation of Crater platform Helm Chart configuration parameters, covering core modules such as backend, frontend, storage, monitoring, and authentication."
+description: "Detailed explanation of Orbit platform Helm Chart configuration parameters, covering core modules such as backend, frontend, storage, monitoring, and authentication."
 ---
 
 <ChartBadge />
 
-Crater is a comprehensive AI development platform designed for Kubernetes, providing GPU resource management, containerized development environments, and workflow orchestration. This document details all configurable items when deploying Crater via Helm.
+Orbit is a comprehensive AI development platform designed for Kubernetes, providing GPU resource management, containerized development environments, and workflow orchestration. This document details all configurable items when deploying Orbit via Helm.
 
-**Project Homepage:** [https://github.com/raids-lab/crater](https://github.com/raids-lab/crater)
+**Project Homepage:** [https://github.com/raids-lab/orbit](https://github.com/raids-lab/orbit)
 
 ## Maintainers
 
@@ -17,24 +17,24 @@ Crater is a comprehensive AI development platform designed for Kubernetes, provi
 
 ## Source Code
 
-* [https://github.com/raids-lab/crater/tree/main/charts/crater](https://github.com/raids-lab/crater/tree/main/charts/crater)
+* [https://github.com/raids-lab/orbit/tree/main/charts/orbit](https://github.com/raids-lab/orbit/tree/main/charts/orbit)
 
 ## Global Values
 
 | Parameter | Type | Default | Description |
 |-----|------|---------|-------------|
-| host | string | `"crater.example.com"` | Domain name or IP address for platform access |
+| host | string | `"orbit.example.com"` | Domain name or IP address for platform access |
 | protocol | string | `"http"` | Protocol type (`http` or `https`) |
-| firstUser.username | string | `"crater-admin"` | Initial administrator username |
+| firstUser.username | string | `"orbit-admin"` | Initial administrator username |
 | firstUser.password | string | `"Masked@Password"` | Initial administrator password (Please change this) |
 | imagePullPolicy | string | `"Always"` | Container image pull policy |
 | namespaces.create | bool | `true` | Whether to automatically create namespaces |
-| namespaces.job | string | `"crater-workspace"` | Namespace for running job tasks |
-| namespaces.image | string | `"crater-images"` | Namespace for building images |
+| namespaces.job | string | `"orbit-workspace"` | Namespace for running job tasks |
+| namespaces.image | string | `"orbit-images"` | Namespace for building images |
 | storage.create | bool | `true` | Whether to automatically create base persistent volume claim (PVC) |
 | storage.request | string | `"10Gi"` | Storage request capacity |
 | storage.storageClass | string | `"nfs"` | Storage class name (must support ReadWriteMany) |
-| storage.pvcName | string | `"crater-rw-storage"` | Name of the shared PVC |
+| storage.pvcName | string | `"orbit-rw-storage"` | Name of the shared PVC |
 
 ## Monitoring (Monitoring)
 
@@ -85,8 +85,8 @@ Crater is a comprehensive AI development platform designed for Kubernetes, provi
 
 | Parameter | Type | Default | Description |
 |-----|------|---------|-------------|
-| backendConfig.secrets.tlsSecretName | string | `"crater-tls-secret"` | Name of the TLS certificate Secret for HTTPS |
-| backendConfig.secrets.tlsForwardSecretName | string | `"crater-tls-forward-secret"` | Name of the TLS certificate Secret for forwarding |
+| backendConfig.secrets.tlsSecretName | string | `"orbit-tls-secret"` | Name of the TLS certificate Secret for HTTPS |
+| backendConfig.secrets.tlsForwardSecretName | string | `"orbit-tls-forward-secret"` | Name of the TLS certificate Secret for forwarding |
 | backendConfig.secrets.imagePullSecretName | string | `""` | Name of the Secret for pulling private images |
 
 ### Authentication Configuration (backendConfig.auth)

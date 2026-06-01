@@ -7,5 +7,5 @@ const (
 )
 
 const (
-	LabelKeyQueueCreatedBy = "crater.raids.io/queue-created-by"
+	LabelKeyQueueCreatedBy = "orbit.raids.io/queue-created-by"
 )

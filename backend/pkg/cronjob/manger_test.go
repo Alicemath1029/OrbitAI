@@ -8,8 +8,8 @@ import (
 	"gorm.io/datatypes"
 	"k8s.io/utils/ptr"
 
-	"github.com/raids-lab/crater/dao/model"
-	"github.com/raids-lab/crater/pkg/cleaner"
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/pkg/cleaner"
 )
 
 func TestCronJob(t *testing.T) {

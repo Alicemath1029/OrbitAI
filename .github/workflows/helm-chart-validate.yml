@@ -36,13 +36,13 @@ jobs:
       - name: Validate Chart Syntax
         run: |
           cd charts
-          helm lint crater/
-          helm template crater crater/ --dry-run
+          helm lint orbit/
+          helm template orbit orbit/ --dry-run
 
       - name: Check Chart Version Update
         run: |
           # Get the chart version from the current branch
-          CURRENT_VERSION=$(helm show chart charts/crater/ | grep '^version:' | awk '{print $2}')
+          CURRENT_VERSION=$(helm show chart charts/orbit/ | grep '^version:' | awk '{print $2}')
           echo "Current chart version: $CURRENT_VERSION"
 
           BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
@@ -51,7 +51,7 @@ jobs:
           # Get the chart version from the base branch
           git fetch origin "$BASE_BRANCH"
           
-          BASE_VERSION=$(git show "origin/$BASE_BRANCH:charts/crater/Chart.yaml" | grep '^version:' | awk '{print $2}')
+          BASE_VERSION=$(git show "origin/$BASE_BRANCH:charts/orbit/Chart.yaml" | grep '^version:' | awk '{print $2}')
           echo "Base chart version: $BASE_VERSION"
 
           # Compare versions using semver comparison
@@ -68,9 +68,9 @@ jobs:
         run: |
           cd charts
           # 先通过 lint 校验 Chart 合法性（语法、依赖、模板等）
-          helm lint crater/ 
+          helm lint orbit/ 
           # 再执行打包（可选保留或删除文件）
-          helm package crater/
+          helm package orbit/
           echo "✅ Chart packaging test completed successfully"
           # 可选：删除打包文件（仅测试用，不保留）
-          rm -f crater-*.tgz
+          rm -f orbit-*.tgz

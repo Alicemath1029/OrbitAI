@@ -38,7 +38,7 @@ Various settings for interactive jobs can be done by **importing a configuration
       "model": "nvidia.com/a100"
     },
     "memory": 4,
-    "image": "harbor.act.buaa.edu.cn/crater-images/nvidia-pytorch:24.08-py3",
+    "image": "harbor.act.buaa.edu.cn/orbit-images/nvidia-pytorch:24.08-py3",
     "volumeMounts": [
       {
         "type": 1,

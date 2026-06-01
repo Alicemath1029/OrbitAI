@@ -41,7 +41,7 @@ image:
 Replace <your-image-repo> with your private registry
 
 ## Device Plugin Customization
-Crater uses a customized version of the NVIDIA Device Plugin (v0.17.0-ubi9) to support resource renaming, allowing advanced GPU allocation strategies.
+Orbit uses a customized version of the NVIDIA Device Plugin (v0.17.0-ubi9) to support resource renaming, allowing advanced GPU allocation strategies.
 
 Refer to Volcano [resource-naming](https://github.com/volcano-sh/devices/blob/release-1.1/docs/resource-naming/README.md) Guide for customization instructions.
 

@@ -20,19 +20,19 @@ For example, if you want to access services through TensorBoard or Visdom, expos
 - Access Visdom.
 - Access Jupyter Notebook.
 
-**Forwarding Path**: All access paths use a unified format: `crater.act.buaa.edu.cn/ingress/{userName}-{uuid}`. Here, `userName` is the username, and `uuid` is a five-character identifier automatically generated, pointing to a specific service.
+**Forwarding Path**: All access paths use a unified format: `orbit.act.buaa.edu.cn/ingress/{userName}-{uuid}`. Here, `userName` is the username, and `uuid` is a five-character identifier automatically generated, pointing to a specific service.
 
 ![ingress-intro](./img/ingress-intro.webp)
 
-After the configuration is completed, you can see the following content in the corresponding Pod's `Annotations`, using `ingress.crater.raids.io` as the `key`:
+After the configuration is completed, you can see the following content in the corresponding Pod's `Annotations`, using `ingress.orbit.raids.io` as the `key`:
 
 ```yaml
 metadata:
   annotations:
-    crater.raids.io/task-name: tensorboard-example
-    ingress.crater.raids.io/lars: '{"Name":"lars","Port":4210,"Prefix":"/ingress/liuxw24-eb05b/"}'
-    ingress.crater.raids.io/tensorboard: '{"Name":"tensorboard","Port":6006,"Prefix":"/ingress/liuxw24-379e0/"}'
-    ingress.crater.raids.io/notebook: '{"Name":"notebook","Port":8888,"Prefix":"/ingress/liuxw24-cce14/"}'
+    orbit.raids.io/task-name: tensorboard-example
+    ingress.orbit.raids.io/lars: '{"Name":"lars","Port":4210,"Prefix":"/ingress/liuxw24-eb05b/"}'
+    ingress.orbit.raids.io/tensorboard: '{"Name":"tensorboard","Port":6006,"Prefix":"/ingress/liuxw24-379e0/"}'
+    ingress.orbit.raids.io/notebook: '{"Name":"notebook","Port":8888,"Prefix":"/ingress/liuxw24-cce14/"}'
 ```
 
 ## 1.2 Usage Example
@@ -68,7 +68,7 @@ When you want to expose a web application for external access, you can use **Ing
 **Field Description**:
 
 - **Port Number** (`port`): A custom port number, set to `6006` here because TensorBoard typically uses this port by default.
-- **Access Path** (`prefix`): The access path will be mapped to `crater.act.buaa.edu.cn/ingress/{userName}-{uuid}`, where `userName` is the username and `uuid` is an automatically generated five-character identifier.
+- **Access Path** (`prefix`): The access path will be mapped to `orbit.act.buaa.edu.cn/ingress/{userName}-{uuid}`, where `userName` is the username and `uuid` is an automatically generated five-character identifier.
 
 ### Starting TensorBoard Inside the Container
 

@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"k8s.io/klog/v2"
 
-	"github.com/raids-lab/crater/internal/handler"
+	"github.com/raids-lab/orbit/internal/handler"
 )
 
 func MergeURLWithQuery(baseURL string, queryParams map[string]string) (string, error) {

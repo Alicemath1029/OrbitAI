@@ -2,7 +2,7 @@
 
 # CI Documentation
 
-This document describes the design and implementation of continuous integration (CI) for the Crater project.
+This document describes the design and implementation of continuous integration (CI) for the Orbit project.
 
 Before open-sourcing to GitHub, this project was hosted on a GitLab instance deployed internally by the lab, using GitLab Pipeline for CI/CD. After migrating to GitHub, we removed the continuous deployment (CD) part, keeping only continuous integration (CI), and implemented it using GitHub Actions workflows.
 
@@ -10,21 +10,21 @@ Before open-sourcing to GitHub, this project was hosted on a GitLab instance dep
 
 ## Overview
 
-Crater's CI process is built on GitHub Actions, primarily serving code quality assurance and artifact publishing. Unlike traditional CI/CD processes, we only retain the continuous integration (CI) part, leaving continuous deployment (CD) to users to handle according to their own environments. This design ensures code quality and standardized build artifacts while giving users flexibility in deployment.
+Orbit's CI process is built on GitHub Actions, primarily serving code quality assurance and artifact publishing. Unlike traditional CI/CD processes, we only retain the continuous integration (CI) part, leaving continuous deployment (CD) to users to handle according to their own environments. This design ensures code quality and standardized build artifacts while giving users flexibility in deployment.
 
 The inputs of the CI process mainly include source code, Dockerfiles, documentation files, and Helm Chart configurations in the repository; the outputs are build artifacts, including multi-platform Docker images, static websites, and Helm Chart packages. All Docker images and Helm Charts are stored in GitHub Container Registry (GHCR), and the documentation website is deployed on GitHub Pages. Users can access these artifacts through the corresponding addresses.
 
 ### Goals
 
-Crater's CI process aims to ensure code quality, standardize build artifacts, and provide users with ready-to-use images and Charts through automation. It ensures code quality through PR checks, reduces manual intervention through automated builds and publishing, meets different environment needs through multi-platform support, and ensures artifact traceability and storage efficiency through version management and cleanup strategies.
+Orbit's CI process aims to ensure code quality, standardize build artifacts, and provide users with ready-to-use images and Charts through automation. It ensures code quality through PR checks, reduces manual intervention through automated builds and publishing, meets different environment needs through multi-platform support, and ensures artifact traceability and storage efficiency through version management and cleanup strategies.
 
 ### Technology Stack
 
-Crater's CI process is built on GitHub Actions, Docker Buildx, and GitHub Container Registry (GHCR). GitHub Actions provides deeply integrated CI capabilities with the repository without requiring additional third-party service configuration; Docker Buildx enables cross-platform builds through QEMU emulation, building both amd64 and arm64 architecture images simultaneously to meet different hardware environment needs; GHCR serves as a unified storage for container images and Helm Charts, integrates with GitHub's permission system, supports OCI standards, and enables automated authentication through `GITHUB_TOKEN`.
+Orbit's CI process is built on GitHub Actions, Docker Buildx, and GitHub Container Registry (GHCR). GitHub Actions provides deeply integrated CI capabilities with the repository without requiring additional third-party service configuration; Docker Buildx enables cross-platform builds through QEMU emulation, building both amd64 and arm64 architecture images simultaneously to meet different hardware environment needs; GHCR serves as a unified storage for container images and Helm Charts, integrates with GitHub's permission system, supports OCI standards, and enables automated authentication through `GITHUB_TOKEN`.
 
 ### CI Process Categories
 
-Crater's CI process is divided into four main categories based on different build targets, each with independent trigger conditions and build processes:
+Orbit's CI process is divided into four main categories based on different build targets, each with independent trigger conditions and build processes:
 
 - **Frontend & Backend** is the core of the CI process, responsible for code quality checks and image build publishing for application services (Backend, Frontend, Storage). It adopts a two-stage design: the PR check stage performs code style checks (Lint) and build verification to ensure code quality; the build and publish stage builds multi-platform images and pushes them to GHCR after code merge, while managing storage space through automatic cleanup strategies.
 
@@ -38,13 +38,13 @@ Crater's CI process is divided into four main categories based on different buil
 
 ## Frontend & Backend
 
-This section introduces the CI configuration for Crater's frontend and backend.
+This section introduces the CI configuration for Orbit's frontend and backend.
 
 It should be noted that the storage service (`storage-server`) is now built from the `backend` module (entrypoint: `backend/cmd/storage-server/main.go`), and its CI configuration is included in this section as an independent workflow.
 
 ### Overview
 
-The CI process for frontend and backend adopts a two-stage design: PR check stage and build & publish stage. Inputs are source code (Go code or frontend resources), outputs are multi-platform Docker images (linux/amd64 and linux/arm64), and artifacts are stored in GHCR repositories `ghcr.io/raids-lab/crater-backend`, `ghcr.io/raids-lab/crater-frontend`, and `ghcr.io/raids-lab/storage-server`.
+The CI process for frontend and backend adopts a two-stage design: PR check stage and build & publish stage. Inputs are source code (Go code or frontend resources), outputs are multi-platform Docker images (linux/amd64 and linux/arm64), and artifacts are stored in GHCR repositories `ghcr.io/raids-lab/orbit-backend`, `ghcr.io/raids-lab/orbit-frontend`, and `ghcr.io/raids-lab/storage-server`.
 
 The PR check stage executes before code merge, performing code style checks (Lint) and build verification, building only a single platform to save time, without building and pushing images. The build & publish stage executes after code merge or when creating version tags, building multi-platform images and pushing them to GHCR, while automatically cleaning up old images to control storage space.
 
@@ -108,7 +108,7 @@ go build -ldflags="-X main.AppVersion=${{ steps.set-version.outputs.app_version 
   -X main.CommitSHA=${{ steps.set-version.outputs.commit_sha }} \
   -X main.BuildType=${{ steps.set-version.outputs.build_type }} \
   -X main.BuildTime=${{ steps.set-version.outputs.build_time }} -w -s" \
-  -o bin/linux_amd64/controller cmd/crater/main.go
+  -o bin/linux_amd64/controller cmd/orbit/main.go
 ```
 
 The `-X` parameter is used to set package variable values, compiling version information into binary files, which can be queried through program interfaces at runtime.
@@ -148,7 +148,7 @@ build_backend:
   steps:
     - name: Build backend binaries
       run: |
-        go build -ldflags="..." -o bin/${{ matrix.platform.image_platform }}/controller cmd/crater/main.go
+        go build -ldflags="..." -o bin/${{ matrix.platform.image_platform }}/controller cmd/orbit/main.go
       env:
         GOOS: ${{ matrix.platform.goos }}
         GOARCH: ${{ matrix.platform.goarch }}
@@ -213,7 +213,7 @@ Tag rule parameter descriptions:
 
 ### Image Push & Cleanup
 
-After image building is complete, images need to be pushed to the image registry and old images cleaned up to control storage space. Image pushing uses GHCR (GitHub Container Registry) as the repository. The complete image address format is `${{ env.REGISTRY }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}`, i.e., `ghcr.io/raids-lab/crater-backend`, `ghcr.io/raids-lab/crater-frontend`, and `ghcr.io/raids-lab/storage-server`.
+After image building is complete, images need to be pushed to the image registry and old images cleaned up to control storage space. Image pushing uses GHCR (GitHub Container Registry) as the repository. The complete image address format is `${{ env.REGISTRY }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}`, i.e., `ghcr.io/raids-lab/orbit-backend`, `ghcr.io/raids-lab/orbit-frontend`, and `ghcr.io/raids-lab/storage-server`.
 
 Before pushing, you need to log in to GHCR with the following configuration:
 
@@ -241,7 +241,7 @@ Image building and pushing configuration:
     tags: ${{ steps.meta.outputs.tags }}
 ```
 
-The `tags` parameter uses the tag list generated by `docker/metadata-action` in the previous section. After building is complete, images are pushed to GHCR with all generated tags. Users can pull images via `docker pull ghcr.io/raids-lab/crater-backend:<tag>`. Pushed images can be viewed in the GitHub repository's Packages page, including all tags and version information.
+The `tags` parameter uses the tag list generated by `docker/metadata-action` in the previous section. After building is complete, images are pushed to GHCR with all generated tags. Users can pull images via `docker pull ghcr.io/raids-lab/orbit-backend:<tag>`. Pushed images can be viewed in the GitHub repository's Packages page, including all tags and version information.
 
 After building, old images are automatically cleaned up with the following configuration:
 
@@ -251,7 +251,7 @@ After building, old images are automatically cleaned up with the following confi
     owner-type: org
     token: ${{ secrets.PAT_TOKEN }}
     repository-owner: ${{ github.repository_owner }}
-    package-name: crater-backend
+    package-name: orbit-backend
     delete-untagged: true
     keep-at-most: 2
     skip-tags: v*
@@ -408,7 +408,7 @@ All three dependency images execute the same cleanup steps, cleaning their respe
 
 ## Documentation Website
 
-The documentation website is built with Next.js and deployed on GitHub Pages, containing tutorials for deploying and using Crater.
+The documentation website is built with Next.js and deployed on GitHub Pages, containing tutorials for deploying and using Orbit.
 
 ### Overview
 
@@ -506,13 +506,13 @@ After translation is complete, translation PRs are automatically created with br
 
 ## Helm Chart
 
-Helm Chart is used to deploy the Crater platform to Kubernetes clusters, providing one-click deployment and configuration management capabilities. Helm Chart's CI process includes two stages: Chart validation and Chart publishing, ensuring Chart quality and automated publishing.
+Helm Chart is used to deploy the Orbit platform to Kubernetes clusters, providing one-click deployment and configuration management capabilities. Helm Chart's CI process includes two stages: Chart validation and Chart publishing, ensuring Chart quality and automated publishing.
 
 ### Overview
 
-Helm Chart's CI process adopts a two-stage design: the Chart validation stage executes during PRs, performing syntax validation, template validation, and version number checks; the Chart publishing stage executes when code is merged to the main branch or when Releases are created, packaging Charts and pushing them to the GHCR OCI repository. Inputs are Chart source code (located in the `charts/crater/` directory), outputs are packaged Helm Charts (`.tgz` files), and artifacts are stored in GHCR's `ghcr.io/raids-lab/crater` OCI repository.
+Helm Chart's CI process adopts a two-stage design: the Chart validation stage executes during PRs, performing syntax validation, template validation, and version number checks; the Chart publishing stage executes when code is merged to the main branch or when Releases are created, packaging Charts and pushing them to the GHCR OCI repository. Inputs are Chart source code (located in the `charts/orbit/` directory), outputs are packaged Helm Charts (`.tgz` files), and artifacts are stored in GHCR's `ghcr.io/raids-lab/orbit` OCI repository.
 
-Chart validation ensures Chart correctness and completeness, including syntax checks, template rendering validation, and version number update checks. Chart publishing packages validated Charts and pushes them to GHCR. Users can install Charts via `helm install crater oci://ghcr.io/raids-lab/crater --version <chart-version>`.
+Chart validation ensures Chart correctness and completeness, including syntax checks, template rendering validation, and version number update checks. Chart publishing packages validated Charts and pushes them to GHCR. Users can install Charts via `helm install orbit oci://ghcr.io/raids-lab/orbit --version <chart-version>`.
 
 ### Chart Validation
 
@@ -524,8 +524,8 @@ Syntax validation uses `helm lint` to check Chart syntax, dependencies, template
 - name: Validate Chart Syntax
   run: |
     cd charts
-    helm lint crater/
-    helm template crater crater/ --dry-run
+    helm lint orbit/
+    helm template orbit orbit/ --dry-run
 ```
 
 `helm lint` checks Chart syntax errors, dependencies, and best practices; `helm template --dry-run` verifies whether templates can render correctly, ensuring template syntax is correct and all required values are provided.
@@ -533,8 +533,8 @@ Syntax validation uses `helm lint` to check Chart syntax, dependencies, template
 Version number check ensures that each PR updates the Chart version number by comparing version numbers between the current branch and the base branch:
 
 ```bash
-CURRENT_VERSION=$(helm show chart charts/crater/ | grep '^version:' | awk '{print $2}')
-BASE_VERSION=$(git show "origin/$BASE_BRANCH:charts/crater/Chart.yaml" | grep '^version:' | awk '{print $2}')
+CURRENT_VERSION=$(helm show chart charts/orbit/ | grep '^version:' | awk '{print $2}')
+BASE_VERSION=$(git show "origin/$BASE_BRANCH:charts/orbit/Chart.yaml" | grep '^version:' | awk '{print $2}')
 
 if [ "$CURRENT_VERSION" = "$BASE_VERSION" ]; then
   echo "⚠️  Chart version has not been updated"
@@ -550,9 +550,9 @@ Packaging test uses `helm package` to test whether Charts can be packaged normal
 - name: Package Chart (Test)
   run: |
     cd charts
-    helm lint crater/
-    helm package crater/
-    rm -f crater-*.tgz
+    helm lint orbit/
+    helm package orbit/
+    rm -f orbit-*.tgz
 ```
 
 ### Chart Publishing
@@ -565,8 +565,8 @@ The packaging stage uses `helm package` to package Charts into `.tgz` files and 
 - name: Package and Push Helm Chart
   run: |
     cd charts
-    helm package crater/
-    CHART_VERSION=$(helm show chart crater/ | grep '^version:' | awk '{print $2}')
+    helm package orbit/
+    CHART_VERSION=$(helm show chart orbit/ | grep '^version:' | awk '{print $2}')
 ```
 
 The pushing stage uses `helm push` to push packaged Charts to the GHCR OCI repository:
@@ -581,14 +581,14 @@ The pushing stage uses `helm push` to push packaged Charts to the GHCR OCI repos
 
 - name: Package and Push Helm Chart
   run: |
-    helm push crater-${CHART_VERSION}.tgz oci://${{ env.REGISTRY }}/${{ env.REPOSITORY }}
+    helm push orbit-${CHART_VERSION}.tgz oci://${{ env.REGISTRY }}/${{ env.REPOSITORY }}
 ```
 
-After Charts are pushed to the `ghcr.io/raids-lab/crater` OCI repository, users can install them with the following commands:
+After Charts are pushed to the `ghcr.io/raids-lab/orbit` OCI repository, users can install them with the following commands:
 
 ```bash
 helm registry login ghcr.io
-helm install crater oci://ghcr.io/raids-lab/crater --version <chart-version>
+helm install orbit oci://ghcr.io/raids-lab/orbit --version <chart-version>
 ```
 
 After publishing, old Chart versions are automatically cleaned up using `ghcr-cleaner` to clean untagged Charts, keeping at most 10 versions and skipping the `latest` tag:
@@ -596,7 +596,7 @@ After publishing, old Chart versions are automatically cleaned up using `ghcr-cl
 ```yaml
 - uses: quartx-analytics/ghcr-cleaner@v1
   with:
-    package-name: crater
+    package-name: orbit
     delete-untagged: true
     keep-at-most: 10
     skip-tags: latest
@@ -604,7 +604,7 @@ After publishing, old Chart versions are automatically cleaned up using `ghcr-cl
 
 ### Version Management
 
-Helm Chart uses Semantic Versioning to manage version numbers, with version numbers defined in the `version` field of `charts/crater/Chart.yaml`. Version number format is `MAJOR.MINOR.PATCH` (e.g., `0.1.1`), following these rules:
+Helm Chart uses Semantic Versioning to manage version numbers, with version numbers defined in the `version` field of `charts/orbit/Chart.yaml`. Version number format is `MAJOR.MINOR.PATCH` (e.g., `0.1.1`), following these rules:
 
 - **MAJOR**: Incompatible API changes
 - **MINOR**: Backward-compatible feature additions

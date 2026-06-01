@@ -24,15 +24,15 @@ In NodePort rules, **Kubernetes automatically assigns a port number from the ran
 
 ![nodeport-intro](./img/nodeport-intro.webp)
 
-After configuration, the following content will be visible in the corresponding Pod's `Annotations`, using `nodeport.crater.raids.io` as the `key`:
+After configuration, the following content will be visible in the corresponding Pod's `Annotations`, using `nodeport.orbit.raids.io` as the `key`:
 
 ```yaml
 metadata:
   annotations:
-    crater.raids.io/task-name: tensorboard-example
-    nodeport.crater.raids.io/smtp: '{"name":"smtp","containerPort":25,"address":"192.168.5.82","nodePort":30631}'
-    nodeport.crater.raids.io/ssh: '{"name":"ssh","containerPort":22,"address":"192.168.5.82","nodePort":32513}'
-    nodeport.crater.raids.io/telnet: '{"name":"telnet","containerPort":23,"address":"192.168.5.82","nodePort":32226}'
+    orbit.raids.io/task-name: tensorboard-example
+    nodeport.orbit.raids.io/smtp: '{"name":"smtp","containerPort":25,"address":"192.168.5.82","nodePort":30631}'
+    nodeport.orbit.raids.io/ssh: '{"name":"ssh","containerPort":22,"address":"192.168.5.82","nodePort":32513}'
+    nodeport.orbit.raids.io/telnet: '{"name":"telnet","containerPort":23,"address":"192.168.5.82","nodePort":32226}'
 ```
 
 ## 2.2 Usage Example

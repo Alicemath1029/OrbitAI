@@ -1,4 +1,4 @@
-# Makefile for Crater Monorepo
+# Makefile for Orbit Monorepo
 
 # 颜色定义
 RED := \033[31m
@@ -12,7 +12,7 @@ RESET := \033[0m
 
 .PHONY: help
 help: ## Display this help message
-	@echo "$(CYAN)🌋 Crater Monorepo Commands$(RESET)"
+	@echo "$(CYAN)🌋 Orbit Monorepo Commands$(RESET)"
 	@echo ""
 	@awk 'BEGIN {FS = ":.*##"; category = ""} \
 		/^## / { category = substr($$0, 4); printf "\n$(BLUE)%s$(RESET)\n", category; next } \
@@ -42,7 +42,7 @@ pre-commit-check: install-hooks ## Run the installed pre-commit hook.
 ##@ Configuration Management
 
 .PHONY: config-link
-config-link: ## Create symlinks for configuration files (usage: make config-link CONFIG_DIR=~/develop/crater/config)
+config-link: ## Create symlinks for configuration files (usage: make config-link CONFIG_DIR=~/develop/orbit/config)
 	@bash hack/config.sh link $(CONFIG_DIR)
 
 .PHONY: config-status
