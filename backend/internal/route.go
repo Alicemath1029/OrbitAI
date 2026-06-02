@@ -50,6 +50,16 @@ func (b *Backend) RegisterService(conf *handler.RegisterConfig) {
 		mgr.RegisterPublic(publicRouter.Group(mgr.GetName()))
 	}
 
+	/////////////////////////////////////////////////
+	//// Public API v1 routers, custom auth only ////
+	/////////////////////////////////////////////////
+	publicV1Router := b.Group(constants.APIV1Prefix)
+	for _, mgr := range managers {
+		if publicV1Mgr, ok := mgr.(handler.PublicV1Manager); ok {
+			publicV1Mgr.RegisterPublicV1(publicV1Router.Group(mgr.GetName()))
+		}
+	}
+
 	///////////////////////////////////////
 	//// Protected routers, need login ////
 	///////////////////////////////////////

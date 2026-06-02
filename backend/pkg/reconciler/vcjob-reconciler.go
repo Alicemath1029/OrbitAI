@@ -217,6 +217,7 @@ func (r *VcJobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 			logger.Error(err, "unable to create job record")
 			return ctrl.Result{Requeue: true}, err
 		}
+		r.syncExperimentRun(ctx, job.Name)
 		return ctrl.Result{}, nil
 	}
 
@@ -253,6 +254,7 @@ func (r *VcJobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 		logger.Error(err, "unable to update job record")
 		return ctrl.Result{Requeue: true}, err
 	}
+	r.syncExperimentRun(ctx, job.Name)
 
 	// Check if job is finished and cancel pending approval orders
 	isJobActive := job.Status.State.Phase == batch.Running ||
@@ -309,6 +311,17 @@ func (r *VcJobReconciler) notifyPrequeue() {
 		return
 	}
 	r.prequeueWatcher.RequestFullScan()
+}
+
+func (r *VcJobReconciler) syncExperimentRun(ctx context.Context, jobName string) {
+	record, err := query.Job.WithContext(ctx).Where(query.Job.JobName.Eq(jobName)).First()
+	if err != nil {
+		r.log.Error(err, "unable to sync experiment run: job record not found", "job", jobName)
+		return
+	}
+	if err := service.NewExperimentService().SyncRunForJob(ctx, record); err != nil {
+		r.log.Error(err, "unable to sync experiment run", "job", jobName)
+	}
 }
 
 func (r *VcJobReconciler) updateMissingJobProfile(ctx context.Context, jobName string, record *model.Job) error {

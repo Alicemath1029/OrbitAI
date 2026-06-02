@@ -258,6 +258,91 @@ export const defaultCheckpoint: CheckpointSchema = {
   maxBytes: 0,
 }
 
+export const experimentConfigSchema = z
+  .object({
+    enabled: z.boolean().default(false),
+    experimentId: z.coerce.number().int().nonnegative().default(0),
+    runName: z.string().optional(),
+    hyperparamsText: z.string().optional(),
+    codeRepo: z.string().optional(),
+    codeBranch: z.string().optional(),
+    codeCommit: z.string().optional(),
+    tagsText: z.string().optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (!value.enabled) {
+      return
+    }
+    if (!value.experimentId || value.experimentId <= 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: '请选择实验',
+        path: ['experimentId'],
+      })
+    }
+    for (const [field, label] of [
+      ['hyperparamsText', '超参数'],
+      ['tagsText', '标签'],
+    ] as const) {
+      const text = value[field]
+      if (!text) {
+        continue
+      }
+      try {
+        JSON.parse(text)
+      } catch {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `${label} 需要是合法 JSON`,
+          path: [field],
+        })
+      }
+    }
+  })
+
+export type ExperimentConfigSchema = z.infer<typeof experimentConfigSchema>
+
+export const defaultExperimentConfig: ExperimentConfigSchema = {
+  enabled: false,
+  experimentId: 0,
+  runName: '',
+  hyperparamsText: '',
+  codeRepo: '',
+  codeBranch: '',
+  codeCommit: '',
+  tagsText: '',
+}
+
+const parseOptionalJSON = (text?: string): Record<string, unknown> => {
+  if (!text || text.trim() === '') {
+    return {}
+  }
+  return JSON.parse(text) as Record<string, unknown>
+}
+
+export const buildExperimentRunConfig = (config?: ExperimentConfigSchema) => {
+  if (!config?.enabled || !config.experimentId) {
+    return undefined
+  }
+  const code: Record<string, unknown> = {}
+  if (config.codeRepo) {
+    code.repo = config.codeRepo
+  }
+  if (config.codeBranch) {
+    code.branch = config.codeBranch
+  }
+  if (config.codeCommit) {
+    code.commit = config.codeCommit
+  }
+  return {
+    experimentId: config.experimentId,
+    runName: config.runName,
+    hyperparams: parseOptionalJSON(config.hyperparamsText),
+    code,
+    tags: parseOptionalJSON(config.tagsText),
+  }
+}
+
 export interface JobSubmitJson<T> {
   version: string
   type: string

@@ -78,6 +78,19 @@ func (mgr *VolcanojobMgr) CreateWebIDEJob(c *gin.Context) {
 	jobName := utils.GenerateJobName("vsc", token.Username)
 	// baseURL for ingress paths (without type prefix)
 	baseURL := jobName[4:] // Remove "vsc-" prefix
+	experimentRuntime, err := prepareExperimentRun(
+		c.Request.Context(),
+		token,
+		&req.CreateJobCommon,
+		jobName,
+		req.Resource,
+		req.Image,
+		req.Checkpoint,
+	)
+	if err != nil {
+		resputil.Error(c, err.Error(), resputil.ServiceError)
+		return
+	}
 
 	// Unified jupyter start command
 	webideCommand := fmt.Sprintf("code-server --bind-addr 0.0.0.0:%d", JupyterPort)
@@ -96,6 +109,7 @@ func (mgr *VolcanojobMgr) CreateWebIDEJob(c *gin.Context) {
 		&req.CreateJobCommon,
 		scheduleMetadata,
 	)
+	ApplyExperimentAnnotations(jobAnnotations, experimentRuntime)
 
 	// 5. Create the pod spec
 	podSpec, err := generateInteractivePodSpec(
@@ -109,12 +123,15 @@ func (mgr *VolcanojobMgr) CreateWebIDEJob(c *gin.Context) {
 		string(OrbitJobTypeWebIDE),
 		req.CpuPinningEnabled,
 		jobName,
+		experimentRuntime,
 	)
 	if err != nil {
+		markExperimentRunSubmitFailed(c.Request.Context(), experimentRuntime, err)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
 	if err := ApplyCheckpointAnnotations(jobAnnotations, req.Checkpoint); err != nil {
+		markExperimentRunSubmitFailed(c.Request.Context(), experimentRuntime, err)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
@@ -158,6 +175,7 @@ func (mgr *VolcanojobMgr) CreateWebIDEJob(c *gin.Context) {
 	}
 
 	if err = mgr.submitJob(c, token, &job); err != nil {
+		markExperimentRunSubmitFailed(c.Request.Context(), experimentRuntime, err)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}

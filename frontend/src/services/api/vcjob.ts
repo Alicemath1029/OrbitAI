@@ -22,6 +22,7 @@ import { V1ResourceList } from '@/utils/resource'
 import { globalJobUrl } from '@/utils/store'
 
 import { IResponse } from '../types'
+import type { ExperimentRunConfig } from './experiment'
 import { ImageInfoResponse } from './imagepack'
 import { TerminatedState } from './tool'
 
@@ -456,6 +457,7 @@ export interface IJupyterCreate {
   forwards: Forward[]
   scheduleType?: ScheduleType
   checkpoint?: CheckpointConfig
+  experiment?: ExperimentRunConfig
 }
 
 export interface ITrainingCreate extends IJupyterCreate {
@@ -497,6 +499,7 @@ export interface ITensorflowCreate {
   template?: string
   forwards: Forward[]
   checkpoint?: CheckpointConfig
+  experiment?: ExperimentRunConfig
 }
 
 export const apiJupyterCreate = (task: IJupyterCreate) =>

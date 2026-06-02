@@ -239,6 +239,7 @@ type (
 		Forwards          []Forward                    `json:"forwards,omitempty"`
 		ScheduleType      *model.ScheduleType          `json:"scheduleType,omitempty"`
 		Checkpoint        *CheckpointConfig            `json:"checkpoint,omitempty"`
+		Experiment        *service.ExperimentRunConfig `json:"experiment,omitempty"`
 	}
 )
 

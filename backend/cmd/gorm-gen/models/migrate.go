@@ -1162,6 +1162,25 @@ func main() {
 				return tx.Migrator().DropTable(&model.JobCheckpoint{})
 			},
 		},
+		{
+			ID: "202606021200",
+			Migrate: func(tx *gorm.DB) error {
+				return tx.AutoMigrate(
+					&model.Experiment{},
+					&model.ExperimentRun{},
+					&model.RunMetric{},
+					&model.RunArtifact{},
+				)
+			},
+			Rollback: func(tx *gorm.DB) error {
+				return tx.Migrator().DropTable(
+					&model.RunArtifact{},
+					&model.RunMetric{},
+					&model.ExperimentRun{},
+					&model.Experiment{},
+				)
+			},
+		},
 	})
 
 	m.InitSchema(func(tx *gorm.DB) error {
@@ -1175,6 +1194,10 @@ func main() {
 			&model.Resource{},
 			&model.Job{},
 			&model.JobCheckpoint{},
+			&model.Experiment{},
+			&model.ExperimentRun{},
+			&model.RunMetric{},
+			&model.RunArtifact{},
 			&model.AITask{},
 			&model.Kaniko{},
 			&model.Image{},

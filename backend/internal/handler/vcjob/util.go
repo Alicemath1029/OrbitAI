@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"gopkg.in/yaml.v3"
+	"gorm.io/datatypes"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -21,6 +22,7 @@ import (
 
 	"github.com/raids-lab/orbit/dao/model"
 	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/service"
 	vcjobservice "github.com/raids-lab/orbit/internal/service/vcjob"
 	"github.com/raids-lab/orbit/internal/util"
 	"github.com/raids-lab/orbit/pkg/config"
@@ -35,6 +37,11 @@ var (
 		},
 	}
 )
+
+type experimentRunRuntime struct {
+	RunID uint
+	Token string
+}
 
 // buildResourceRequirements creates resource requirements and resize policy based on CPU pinning setting
 func buildResourceRequirements(resourceList v1.ResourceList, cpuPinningEnabled bool) (v1.ResourceRequirements, []v1.ContainerResizePolicy) {
@@ -569,11 +576,107 @@ func getLabelAndAnnotations(
 			jobAnnotations[vcjobservice.AnnotationKeyMountedDatasetIDs] = string(data)
 		}
 	}
+	if c.Experiment != nil && c.Experiment.ExperimentID > 0 {
+		jobAnnotations[service.ExperimentAnnotationID] = strconv.FormatUint(uint64(c.Experiment.ExperimentID), 10)
+	}
 	podAnnotations = map[string]string{
 		AnnotationKeyTaskName: c.Name,
 		AnnotationKeyUser:     token.Username,
 	}
 	return labels, jobAnnotations, podAnnotations
+}
+
+func prepareExperimentRun(
+	ctx context.Context,
+	token util.JWTMessage,
+	req *CreateJobCommon,
+	jobName string,
+	resourceSnapshot any,
+	imageSnapshot any,
+	checkpoint *CheckpointConfig,
+) (*experimentRunRuntime, error) {
+	if req == nil || req.Experiment == nil || req.Experiment.ExperimentID == 0 {
+		return nil, nil
+	}
+	experimentSvc := service.NewExperimentService()
+	result, err := experimentSvc.CreateRun(ctx, service.CreateRunInput{
+		ExperimentID:       req.Experiment.ExperimentID,
+		JobName:            jobName,
+		RunName:            req.Experiment.RunName,
+		UserID:             token.UserID,
+		AccountID:          token.AccountID,
+		Hyperparams:        req.Experiment.Hyperparams,
+		CodeSnapshot:       req.Experiment.Code,
+		DataSnapshot:       req.Experiment.Data,
+		ImageSnapshot:      toJSONMap(imageSnapshot),
+		ResourceSnapshot:   toJSONMap(resourceSnapshot),
+		CheckpointSnapshot: toJSONMap(checkpoint),
+		Tags:               req.Experiment.Tags,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &experimentRunRuntime{RunID: result.Run.ID, Token: result.Token}, nil
+}
+
+func markExperimentRunSubmitFailed(ctx context.Context, runtime *experimentRunRuntime, err error) {
+	if runtime == nil || runtime.RunID == 0 || err == nil {
+		return
+	}
+	if markErr := service.NewExperimentService().MarkRunFailedByID(ctx, runtime.RunID, err.Error()); markErr != nil {
+		// Do not fail job submission cleanup on experiment status bookkeeping.
+		return
+	}
+}
+
+func AppendExperimentEnvs(envs []v1.EnvVar, runtime *experimentRunRuntime) []v1.EnvVar {
+	if runtime == nil || runtime.RunID == 0 || runtime.Token == "" {
+		return envs
+	}
+	next := make([]v1.EnvVar, 0, len(envs)+3)
+	for _, env := range envs {
+		if strings.HasPrefix(env.Name, "ORBIT_RUN_") || env.Name == service.EnvOrbitAPIBase {
+			continue
+		}
+		next = append(next, env)
+	}
+	next = append(next,
+		v1.EnvVar{Name: service.EnvOrbitRunID, Value: strconv.FormatUint(uint64(runtime.RunID), 10)},
+		v1.EnvVar{Name: service.EnvOrbitRunToken, Value: runtime.Token},
+		v1.EnvVar{Name: service.EnvOrbitAPIBase, Value: service.OrbitAPIBase()},
+	)
+	return next
+}
+
+func ApplyExperimentAnnotations(annotations map[string]string, runtime *experimentRunRuntime) {
+	if annotations == nil || runtime == nil || runtime.RunID == 0 {
+		return
+	}
+	annotations[service.ExperimentAnnotationRunID] = strconv.FormatUint(uint64(runtime.RunID), 10)
+}
+
+func toJSONMap(value any) datatypes.JSONMap {
+	if value == nil {
+		return datatypes.JSONMap{}
+	}
+	if typed, ok := value.(datatypes.JSONMap); ok {
+		if typed == nil {
+			return datatypes.JSONMap{}
+		}
+		return typed
+	}
+	data, err := json.Marshal(value)
+	if err != nil {
+		return datatypes.JSONMap{}
+	}
+	var result datatypes.JSONMap
+	if err := json.Unmarshal(data, &result); err != nil {
+		return datatypes.JSONMap{}
+	}
+	if result == nil {
+		return datatypes.JSONMap{}
+	}
+	return result
 }
 
 func collectMountedDatasetIDs(mounts []util.VolumeMount) []uint {
@@ -607,6 +710,7 @@ func generateInteractivePodSpec(
 	containerName string,
 	cpuPinningEnabled bool,
 	jobName string,
+	experimentRuntime *experimentRunRuntime,
 ) (v1.PodSpec, error) {
 	// 1. Volume Mounts
 	volumes, volumeMounts, err := GenerateVolumeMounts(c, req.VolumeMounts, token)
@@ -639,7 +743,10 @@ func generateInteractivePodSpec(
 	})
 
 	// 2. Env Vars
-	envs := AppendCheckpointEnvs(GenerateEnvs(c, token, req.Envs), checkpoint, jobName)
+	envs := AppendExperimentEnvs(
+		AppendCheckpointEnvs(GenerateEnvs(c, token, req.Envs), checkpoint, jobName),
+		experimentRuntime,
+	)
 
 	// 3. Node Affinity and Tolerations
 	baseAffinity := GenerateNodeAffinity(req.Selectors, resourceList)

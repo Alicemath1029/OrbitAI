@@ -1,0 +1,554 @@
+package service
+
+import (
+	"context"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/hex"
+	"errors"
+	"fmt"
+	"os"
+	"strings"
+	"time"
+
+	"gorm.io/datatypes"
+	"gorm.io/gorm"
+	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
+
+	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/dao/query"
+	"github.com/raids-lab/orbit/internal/util"
+)
+
+const (
+	ExperimentAnnotationRunID = "orbit.raids.io/experiment-run-id"
+	ExperimentAnnotationID    = "orbit.raids.io/experiment-id"
+
+	EnvOrbitRunID    = "ORBIT_RUN_ID"
+	EnvOrbitRunToken = "ORBIT_RUN_TOKEN"
+	EnvOrbitAPIBase  = "ORBIT_API_BASE"
+)
+
+type ExperimentRunConfig struct {
+	ExperimentID uint              `json:"experimentId"`
+	RunName      string            `json:"runName"`
+	Hyperparams  datatypes.JSONMap `json:"hyperparams"`
+	Code         datatypes.JSONMap `json:"code"`
+	Data         datatypes.JSONMap `json:"data"`
+	Image        datatypes.JSONMap `json:"image"`
+	Tags         datatypes.JSONMap `json:"tags"`
+}
+
+type CreateExperimentInput struct {
+	Name        string
+	Description string
+	Visibility  model.ExperimentVisibility
+	Tags        datatypes.JSONMap
+	UserID      uint
+	AccountID   uint
+}
+
+type UpdateExperimentInput struct {
+	Name        *string
+	Description *string
+	Visibility  *model.ExperimentVisibility
+	Tags        *datatypes.JSONMap
+}
+
+type CreateRunInput struct {
+	ExperimentID       uint
+	JobName            string
+	RunName            string
+	UserID             uint
+	AccountID          uint
+	Hyperparams        datatypes.JSONMap
+	CodeSnapshot       datatypes.JSONMap
+	DataSnapshot       datatypes.JSONMap
+	ImageSnapshot      datatypes.JSONMap
+	ResourceSnapshot   datatypes.JSONMap
+	CheckpointSnapshot datatypes.JSONMap
+	Tags               datatypes.JSONMap
+}
+
+type CreateRunResult struct {
+	Run   *model.ExperimentRun
+	Token string
+}
+
+type MetricInput struct {
+	Name      string            `json:"name"`
+	Value     float64           `json:"value"`
+	Step      int64             `json:"step"`
+	Timestamp *time.Time        `json:"timestamp"`
+	Context   datatypes.JSONMap `json:"context"`
+}
+
+type ArtifactInput struct {
+	Name      string            `json:"name"`
+	Type      string            `json:"type"`
+	Path      string            `json:"path"`
+	SizeBytes int64             `json:"sizeBytes"`
+	Metadata  datatypes.JSONMap `json:"metadata"`
+}
+
+type ExperimentService struct {
+	db *gorm.DB
+}
+
+func NewExperimentService() *ExperimentService {
+	return &ExperimentService{db: query.GetDB()}
+}
+
+func NewExperimentServiceWithDB(db *gorm.DB) *ExperimentService {
+	return &ExperimentService{db: db}
+}
+
+func OrbitAPIBase() string {
+	if base := strings.TrimSpace(os.Getenv("ORBIT_API_BASE")); base != "" {
+		return strings.TrimRight(base, "/")
+	}
+	if base := strings.TrimSpace(os.Getenv("CRATER_API_BASE")); base != "" {
+		return strings.TrimRight(base, "/")
+	}
+	return "http://orbit-backend:8088/api/v1"
+}
+
+func (s *ExperimentService) ListExperiments(
+	ctx context.Context,
+	token util.JWTMessage,
+	limit int,
+	offset int,
+) ([]model.Experiment, int64, error) {
+	if limit <= 0 || limit > 100 {
+		limit = 50
+	}
+	var total int64
+	base := s.db.WithContext(ctx).Model(&model.Experiment{}).
+		Where("account_id = ? AND (visibility = ? OR user_id = ?)", token.AccountID, model.ExperimentVisibilityAccount, token.UserID)
+	if err := base.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	var items []model.Experiment
+	err := base.Order("updated_at DESC").Limit(limit).Offset(offset).Find(&items).Error
+	return items, total, err
+}
+
+func (s *ExperimentService) CreateExperiment(
+	ctx context.Context,
+	input CreateExperimentInput,
+) (*model.Experiment, error) {
+	name := strings.TrimSpace(input.Name)
+	if name == "" {
+		return nil, fmt.Errorf("experiment name is required")
+	}
+	visibility := input.Visibility
+	if visibility == "" {
+		visibility = model.ExperimentVisibilityPrivate
+	}
+	exp := &model.Experiment{
+		Name:        name,
+		Description: input.Description,
+		UserID:      input.UserID,
+		AccountID:   input.AccountID,
+		Visibility:  visibility,
+		Tags:        safeJSONMap(input.Tags),
+	}
+	if err := s.db.WithContext(ctx).Create(exp).Error; err != nil {
+		return nil, err
+	}
+	return exp, nil
+}
+
+func (s *ExperimentService) GetExperiment(
+	ctx context.Context,
+	id uint,
+	token util.JWTMessage,
+) (*model.Experiment, error) {
+	var exp model.Experiment
+	if err := s.db.WithContext(ctx).Where("id = ?", id).First(&exp).Error; err != nil {
+		return nil, err
+	}
+	if !canAccessExperiment(&exp, token) {
+		return nil, gorm.ErrRecordNotFound
+	}
+	return &exp, nil
+}
+
+func (s *ExperimentService) UpdateExperiment(
+	ctx context.Context,
+	id uint,
+	token util.JWTMessage,
+	input UpdateExperimentInput,
+) (*model.Experiment, error) {
+	exp, err := s.GetExperiment(ctx, id, token)
+	if err != nil {
+		return nil, err
+	}
+	if exp.UserID != token.UserID {
+		return nil, fmt.Errorf("only owner can update experiment")
+	}
+	updates := map[string]any{}
+	if input.Name != nil {
+		name := strings.TrimSpace(*input.Name)
+		if name == "" {
+			return nil, fmt.Errorf("experiment name is required")
+		}
+		updates["name"] = name
+	}
+	if input.Description != nil {
+		updates["description"] = *input.Description
+	}
+	if input.Visibility != nil {
+		updates["visibility"] = *input.Visibility
+	}
+	if input.Tags != nil {
+		updates["tags"] = safeJSONMap(*input.Tags)
+	}
+	if len(updates) > 0 {
+		if err := s.db.WithContext(ctx).Model(exp).Updates(updates).Error; err != nil {
+			return nil, err
+		}
+	}
+	return s.GetExperiment(ctx, id, token)
+}
+
+func (s *ExperimentService) ListRuns(
+	ctx context.Context,
+	experimentID uint,
+	token util.JWTMessage,
+) ([]model.ExperimentRun, error) {
+	if _, err := s.GetExperiment(ctx, experimentID, token); err != nil {
+		return nil, err
+	}
+	var runs []model.ExperimentRun
+	err := s.db.WithContext(ctx).
+		Where("experiment_id = ?", experimentID).
+		Order("created_at DESC").
+		Find(&runs).Error
+	return runs, err
+}
+
+func (s *ExperimentService) CreateRun(
+	ctx context.Context,
+	input CreateRunInput,
+) (*CreateRunResult, error) {
+	if input.ExperimentID == 0 {
+		return nil, fmt.Errorf("experimentId is required")
+	}
+	var exp model.Experiment
+	if err := s.db.WithContext(ctx).
+		Where("id = ? AND account_id = ? AND (visibility = ? OR user_id = ?)",
+			input.ExperimentID,
+			input.AccountID,
+			model.ExperimentVisibilityAccount,
+			input.UserID,
+		).First(&exp).Error; err != nil {
+		return nil, err
+	}
+
+	token, tokenHash, err := newRunToken()
+	if err != nil {
+		return nil, err
+	}
+	runName := strings.TrimSpace(input.RunName)
+	if runName == "" {
+		runName = input.JobName
+	}
+	if runName == "" {
+		runName = fmt.Sprintf("run-%d", time.Now().Unix())
+	}
+
+	run := &model.ExperimentRun{
+		ExperimentID:       input.ExperimentID,
+		JobName:            input.JobName,
+		RunName:            runName,
+		Status:             model.ExperimentRunStatusPending,
+		UserID:             input.UserID,
+		AccountID:          input.AccountID,
+		RunTokenHash:       tokenHash,
+		Hyperparams:        safeJSONMap(input.Hyperparams),
+		CodeSnapshot:       safeJSONMap(input.CodeSnapshot),
+		DataSnapshot:       safeJSONMap(input.DataSnapshot),
+		ImageSnapshot:      safeJSONMap(input.ImageSnapshot),
+		ResourceSnapshot:   safeJSONMap(input.ResourceSnapshot),
+		CheckpointSnapshot: safeJSONMap(input.CheckpointSnapshot),
+		Tags:               safeJSONMap(input.Tags),
+	}
+	if err := s.db.WithContext(ctx).Create(run).Error; err != nil {
+		return nil, err
+	}
+	return &CreateRunResult{Run: run, Token: token}, nil
+}
+
+func (s *ExperimentService) MarkRunFailedByID(ctx context.Context, runID uint, message string) error {
+	if runID == 0 {
+		return nil
+	}
+	var run model.ExperimentRun
+	if err := s.db.WithContext(ctx).Where("id = ?", runID).First(&run).Error; err != nil {
+		return err
+	}
+	updates := map[string]any{
+		"status":      model.ExperimentRunStatusFailed,
+		"finished_at": time.Now(),
+	}
+	if message != "" {
+		tags := safeJSONMap(run.Tags)
+		tags["submitError"] = message
+		updates["tags"] = tags
+	}
+	return s.db.WithContext(ctx).Model(&run).Updates(updates).Error
+}
+
+func (s *ExperimentService) GetRun(
+	ctx context.Context,
+	runID uint,
+	token util.JWTMessage,
+) (*model.ExperimentRun, error) {
+	var run model.ExperimentRun
+	if err := s.db.WithContext(ctx).Where("id = ?", runID).First(&run).Error; err != nil {
+		return nil, err
+	}
+	if run.AccountID != token.AccountID || (run.UserID != token.UserID && token.RolePlatform != model.RoleAdmin) {
+		return nil, gorm.ErrRecordNotFound
+	}
+	return &run, nil
+}
+
+func (s *ExperimentService) VerifyRunToken(ctx context.Context, runID uint, token string) (*model.ExperimentRun, error) {
+	token = strings.TrimSpace(token)
+	if token == "" {
+		return nil, fmt.Errorf("run token is required")
+	}
+	var run model.ExperimentRun
+	if err := s.db.WithContext(ctx).Where("id = ?", runID).First(&run).Error; err != nil {
+		return nil, err
+	}
+	if run.RunTokenHash != hashRunToken(token) {
+		return nil, fmt.Errorf("invalid run token")
+	}
+	return &run, nil
+}
+
+func (s *ExperimentService) LogMetrics(ctx context.Context, runID uint, metrics []MetricInput) error {
+	if len(metrics) == 0 {
+		return nil
+	}
+	if len(metrics) > 1000 {
+		return fmt.Errorf("too many metrics in one request")
+	}
+	now := time.Now()
+	rows := make([]model.RunMetric, 0, len(metrics))
+	for _, metric := range metrics {
+		name := strings.TrimSpace(metric.Name)
+		if name == "" {
+			continue
+		}
+		timestamp := now
+		if metric.Timestamp != nil {
+			timestamp = *metric.Timestamp
+		}
+		rows = append(rows, model.RunMetric{
+			RunID:     runID,
+			Name:      name,
+			Step:      metric.Step,
+			Value:     metric.Value,
+			Timestamp: timestamp,
+			Context:   safeJSONMap(metric.Context),
+		})
+	}
+	if len(rows) == 0 {
+		return nil
+	}
+	return s.db.WithContext(ctx).Create(&rows).Error
+}
+
+func (s *ExperimentService) ListMetrics(ctx context.Context, runID uint, token util.JWTMessage) ([]model.RunMetric, error) {
+	if _, err := s.GetRun(ctx, runID, token); err != nil {
+		return nil, err
+	}
+	var metrics []model.RunMetric
+	err := s.db.WithContext(ctx).
+		Where("run_id = ?", runID).
+		Order("name ASC, step ASC, timestamp ASC").
+		Find(&metrics).Error
+	return metrics, err
+}
+
+func (s *ExperimentService) MergeParams(ctx context.Context, runID uint, params datatypes.JSONMap) error {
+	if len(params) == 0 {
+		return nil
+	}
+	var run model.ExperimentRun
+	if err := s.db.WithContext(ctx).Where("id = ?", runID).First(&run).Error; err != nil {
+		return err
+	}
+	next := safeJSONMap(run.Hyperparams)
+	for key, value := range params {
+		next[key] = value
+	}
+	return s.db.WithContext(ctx).Model(&run).Update("hyperparams", next).Error
+}
+
+func (s *ExperimentService) MergeTags(ctx context.Context, runID uint, tags datatypes.JSONMap) error {
+	if len(tags) == 0 {
+		return nil
+	}
+	var run model.ExperimentRun
+	if err := s.db.WithContext(ctx).Where("id = ?", runID).First(&run).Error; err != nil {
+		return err
+	}
+	next := safeJSONMap(run.Tags)
+	for key, value := range tags {
+		next[key] = value
+	}
+	return s.db.WithContext(ctx).Model(&run).Update("tags", next).Error
+}
+
+func (s *ExperimentService) CreateArtifact(ctx context.Context, runID uint, input ArtifactInput) (*model.RunArtifact, error) {
+	name := strings.TrimSpace(input.Name)
+	path := strings.TrimSpace(input.Path)
+	if name == "" {
+		return nil, fmt.Errorf("artifact name is required")
+	}
+	if path == "" {
+		return nil, fmt.Errorf("artifact path is required")
+	}
+	artifactType := strings.TrimSpace(input.Type)
+	if artifactType == "" {
+		artifactType = "file"
+	}
+	artifact := &model.RunArtifact{
+		RunID:     runID,
+		Name:      name,
+		Type:      artifactType,
+		Path:      path,
+		SizeBytes: input.SizeBytes,
+		Metadata:  safeJSONMap(input.Metadata),
+	}
+	if err := s.db.WithContext(ctx).Create(artifact).Error; err != nil {
+		return nil, err
+	}
+	return artifact, nil
+}
+
+func (s *ExperimentService) ListArtifacts(ctx context.Context, runID uint, token util.JWTMessage) ([]model.RunArtifact, error) {
+	if _, err := s.GetRun(ctx, runID, token); err != nil {
+		return nil, err
+	}
+	var artifacts []model.RunArtifact
+	err := s.db.WithContext(ctx).
+		Where("run_id = ?", runID).
+		Order("created_at DESC").
+		Find(&artifacts).Error
+	return artifacts, err
+}
+
+func (s *ExperimentService) FinishRun(ctx context.Context, runID uint, status model.ExperimentRunStatus) error {
+	switch status {
+	case model.ExperimentRunStatusSucceeded,
+		model.ExperimentRunStatusFailed,
+		model.ExperimentRunStatusTerminated,
+		model.ExperimentRunStatusCancelled:
+	default:
+		return fmt.Errorf("invalid finish status: %s", status)
+	}
+	return s.db.WithContext(ctx).Model(&model.ExperimentRun{}).
+		Where("id = ?", runID).
+		Updates(map[string]any{
+			"status":      status,
+			"finished_at": time.Now(),
+		}).Error
+}
+
+func (s *ExperimentService) SyncRunForJob(ctx context.Context, job *model.Job) error {
+	if job == nil || job.JobName == "" {
+		return nil
+	}
+	status := runStatusFromJobPhase(job.Status)
+	updates := map[string]any{
+		"job_id":     job.ID,
+		"status":     status,
+		"updated_at": time.Now(),
+	}
+	if !job.RunningTimestamp.IsZero() {
+		updates["started_at"] = job.RunningTimestamp
+	}
+	if !job.CompletedTimestamp.IsZero() {
+		updates["finished_at"] = job.CompletedTimestamp
+	}
+	if job.Checkpoint != nil {
+		updates["checkpoint_snapshot"] = checkpointInfoToMap(job.Checkpoint.Data())
+	}
+	return s.db.WithContext(ctx).Model(&model.ExperimentRun{}).
+		Where("job_name = ?", job.JobName).
+		Updates(updates).Error
+}
+
+func canAccessExperiment(exp *model.Experiment, token util.JWTMessage) bool {
+	if exp.AccountID != token.AccountID {
+		return false
+	}
+	return exp.Visibility == model.ExperimentVisibilityAccount || exp.UserID == token.UserID || token.RolePlatform == model.RoleAdmin
+}
+
+func safeJSONMap(value datatypes.JSONMap) datatypes.JSONMap {
+	if value == nil {
+		return datatypes.JSONMap{}
+	}
+	return value
+}
+
+func newRunToken() (string, string, error) {
+	raw := make([]byte, 32)
+	if _, err := rand.Read(raw); err != nil {
+		return "", "", err
+	}
+	token := base64.RawURLEncoding.EncodeToString(raw)
+	return token, hashRunToken(token), nil
+}
+
+func hashRunToken(token string) string {
+	sum := sha256.Sum256([]byte(token))
+	return hex.EncodeToString(sum[:])
+}
+
+func runStatusFromJobPhase(phase batch.JobPhase) model.ExperimentRunStatus {
+	switch phase {
+	case batch.Running, batch.Restarting:
+		return model.ExperimentRunStatusRunning
+	case batch.Completed:
+		return model.ExperimentRunStatusSucceeded
+	case batch.Failed:
+		return model.ExperimentRunStatusFailed
+	case batch.Aborted, batch.Terminated:
+		return model.ExperimentRunStatusTerminated
+	default:
+		return model.ExperimentRunStatusPending
+	}
+}
+
+func checkpointInfoToMap(info *model.CheckpointInfo) datatypes.JSONMap {
+	if info == nil {
+		return datatypes.JSONMap{}
+	}
+	return datatypes.JSONMap{
+		"enabled":          info.Enabled,
+		"framework":        info.Framework,
+		"projectName":      info.ProjectName,
+		"experimentName":   info.ExperimentName,
+		"outputDir":        info.OutputDir,
+		"checkpointDir":    info.CheckpointDir,
+		"resumeMode":       info.ResumeMode,
+		"resumeFrom":       info.ResumeFrom,
+		"latestCheckpoint": info.LatestCheckpoint,
+		"saveSteps":        info.SaveSteps,
+		"maxToKeep":        info.MaxToKeep,
+		"maxBytes":         info.MaxBytes,
+	}
+}
+
+func IsRecordNotFound(err error) bool {
+	return errors.Is(err, gorm.ErrRecordNotFound)
+}

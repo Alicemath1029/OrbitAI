@@ -49,6 +49,7 @@ import TipBadge from '@/components/badge/tip-badge'
 import { CheckpointFormCard } from '@/components/form/checkpoint-form-field'
 import { VolumeMountsCard } from '@/components/form/data-mount-form-field'
 import { EnvFormCard } from '@/components/form/env-form-field'
+import { ExperimentFormCard } from '@/components/form/experiment-form-field'
 import FormExportButton from '@/components/form/form-export-button'
 import FormImportButton from '@/components/form/form-import-button'
 import FormLabelMust from '@/components/form/form-label-must'
@@ -72,12 +73,15 @@ import { useJobCreateBillingBlockDialog } from '@/hooks/use-job-create-billing-b
 
 import {
   VolumeMountType,
+  buildExperimentRunConfig,
   checkpointSchema,
   convertToResourceList,
   defaultCheckpoint,
+  defaultExperimentConfig,
   defaultResource,
   ensureImageCompatibility,
   envsSchema,
+  experimentConfigSchema,
   exportToJsonString,
   forwardsSchema,
   jobNameSchema,
@@ -111,6 +115,7 @@ const formSchema = z.object({
   volumeMounts: volumeMountsSchema,
   nodeSelector: nodeSelectorSchema,
   checkpoint: checkpointSchema,
+  experiment: experimentConfigSchema,
   alertEnabled: z.boolean().default(true),
   cpuPinningEnabled: z.boolean().default(false),
   forwards: forwardsSchema,
@@ -165,6 +170,9 @@ const dataProcessor = (data: FormSchema) => {
   if (!data.checkpoint) {
     data.checkpoint = defaultCheckpoint
   }
+  if (!data.experiment) {
+    data.experiment = defaultExperimentConfig
+  }
   return data
 }
 
@@ -174,6 +182,7 @@ function RouteComponent() {
   const searchParams = Route.useSearch()
   const [envOpen, setEnvOpen] = useState<boolean>(false)
   const [checkpointOpen, setCheckpointOpen] = useState<boolean>(false)
+  const [experimentOpen, setExperimentOpen] = useState<boolean>(false)
   const [otherOpen, setOtherOpen] = useState<boolean>(true)
   const navigate = Route.useNavigate()
   const queryClient = useQueryClient()
@@ -198,6 +207,7 @@ function RouteComponent() {
         envs: values.envs,
         forwards: values.forwards,
         checkpoint: values.checkpoint,
+        experiment: buildExperimentRunConfig(values.experiment),
         alertEnabled: values.alertEnabled,
         cpuPinningEnabled: values.cpuPinningEnabled,
         scheduleType: isBackfillEnabled ? values.scheduleType : ScheduleType.Normal,
@@ -257,6 +267,7 @@ function RouteComponent() {
       ],
       envs: [],
       checkpoint: defaultCheckpoint,
+      experiment: defaultExperimentConfig,
       alertEnabled: true,
       cpuPinningEnabled: false,
       scheduleType: ScheduleType.Normal,
@@ -321,6 +332,9 @@ function RouteComponent() {
                   }
                   if (data.checkpoint?.enabled) {
                     setCheckpointOpen(true)
+                  }
+                  if (data.experiment?.enabled) {
+                    setExperimentOpen(true)
                   }
                   if (data.nodeSelector.enable) {
                     setOtherOpen(true)
@@ -513,6 +527,11 @@ conda activate base;
                   value: true,
                 },
                 {
+                  condition: (data) => data.experiment?.enabled === true,
+                  setter: setExperimentOpen,
+                  value: true,
+                },
+                {
                   condition: (data) => data.nodeSelector.enable || data.alertEnabled,
                   setter: setOtherOpen,
                   value: true,
@@ -525,6 +544,7 @@ conda activate base;
           </div>
           <div className="flex flex-col gap-4 md:gap-6">
             <VolumeMountsCard form={form} />
+            <ExperimentFormCard form={form} open={experimentOpen} setOpen={setExperimentOpen} />
             <CheckpointFormCard form={form} open={checkpointOpen} setOpen={setCheckpointOpen} />
             <ForwardFormCard form={form} />
             <EnvFormCard form={form} open={envOpen} setOpen={setEnvOpen} />

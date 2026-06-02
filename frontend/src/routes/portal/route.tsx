@@ -125,6 +125,11 @@ const useUserSidebarGroups = (): NavGroupProps[] => {
           url: '/portal/templates',
           icon: ShoppingBagIcon,
         },
+        {
+          title: '实验中心',
+          url: '/portal/experiments',
+          icon: FlaskConicalIcon,
+        },
       ],
     },
     {

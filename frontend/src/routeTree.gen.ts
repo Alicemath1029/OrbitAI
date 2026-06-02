@@ -19,6 +19,7 @@ import { Route as PortalUsersRouteRouteImport } from './routes/portal/users/rout
 import { Route as PortalTemplatesRouteRouteImport } from './routes/portal/templates/route'
 import { Route as PortalOverviewRouteRouteImport } from './routes/portal/overview/route'
 import { Route as PortalMoreRouteRouteImport } from './routes/portal/more/route'
+import { Route as PortalExperimentsRouteRouteImport } from './routes/portal/experiments/route'
 import { Route as PortalAccountRouteRouteImport } from './routes/portal/account/route'
 import { Route as AdminUsersRouteRouteImport } from './routes/admin/users/route'
 import { Route as AdminStatisticsRouteRouteImport } from './routes/admin/statistics/route'
@@ -30,6 +31,7 @@ import { Route as PortalUsersIndexRouteImport } from './routes/portal/users/inde
 import { Route as PortalTemplatesIndexRouteImport } from './routes/portal/templates/index'
 import { Route as PortalOverviewIndexRouteImport } from './routes/portal/overview/index'
 import { Route as PortalMoreIndexRouteImport } from './routes/portal/more/index'
+import { Route as PortalExperimentsIndexRouteImport } from './routes/portal/experiments/index'
 import { Route as AdminUsersIndexRouteImport } from './routes/admin/users/index'
 import { Route as AdminStatisticsIndexRouteImport } from './routes/admin/statistics/index'
 import { Route as AdminOperationLogsIndexRouteImport } from './routes/admin/operation-logs/index'
@@ -47,6 +49,7 @@ import { Route as PortalMonitorNetworkRouteImport } from './routes/portal/monito
 import { Route as PortalMonitorIdleRouteImport } from './routes/portal/monitor/idle'
 import { Route as PortalMonitorGpuRouteImport } from './routes/portal/monitor/gpu'
 import { Route as PortalFilesSplatRouteImport } from './routes/portal/files/$'
+import { Route as PortalExperimentsIdRouteImport } from './routes/portal/experiments/$id'
 import { Route as PortalAccountStatisticsRouteImport } from './routes/portal/account/statistics'
 import { Route as PortalAccountMemberRouteImport } from './routes/portal/account/member'
 import { Route as IngressWebideNameRouteImport } from './routes/ingress/webide.$name'
@@ -94,6 +97,7 @@ import { Route as PortalJobsNewJupyterJobRouteImport } from './routes/portal/job
 import { Route as PortalJobsNewEmiasJupyterJobRouteImport } from './routes/portal/jobs/new/emias-jupyter-job'
 import { Route as PortalJobsNewEmiasJobRouteImport } from './routes/portal/jobs/new/emias-job'
 import { Route as PortalJobsDetailNameRouteImport } from './routes/portal/jobs/detail/$name'
+import { Route as PortalExperimentsRunsRunIDRouteImport } from './routes/portal/experiments/runs/$runID'
 import { Route as PortalEnvRegistryNameRouteImport } from './routes/portal/env/registry/$name'
 import { Route as PortalDataModelsIdRouteImport } from './routes/portal/data/models/$id'
 import { Route as PortalDataDatasetsIdRouteImport } from './routes/portal/data/datasets/$id'
@@ -156,6 +160,11 @@ const PortalMoreRouteRoute = PortalMoreRouteRouteImport.update({
   path: '/more',
   getParentRoute: () => PortalRouteRoute,
 } as any)
+const PortalExperimentsRouteRoute = PortalExperimentsRouteRouteImport.update({
+  id: '/experiments',
+  path: '/experiments',
+  getParentRoute: () => PortalRouteRoute,
+} as any)
 const PortalAccountRouteRoute = PortalAccountRouteRouteImport.update({
   id: '/account',
   path: '/account',
@@ -210,6 +219,11 @@ const PortalMoreIndexRoute = PortalMoreIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PortalMoreRouteRoute,
+} as any)
+const PortalExperimentsIndexRoute = PortalExperimentsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PortalExperimentsRouteRoute,
 } as any)
 const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
   id: '/',
@@ -295,6 +309,11 @@ const PortalFilesSplatRoute = PortalFilesSplatRouteImport.update({
   id: '/files/$',
   path: '/files/$',
   getParentRoute: () => PortalRouteRoute,
+} as any)
+const PortalExperimentsIdRoute = PortalExperimentsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PortalExperimentsRouteRoute,
 } as any)
 const PortalAccountStatisticsRoute = PortalAccountStatisticsRouteImport.update({
   id: '/statistics',
@@ -536,6 +555,12 @@ const PortalJobsDetailNameRoute = PortalJobsDetailNameRouteImport.update({
   path: '/$name',
   getParentRoute: () => PortalJobsDetailRouteRoute,
 } as any)
+const PortalExperimentsRunsRunIDRoute =
+  PortalExperimentsRunsRunIDRouteImport.update({
+    id: '/runs/$runID',
+    path: '/runs/$runID',
+    getParentRoute: () => PortalExperimentsRouteRoute,
+  } as any)
 const PortalEnvRegistryNameRoute = PortalEnvRegistryNameRouteImport.update({
   id: '/$name',
   path: '/$name',
@@ -607,6 +632,7 @@ export interface FileRoutesByFullPath {
   '/admin/statistics': typeof AdminStatisticsRouteRouteWithChildren
   '/admin/users': typeof AdminUsersRouteRouteWithChildren
   '/portal/account': typeof PortalAccountRouteRouteWithChildren
+  '/portal/experiments': typeof PortalExperimentsRouteRouteWithChildren
   '/portal/more': typeof PortalMoreRouteRouteWithChildren
   '/portal/overview': typeof PortalOverviewRouteRouteWithChildren
   '/portal/templates': typeof PortalTemplatesRouteRouteWithChildren
@@ -638,6 +664,7 @@ export interface FileRoutesByFullPath {
   '/ingress/webide/$name': typeof IngressWebideNameRoute
   '/portal/account/member': typeof PortalAccountMemberRoute
   '/portal/account/statistics': typeof PortalAccountStatisticsRoute
+  '/portal/experiments/$id': typeof PortalExperimentsIdRoute
   '/portal/files/$': typeof PortalFilesSplatRoute
   '/portal/monitor/gpu': typeof PortalMonitorGpuRoute
   '/portal/monitor/idle': typeof PortalMonitorIdleRoute
@@ -655,6 +682,7 @@ export interface FileRoutesByFullPath {
   '/admin/operation-logs': typeof AdminOperationLogsIndexRoute
   '/admin/statistics/': typeof AdminStatisticsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
+  '/portal/experiments/': typeof PortalExperimentsIndexRoute
   '/portal/more/': typeof PortalMoreIndexRoute
   '/portal/overview/': typeof PortalOverviewIndexRoute
   '/portal/templates/': typeof PortalTemplatesIndexRoute
@@ -666,6 +694,7 @@ export interface FileRoutesByFullPath {
   '/portal/data/datasets/$id': typeof PortalDataDatasetsIdRoute
   '/portal/data/models/$id': typeof PortalDataModelsIdRoute
   '/portal/env/registry/$name': typeof PortalEnvRegistryNameRoute
+  '/portal/experiments/runs/$runID': typeof PortalExperimentsRunsRunIDRoute
   '/portal/jobs/detail/$name': typeof PortalJobsDetailNameRoute
   '/portal/jobs/new/emias-job': typeof PortalJobsNewEmiasJobRoute
   '/portal/jobs/new/emias-jupyter-job': typeof PortalJobsNewEmiasJupyterJobRoute
@@ -715,6 +744,7 @@ export interface FileRoutesByTo {
   '/ingress/webide/$name': typeof IngressWebideNameRoute
   '/portal/account/member': typeof PortalAccountMemberRoute
   '/portal/account/statistics': typeof PortalAccountStatisticsRoute
+  '/portal/experiments/$id': typeof PortalExperimentsIdRoute
   '/portal/files/$': typeof PortalFilesSplatRoute
   '/portal/monitor/gpu': typeof PortalMonitorGpuRoute
   '/portal/monitor/idle': typeof PortalMonitorIdleRoute
@@ -732,6 +762,7 @@ export interface FileRoutesByTo {
   '/admin/operation-logs': typeof AdminOperationLogsIndexRoute
   '/admin/statistics': typeof AdminStatisticsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
+  '/portal/experiments': typeof PortalExperimentsIndexRoute
   '/portal/more': typeof PortalMoreIndexRoute
   '/portal/overview': typeof PortalOverviewIndexRoute
   '/portal/templates': typeof PortalTemplatesIndexRoute
@@ -743,6 +774,7 @@ export interface FileRoutesByTo {
   '/portal/data/datasets/$id': typeof PortalDataDatasetsIdRoute
   '/portal/data/models/$id': typeof PortalDataModelsIdRoute
   '/portal/env/registry/$name': typeof PortalEnvRegistryNameRoute
+  '/portal/experiments/runs/$runID': typeof PortalExperimentsRunsRunIDRoute
   '/portal/jobs/detail/$name': typeof PortalJobsDetailNameRoute
   '/portal/jobs/new/emias-job': typeof PortalJobsNewEmiasJobRoute
   '/portal/jobs/new/emias-jupyter-job': typeof PortalJobsNewEmiasJupyterJobRoute
@@ -783,6 +815,7 @@ export interface FileRoutesById {
   '/admin/statistics': typeof AdminStatisticsRouteRouteWithChildren
   '/admin/users': typeof AdminUsersRouteRouteWithChildren
   '/portal/account': typeof PortalAccountRouteRouteWithChildren
+  '/portal/experiments': typeof PortalExperimentsRouteRouteWithChildren
   '/portal/more': typeof PortalMoreRouteRouteWithChildren
   '/portal/overview': typeof PortalOverviewRouteRouteWithChildren
   '/portal/templates': typeof PortalTemplatesRouteRouteWithChildren
@@ -814,6 +847,7 @@ export interface FileRoutesById {
   '/ingress/webide/$name': typeof IngressWebideNameRoute
   '/portal/account/member': typeof PortalAccountMemberRoute
   '/portal/account/statistics': typeof PortalAccountStatisticsRoute
+  '/portal/experiments/$id': typeof PortalExperimentsIdRoute
   '/portal/files/$': typeof PortalFilesSplatRoute
   '/portal/monitor/gpu': typeof PortalMonitorGpuRoute
   '/portal/monitor/idle': typeof PortalMonitorIdleRoute
@@ -831,6 +865,7 @@ export interface FileRoutesById {
   '/admin/operation-logs/': typeof AdminOperationLogsIndexRoute
   '/admin/statistics/': typeof AdminStatisticsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
+  '/portal/experiments/': typeof PortalExperimentsIndexRoute
   '/portal/more/': typeof PortalMoreIndexRoute
   '/portal/overview/': typeof PortalOverviewIndexRoute
   '/portal/templates/': typeof PortalTemplatesIndexRoute
@@ -842,6 +877,7 @@ export interface FileRoutesById {
   '/portal/data/datasets/$id': typeof PortalDataDatasetsIdRoute
   '/portal/data/models/$id': typeof PortalDataModelsIdRoute
   '/portal/env/registry/$name': typeof PortalEnvRegistryNameRoute
+  '/portal/experiments/runs/$runID': typeof PortalExperimentsRunsRunIDRoute
   '/portal/jobs/detail/$name': typeof PortalJobsDetailNameRoute
   '/portal/jobs/new/emias-job': typeof PortalJobsNewEmiasJobRoute
   '/portal/jobs/new/emias-jupyter-job': typeof PortalJobsNewEmiasJupyterJobRoute
@@ -883,6 +919,7 @@ export interface FileRouteTypes {
     | '/admin/statistics'
     | '/admin/users'
     | '/portal/account'
+    | '/portal/experiments'
     | '/portal/more'
     | '/portal/overview'
     | '/portal/templates'
@@ -914,6 +951,7 @@ export interface FileRouteTypes {
     | '/ingress/webide/$name'
     | '/portal/account/member'
     | '/portal/account/statistics'
+    | '/portal/experiments/$id'
     | '/portal/files/$'
     | '/portal/monitor/gpu'
     | '/portal/monitor/idle'
@@ -931,6 +969,7 @@ export interface FileRouteTypes {
     | '/admin/operation-logs'
     | '/admin/statistics/'
     | '/admin/users/'
+    | '/portal/experiments/'
     | '/portal/more/'
     | '/portal/overview/'
     | '/portal/templates/'
@@ -942,6 +981,7 @@ export interface FileRouteTypes {
     | '/portal/data/datasets/$id'
     | '/portal/data/models/$id'
     | '/portal/env/registry/$name'
+    | '/portal/experiments/runs/$runID'
     | '/portal/jobs/detail/$name'
     | '/portal/jobs/new/emias-job'
     | '/portal/jobs/new/emias-jupyter-job'
@@ -991,6 +1031,7 @@ export interface FileRouteTypes {
     | '/ingress/webide/$name'
     | '/portal/account/member'
     | '/portal/account/statistics'
+    | '/portal/experiments/$id'
     | '/portal/files/$'
     | '/portal/monitor/gpu'
     | '/portal/monitor/idle'
@@ -1008,6 +1049,7 @@ export interface FileRouteTypes {
     | '/admin/operation-logs'
     | '/admin/statistics'
     | '/admin/users'
+    | '/portal/experiments'
     | '/portal/more'
     | '/portal/overview'
     | '/portal/templates'
@@ -1019,6 +1061,7 @@ export interface FileRouteTypes {
     | '/portal/data/datasets/$id'
     | '/portal/data/models/$id'
     | '/portal/env/registry/$name'
+    | '/portal/experiments/runs/$runID'
     | '/portal/jobs/detail/$name'
     | '/portal/jobs/new/emias-job'
     | '/portal/jobs/new/emias-jupyter-job'
@@ -1058,6 +1101,7 @@ export interface FileRouteTypes {
     | '/admin/statistics'
     | '/admin/users'
     | '/portal/account'
+    | '/portal/experiments'
     | '/portal/more'
     | '/portal/overview'
     | '/portal/templates'
@@ -1089,6 +1133,7 @@ export interface FileRouteTypes {
     | '/ingress/webide/$name'
     | '/portal/account/member'
     | '/portal/account/statistics'
+    | '/portal/experiments/$id'
     | '/portal/files/$'
     | '/portal/monitor/gpu'
     | '/portal/monitor/idle'
@@ -1106,6 +1151,7 @@ export interface FileRouteTypes {
     | '/admin/operation-logs/'
     | '/admin/statistics/'
     | '/admin/users/'
+    | '/portal/experiments/'
     | '/portal/more/'
     | '/portal/overview/'
     | '/portal/templates/'
@@ -1117,6 +1163,7 @@ export interface FileRouteTypes {
     | '/portal/data/datasets/$id'
     | '/portal/data/models/$id'
     | '/portal/env/registry/$name'
+    | '/portal/experiments/runs/$runID'
     | '/portal/jobs/detail/$name'
     | '/portal/jobs/new/emias-job'
     | '/portal/jobs/new/emias-jupyter-job'
@@ -1227,6 +1274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalMoreRouteRouteImport
       parentRoute: typeof PortalRouteRoute
     }
+    '/portal/experiments': {
+      id: '/portal/experiments'
+      path: '/experiments'
+      fullPath: '/portal/experiments'
+      preLoaderRoute: typeof PortalExperimentsRouteRouteImport
+      parentRoute: typeof PortalRouteRoute
+    }
     '/portal/account': {
       id: '/portal/account'
       path: '/account'
@@ -1303,6 +1357,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/more/'
       preLoaderRoute: typeof PortalMoreIndexRouteImport
       parentRoute: typeof PortalMoreRouteRoute
+    }
+    '/portal/experiments/': {
+      id: '/portal/experiments/'
+      path: '/'
+      fullPath: '/portal/experiments/'
+      preLoaderRoute: typeof PortalExperimentsIndexRouteImport
+      parentRoute: typeof PortalExperimentsRouteRoute
     }
     '/admin/users/': {
       id: '/admin/users/'
@@ -1422,6 +1483,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/files/$'
       preLoaderRoute: typeof PortalFilesSplatRouteImport
       parentRoute: typeof PortalRouteRoute
+    }
+    '/portal/experiments/$id': {
+      id: '/portal/experiments/$id'
+      path: '/$id'
+      fullPath: '/portal/experiments/$id'
+      preLoaderRoute: typeof PortalExperimentsIdRouteImport
+      parentRoute: typeof PortalExperimentsRouteRoute
     }
     '/portal/account/statistics': {
       id: '/portal/account/statistics'
@@ -1752,6 +1820,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalJobsDetailNameRouteImport
       parentRoute: typeof PortalJobsDetailRouteRoute
     }
+    '/portal/experiments/runs/$runID': {
+      id: '/portal/experiments/runs/$runID'
+      path: '/runs/$runID'
+      fullPath: '/portal/experiments/runs/$runID'
+      preLoaderRoute: typeof PortalExperimentsRunsRunIDRouteImport
+      parentRoute: typeof PortalExperimentsRouteRoute
+    }
     '/portal/env/registry/$name': {
       id: '/portal/env/registry/$name'
       path: '/$name'
@@ -2032,6 +2107,24 @@ const PortalAccountRouteRouteChildren: PortalAccountRouteRouteChildren = {
 const PortalAccountRouteRouteWithChildren =
   PortalAccountRouteRoute._addFileChildren(PortalAccountRouteRouteChildren)
 
+interface PortalExperimentsRouteRouteChildren {
+  PortalExperimentsIdRoute: typeof PortalExperimentsIdRoute
+  PortalExperimentsIndexRoute: typeof PortalExperimentsIndexRoute
+  PortalExperimentsRunsRunIDRoute: typeof PortalExperimentsRunsRunIDRoute
+}
+
+const PortalExperimentsRouteRouteChildren: PortalExperimentsRouteRouteChildren =
+  {
+    PortalExperimentsIdRoute: PortalExperimentsIdRoute,
+    PortalExperimentsIndexRoute: PortalExperimentsIndexRoute,
+    PortalExperimentsRunsRunIDRoute: PortalExperimentsRunsRunIDRoute,
+  }
+
+const PortalExperimentsRouteRouteWithChildren =
+  PortalExperimentsRouteRoute._addFileChildren(
+    PortalExperimentsRouteRouteChildren,
+  )
+
 interface PortalMoreOrdersRouteRouteChildren {
   PortalMoreOrdersIdRoute: typeof PortalMoreOrdersIdRoute
   PortalMoreOrdersIndexRoute: typeof PortalMoreOrdersIndexRoute
@@ -2213,6 +2306,7 @@ const PortalJobsNewRouteRouteWithChildren =
 
 interface PortalRouteRouteChildren {
   PortalAccountRouteRoute: typeof PortalAccountRouteRouteWithChildren
+  PortalExperimentsRouteRoute: typeof PortalExperimentsRouteRouteWithChildren
   PortalMoreRouteRoute: typeof PortalMoreRouteRouteWithChildren
   PortalOverviewRouteRoute: typeof PortalOverviewRouteRouteWithChildren
   PortalTemplatesRouteRoute: typeof PortalTemplatesRouteRouteWithChildren
@@ -2235,6 +2329,7 @@ interface PortalRouteRouteChildren {
 
 const PortalRouteRouteChildren: PortalRouteRouteChildren = {
   PortalAccountRouteRoute: PortalAccountRouteRouteWithChildren,
+  PortalExperimentsRouteRoute: PortalExperimentsRouteRouteWithChildren,
   PortalMoreRouteRoute: PortalMoreRouteRouteWithChildren,
   PortalOverviewRouteRoute: PortalOverviewRouteRouteWithChildren,
   PortalTemplatesRouteRoute: PortalTemplatesRouteRouteWithChildren,

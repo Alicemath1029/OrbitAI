@@ -24,6 +24,12 @@ type Manager interface {
 	RegisterAdmin(group *gin.RouterGroup)
 }
 
+// PublicV1Manager can expose API v1 routes that use their own authentication,
+// such as short-lived run tokens injected into training pods.
+type PublicV1Manager interface {
+	RegisterPublicV1(group *gin.RouterGroup)
+}
+
 // RegisterConfig is a struct that holds the configuration for a Manager.
 type RegisterConfig struct {
 	// Client is the controller-runtime client.

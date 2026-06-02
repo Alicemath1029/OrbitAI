@@ -104,15 +104,30 @@ func (mgr *VolcanojobMgr) CreateTensorflowJob(c *gin.Context) {
 	jobName := utils.GenerateJobName("tf", token.Username)
 	// baseURL for ingress paths (without type prefix)
 	baseURL := jobName[3:] // Remove "tf-" prefix
+	experimentRuntime, err := prepareExperimentRun(
+		c.Request.Context(),
+		token,
+		&req.CreateJobCommon,
+		jobName,
+		jobResources,
+		req.Tasks,
+		req.Checkpoint,
+	)
+	if err != nil {
+		resputil.Error(c, err.Error(), resputil.ServiceError)
+		return
+	}
 
 	// 1. Volume Mounts
 	volumes, volumeMounts, err := GenerateVolumeMounts(c, req.VolumeMounts, token)
 	if err != nil {
+		markExperimentRunSubmitFailed(c.Request.Context(), experimentRuntime, err)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
 	checkpoint, err := prepareCheckpointConfig(token, &req.CreateJobCommon, volumeMounts)
 	if err != nil {
+		markExperimentRunSubmitFailed(c.Request.Context(), experimentRuntime, err)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
@@ -120,7 +135,10 @@ func (mgr *VolcanojobMgr) CreateTensorflowJob(c *gin.Context) {
 	// 2. Node Affinity and Tolerations
 	baseAffinity := GenerateNodeAffinity(req.Selectors, jobResources)
 	baseTolerations := GenerateTaintTolerationsForAccount(token)
-	envs := AppendCheckpointEnvs(GenerateEnvs(c, token, req.Envs), checkpoint, jobName)
+	envs := AppendExperimentEnvs(
+		AppendCheckpointEnvs(GenerateEnvs(c, token, req.Envs), checkpoint, jobName),
+		experimentRuntime,
+	)
 
 	// 3. Labels and Annotations
 	labels, jobAnnotations, podAnnotations := getLabelAndAnnotations(
@@ -130,7 +148,9 @@ func (mgr *VolcanojobMgr) CreateTensorflowJob(c *gin.Context) {
 		&req.CreateJobCommon,
 		scheduleMetadata,
 	)
+	ApplyExperimentAnnotations(jobAnnotations, experimentRuntime)
 	if err := ApplyCheckpointAnnotations(jobAnnotations, req.Checkpoint); err != nil {
+		markExperimentRunSubmitFailed(c.Request.Context(), experimentRuntime, err)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
@@ -177,6 +197,7 @@ func (mgr *VolcanojobMgr) CreateTensorflowJob(c *gin.Context) {
 	}
 
 	if err = mgr.submitJob(c, token, &job); err != nil {
+		markExperimentRunSubmitFailed(c.Request.Context(), experimentRuntime, err)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
