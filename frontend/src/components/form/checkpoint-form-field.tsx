@@ -174,7 +174,9 @@ export function CheckpointFormCard<T extends FieldValues>({
                 <FormControl>
                   <Input {...field} className="font-mono" placeholder="/workspace/checkpoints" />
                 </FormControl>
-                <FormDescription>HF Trainer 等框架会将 output_dir 与 checkpoint 目录对齐</FormDescription>
+                <FormDescription>
+                  HF Trainer 等框架会将 output_dir 与 checkpoint 目录对齐
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

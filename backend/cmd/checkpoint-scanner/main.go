@@ -29,15 +29,24 @@ type scanServer struct {
 func main() {
 	initVersionInfo()
 
-	root := firstNonEmptyEnv("ORBIT_CHECKPOINT_SCANNER_ROOT", "ORBIT_STORAGE_ROOT", "ROOTDIR")
+	root := firstNonEmptyEnv(
+		"ORBIT_CHECKPOINT_SCANNER_ROOT",
+		"CRATER_CHECKPOINT_SCANNER_ROOT",
+		"ORBIT_STORAGE_ROOT",
+		"CRATER_STORAGE_ROOT",
+		"ROOTDIR",
+	)
 	if root == "" {
 		root = checkpointsvc.DefaultScannerMountPath
 	}
-	port := firstNonEmptyEnv("ORBIT_CHECKPOINT_SCANNER_PORT", "PORT")
+	port := firstNonEmptyEnv("ORBIT_CHECKPOINT_SCANNER_PORT", "CRATER_CHECKPOINT_SCANNER_PORT", "PORT")
 	if port == "" {
 		port = checkpointsvc.DefaultScannerPort
 	}
-	concurrency := positiveIntEnv("ORBIT_CHECKPOINT_SCANNER_CONCURRENCY", 4)
+	concurrency := positiveIntEnv(
+		firstNonEmptyEnv("ORBIT_CHECKPOINT_SCANNER_CONCURRENCY", "CRATER_CHECKPOINT_SCANNER_CONCURRENCY"),
+		4,
+	)
 
 	server := &scanServer{
 		scanner: checkpointsvc.NewFileSystemScanner(root),
@@ -110,8 +119,8 @@ func firstNonEmptyEnv(keys ...string) string {
 	return ""
 }
 
-func positiveIntEnv(key string, fallback int) int {
-	value := strings.TrimSpace(os.Getenv(key))
+func positiveIntEnv(value string, fallback int) int {
+	value = strings.TrimSpace(value)
 	if value == "" {
 		return fallback
 	}

@@ -17,9 +17,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import {
   ArchiveRestoreIcon,
+  CopyIcon,
   RefreshCwIcon,
   RotateCcwIcon,
   ShieldCheckIcon,
+  TerminalSquareIcon,
   Trash2Icon,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -34,6 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,7 +50,8 @@ import {
 } from '@/components/ui-custom/alert-dialog'
 
 import {
-  JobCheckpoint,
+  type CheckpointConfig,
+  type JobCheckpoint,
   apiJobCheckpointCleanup,
   apiJobCheckpointDelete,
   apiJobCheckpointRestore,
@@ -125,11 +129,24 @@ export default function CheckpointPanel({ jobName }: CheckpointPanelProps) {
   const checkpoints = data?.items ?? []
   const maxToKeep = data?.quota.maxToKeep || data?.checkpoint?.maxToKeep || 0
   const lastScannedAt = data?.lastScannedAt ? new Date(data.lastScannedAt).toLocaleString() : '-'
+  const latestCheckpoint = data?.latest
+  const checkpointRoot = data?.checkpoint?.checkpointDir || '-'
+  const latestPath = latestCheckpoint?.path || data?.checkpoint?.latestCheckpoint || ''
+  const resumeCommand = buildResumeCommand(data?.checkpoint, latestPath)
+
+  const copyResumeCommand = async () => {
+    if (!resumeCommand) {
+      return
+    }
+    await navigator.clipboard.writeText(resumeCommand)
+    toast.success('恢复命令已复制')
+  }
 
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
-      <div className="grid gap-3 md:grid-cols-4">
-        <Metric label="Latest" value={data?.latest?.name ?? '-'} mono />
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+        <Metric label="Checkpoint Root" value={checkpointRoot} mono />
+        <Metric label="Latest" value={latestCheckpoint?.name ?? '-'} mono />
         <Metric label="数量" value={`${data?.quota.currentCount ?? 0}/${maxToKeep || '-'}`} />
         <Metric
           label="容量"
@@ -139,6 +156,37 @@ export default function CheckpointPanel({ jobName }: CheckpointPanelProps) {
         />
         <Metric label="上次扫描" value={lastScannedAt} />
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)]">
+        <div className="border-border rounded-md border px-3 py-2">
+          <div className="text-muted-foreground text-xs">Latest Path</div>
+          <div className="mt-1 font-mono text-sm font-medium break-all">{latestPath || '-'}</div>
+        </div>
+        <div className="border-border rounded-md border px-3 py-2">
+          <div className="text-muted-foreground text-xs">恢复模式</div>
+          <div className="mt-1 text-sm font-medium">
+            {data?.checkpoint?.resumeMode ?? '-'} / {data?.checkpoint?.framework ?? '-'}
+          </div>
+        </div>
+      </div>
+
+      {resumeCommand && (
+        <div className="border-border bg-muted/30 rounded-md border">
+          <div className="border-border flex items-center justify-between gap-3 border-b px-3 py-2">
+            <div className="text-muted-foreground flex items-center gap-2 text-sm">
+              <TerminalSquareIcon className="size-4" />
+              <span>恢复命令</span>
+            </div>
+            <Button type="button" size="sm" variant="ghost" onClick={copyResumeCommand}>
+              <CopyIcon className="size-4" />
+              复制
+            </Button>
+          </div>
+          <pre className="max-h-48 overflow-auto p-3 text-xs leading-5">
+            <code>{resumeCommand}</code>
+          </pre>
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="text-muted-foreground flex items-center gap-2 text-sm">
@@ -159,6 +207,31 @@ export default function CheckpointPanel({ jobName }: CheckpointPanelProps) {
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
+              <Button variant="secondary" disabled={!latestCheckpoint || restoreMutation.isPending}>
+                <ArchiveRestoreIcon className="size-4" />从 latest 恢复
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>从 latest checkpoint 恢复</AlertDialogTitle>
+                <AlertDialogDescription>
+                  将基于当前作业配置提交一个新作业，并设置恢复路径为 {latestCheckpoint?.path ?? '-'}
+                  。
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>取消</AlertDialogCancel>
+                <AlertDialogAction
+                  disabled={!latestCheckpoint}
+                  onClick={() => latestCheckpoint && restoreMutation.mutate(latestCheckpoint)}
+                >
+                  提交恢复作业
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
               <Button
                 variant="outline"
                 disabled={cleanupMutation.isPending || checkpoints.length === 0}
@@ -176,9 +249,7 @@ export default function CheckpointPanel({ jobName }: CheckpointPanelProps) {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>取消</AlertDialogCancel>
-                <AlertDialogAction onClick={() => cleanupMutation.mutate()}>
-                  清理
-                </AlertDialogAction>
+                <AlertDialogAction onClick={() => cleanupMutation.mutate()}>清理</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -224,7 +295,7 @@ export default function CheckpointPanel({ jobName }: CheckpointPanelProps) {
                     <AlertDialogTrigger asChild>
                       <Button variant="secondary" size="sm" disabled={restoreMutation.isPending}>
                         <ArchiveRestoreIcon className="size-4" />
-                        恢复
+                        从此恢复
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
@@ -290,4 +361,56 @@ function Metric({ label, value, mono }: { label: string; value: string; mono?: b
       <div className={cn('mt-1 truncate text-sm font-medium', mono && 'font-mono')}>{value}</div>
     </div>
   )
+}
+
+function buildResumeCommand(checkpoint?: CheckpointConfig, latestPath?: string) {
+  if (!checkpoint?.enabled) {
+    return ''
+  }
+
+  const resumeFrom = latestPath || checkpoint.resumeFrom || '$ORBIT_RESUME_FROM'
+  const outputDir = checkpoint.outputDir || '$ORBIT_OUTPUT_DIR'
+  const checkpointDir = checkpoint.checkpointDir || '$ORBIT_CHECKPOINT_DIR'
+  const saveSteps = checkpoint.saveSteps ? `${checkpoint.saveSteps}` : '$ORBIT_SAVE_STEPS'
+  const maxToKeep = checkpoint.maxToKeep ? `${checkpoint.maxToKeep}` : '$ORBIT_SAVE_TOTAL_LIMIT'
+
+  switch (checkpoint.framework) {
+    case 'hf-trainer':
+      return `python train.py \\
+  --model_name_or_path "$MODEL_PATH" \\
+  --train_file "$TRAIN_FILE" \\
+  --output_dir "${outputDir}" \\
+  --save_strategy steps \\
+  --save_steps "${saveSteps}" \\
+  --save_total_limit "${maxToKeep}" \\
+  --resume_from_checkpoint "${resumeFrom}"`
+    case 'pytorch':
+      return `torchrun \\
+  --nnodes="\${NNODES:-1}" \\
+  --nproc_per_node="\${NPROC_PER_NODE:-1}" \\
+  train.py \\
+  --output_dir "${outputDir}" \\
+  --checkpoint_dir "${checkpointDir}" \\
+  --resume_from "${resumeFrom}"`
+    case 'deepspeed':
+      return `deepspeed train.py \\
+  --deepspeed "$DEEPSPEED_CONFIG" \\
+  --output_dir "${outputDir}" \\
+  --resume_from_checkpoint "${resumeFrom}"`
+    case 'verl':
+      return `python -m verl.trainer.main_ppo \\
+  trainer.default_local_dir="${checkpointDir}" \\
+  trainer.resume_mode="${checkpoint.resumeMode}" \\
+  trainer.resume_from_path="${resumeFrom}" \\
+  trainer.save_freq="${saveSteps}"`
+    case 'lightning':
+      return `python train.py \\
+  --default_root_dir "${outputDir}" \\
+  --ckpt_path "${resumeFrom}"`
+    default:
+      return `ORBIT_OUTPUT_DIR="${outputDir}" \\
+ORBIT_CHECKPOINT_DIR="${checkpointDir}" \\
+ORBIT_RESUME_FROM="${resumeFrom}" \\
+python train.py`
+  }
 }

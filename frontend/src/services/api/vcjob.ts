@@ -482,6 +482,7 @@ export interface ITensorflowCreate {
     replicas: number
     resource: V1ResourceList
     image: IImageBaseInfo
+    shell?: string
     command?: string
     workingDir?: string
     ports: {

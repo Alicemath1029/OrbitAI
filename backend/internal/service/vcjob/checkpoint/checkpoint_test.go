@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"gorm.io/datatypes"
 	v1 "k8s.io/api/core/v1"
@@ -263,6 +264,69 @@ func TestFileSystemScannerScansFrameworkLayouts(t *testing.T) {
 	}
 }
 
+func TestLatestCheckpointPrefersFrameworkTracker(t *testing.T) {
+	t.Parallel()
+
+	items := []model.JobCheckpoint{
+		{
+			Name:    "global_step0010",
+			Path:    "/home/admin/exp/checkpoints/global_step0010",
+			Step:    10,
+			ModTime: mustParseTime(t, "2026-01-01T00:00:00Z"),
+		},
+		{
+			Name:    "global_step0008",
+			Path:    "/home/admin/exp/checkpoints/global_step0008",
+			Step:    8,
+			ModTime: mustParseTime(t, "2026-01-02T00:00:00Z"),
+			Metadata: datatypes.JSONMap{
+				"trackedLatest": true,
+			},
+		},
+	}
+
+	latest := latestCheckpoint(items)
+	if latest == nil || latest.Name != "global_step0008" {
+		t.Fatalf("latestCheckpoint() = %#v, want tracker-marked global_step0008", latest)
+	}
+}
+
+func TestFileSystemScannerReportsLatestMarker(t *testing.T) {
+	t.Parallel()
+
+	root := t.TempDir()
+	base := filepath.Join(root, "users", "u-admin", "exp", "checkpoints")
+	mustWriteFile(t, filepath.Join(base, "global_step0010", "rank0.pt"), "newer")
+	mustWriteFile(t, filepath.Join(base, "global_step0008", "rank0.pt"), "tracked")
+	mustWriteFile(t, filepath.Join(base, latestCheckpointTracker), "8")
+
+	scanner := NewFileSystemScanner(root)
+	resp, err := scanner.Scan(context.Background(), ServiceScanRequest{
+		Framework:     FrameworkVerl,
+		CheckpointDir: "/home/admin/exp/checkpoints",
+		StoragePath:   "users/u-admin/exp/checkpoints",
+	})
+	if err != nil {
+		t.Fatalf("Scan() error = %v", err)
+	}
+	if resp.LatestMarker != "8" {
+		t.Fatalf("Scan() LatestMarker = %q, want 8", resp.LatestMarker)
+	}
+}
+
+func TestNormalizeServiceScannerOptionsReadsLegacyCraterEnv(t *testing.T) {
+	t.Setenv("CRATER_CHECKPOINT_SCANNER_ENDPOINT", "http://legacy-scanner:7330/")
+	t.Setenv("CRATER_CHECKPOINT_SCANNER_TIMEOUT_SECONDS", "7")
+
+	opts := normalizeServiceScannerOptions(ServiceScannerOptions{})
+	if opts.Endpoint != "http://legacy-scanner:7330" {
+		t.Fatalf("Endpoint = %q, want legacy endpoint without trailing slash", opts.Endpoint)
+	}
+	if opts.Timeout != 7*time.Second {
+		t.Fatalf("Timeout = %v, want 7s", opts.Timeout)
+	}
+}
+
 func TestScanJobWithKubernetesDoesNotCreateFallbackPod(t *testing.T) {
 	t.Setenv("ORBIT_CHECKPOINT_SCANNER_ENDPOINT", "http://127.0.0.1:1")
 	t.Setenv("ORBIT_CHECKPOINT_SCANNER_TIMEOUT_SECONDS", "1")
@@ -307,4 +371,13 @@ func mustWriteFile(t *testing.T, path string, content string) {
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		t.Fatalf("WriteFile(%q) error = %v", path, err)
 	}
+}
+
+func mustParseTime(t *testing.T, raw string) time.Time {
+	t.Helper()
+	parsed, err := time.Parse(time.RFC3339, raw)
+	if err != nil {
+		t.Fatalf("Parse(%q) error = %v", raw, err)
+	}
+	return parsed
 }

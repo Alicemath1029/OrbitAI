@@ -24,6 +24,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
   Form,
@@ -117,6 +118,23 @@ const formSchema = z.object({
 })
 
 type FormSchema = z.infer<typeof formSchema>
+
+const hfTrainerTemplateCommand = `python train.py \\
+  --model_name_or_path "$MODEL_PATH" \\
+  --train_file "$TRAIN_FILE" \\
+  --output_dir "$ORBIT_OUTPUT_DIR" \\
+  --save_strategy steps \\
+  --save_steps "$ORBIT_SAVE_STEPS" \\
+  --save_total_limit "$ORBIT_SAVE_TOTAL_LIMIT" \\
+  --resume_from_checkpoint "$ORBIT_RESUME_FROM"`
+
+const torchrunTemplateCommand = `torchrun \\
+  --nnodes="\${NNODES:-1}" \\
+  --nproc_per_node="\${NPROC_PER_NODE:-1}" \\
+  train.py \\
+  --output_dir "$ORBIT_OUTPUT_DIR" \\
+  --checkpoint_dir "$ORBIT_CHECKPOINT_DIR" \\
+  --resume_from "$ORBIT_RESUME_FROM"`
 
 const dataProcessor = (data: FormSchema) => {
   // 处理镜像字段兼容性
@@ -249,6 +267,22 @@ function RouteComponent() {
     },
   })
 
+  const applyTrainingTemplate = (framework: 'hf-trainer' | 'pytorch') => {
+    setCheckpointOpen(true)
+    form.setValue('checkpoint.enabled', true, { shouldDirty: true })
+    form.setValue('checkpoint.framework', framework, { shouldDirty: true })
+    form.setValue('checkpoint.resumeMode', 'auto', { shouldDirty: true })
+    form.setValue('checkpoint.saveSteps', 500, { shouldDirty: true })
+    form.setValue('checkpoint.maxToKeep', 3, { shouldDirty: true })
+    form.setValue('task.shell', '/orbit-start.sh', { shouldDirty: true })
+    form.setValue(
+      'task.command',
+      framework === 'hf-trainer' ? hfTrainerTemplateCommand : torchrunTemplateCommand,
+      { shouldDirty: true }
+    )
+    toast.success(framework === 'hf-trainer' ? '已填充 HF Trainer 模板' : '已填充 torchrun 模板')
+  }
+
   const onSubmit = (values: FormSchema) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
@@ -343,6 +377,31 @@ function RouteComponent() {
                 />
                 <ImageFormField form={form} name="task.image" />
                 {isBackfillEnabled && <ScheduleTypeFormField form={form} name="scheduleType" />}
+                <div className="space-y-2">
+                  <FormLabel>训练模板</FormLabel>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="justify-start"
+                      onClick={() => applyTrainingTemplate('hf-trainer')}
+                    >
+                      HF Trainer
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="justify-start"
+                      onClick={() => applyTrainingTemplate('pytorch')}
+                    >
+                      PyTorch / torchrun
+                    </Button>
+                  </div>
+                  <FormDescription>
+                    自动填充启动命令、checkpoint 框架和恢复参数；torchrun
+                    模板仍需要训练代码自行保存与加载。
+                  </FormDescription>
+                </div>
                 <FormField
                   control={form.control}
                   name="task.shell"
@@ -466,11 +525,7 @@ conda activate base;
           </div>
           <div className="flex flex-col gap-4 md:gap-6">
             <VolumeMountsCard form={form} />
-            <CheckpointFormCard
-              form={form}
-              open={checkpointOpen}
-              setOpen={setCheckpointOpen}
-            />
+            <CheckpointFormCard form={form} open={checkpointOpen} setOpen={setCheckpointOpen} />
             <ForwardFormCard form={form} />
             <EnvFormCard form={form} open={envOpen} setOpen={setEnvOpen} />
             <OtherOptionsFormCard

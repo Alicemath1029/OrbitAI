@@ -67,6 +67,10 @@ func ScanJobWithService(ctx context.Context, record *model.Job, opts ServiceScan
 			checkpoint.Metadata = datatypes.JSONMap{}
 		}
 		checkpoint.Metadata["scanBackend"] = scannerBackendService
+		if checkpointMatchesTracker(&checkpoint, resp.LatestMarker, latestMarkerStep(resp.LatestMarker)) {
+			checkpoint.Metadata["trackedLatest"] = true
+			checkpoint.Metadata["latestTracker"] = latestCheckpointTracker
+		}
 		candidates = append(candidates, checkpoint)
 	}
 	return finishScan(ctx, record, info, storagePath, candidates)
@@ -76,7 +80,10 @@ var errServiceScannerDisabled = fmt.Errorf("checkpoint scanner service endpoint 
 
 func normalizeServiceScannerOptions(opts ServiceScannerOptions) ServiceScannerOptions {
 	if opts.Endpoint == "" {
-		opts.Endpoint = strings.TrimSpace(os.Getenv("ORBIT_CHECKPOINT_SCANNER_ENDPOINT"))
+		opts.Endpoint = firstNonEmptyEnv(
+			"ORBIT_CHECKPOINT_SCANNER_ENDPOINT",
+			"CRATER_CHECKPOINT_SCANNER_ENDPOINT",
+		)
 	}
 	if opts.Endpoint == "" {
 		cfg := config.GetConfig()
@@ -86,7 +93,10 @@ func normalizeServiceScannerOptions(opts ServiceScannerOptions) ServiceScannerOp
 		}
 	}
 	if opts.Timeout <= 0 {
-		if timeoutEnv := strings.TrimSpace(os.Getenv("ORBIT_CHECKPOINT_SCANNER_TIMEOUT_SECONDS")); timeoutEnv != "" {
+		if timeoutEnv := firstNonEmptyEnv(
+			"ORBIT_CHECKPOINT_SCANNER_TIMEOUT_SECONDS",
+			"CRATER_CHECKPOINT_SCANNER_TIMEOUT_SECONDS",
+		); timeoutEnv != "" {
 			if seconds, err := strconv.Atoi(timeoutEnv); err == nil && seconds > 0 {
 				opts.Timeout = time.Duration(seconds) * time.Second
 			}
@@ -97,6 +107,15 @@ func normalizeServiceScannerOptions(opts ServiceScannerOptions) ServiceScannerOp
 	}
 	opts.Endpoint = strings.TrimRight(opts.Endpoint, "/")
 	return opts
+}
+
+func firstNonEmptyEnv(keys ...string) string {
+	for _, key := range keys {
+		if value := strings.TrimSpace(os.Getenv(key)); value != "" {
+			return value
+		}
+	}
+	return ""
 }
 
 func requestServiceScan(ctx context.Context, opts ServiceScannerOptions, body ServiceScanRequest) (ServiceScanResponse, error) {

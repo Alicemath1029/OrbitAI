@@ -27,7 +27,8 @@ type ServiceScanRequest struct {
 }
 
 type ServiceScanResponse struct {
-	Items []ServiceScanItem `json:"items"`
+	Items        []ServiceScanItem `json:"items"`
+	LatestMarker string            `json:"latestMarker,omitempty"`
 }
 
 type ServiceScanItem struct {
@@ -104,6 +105,7 @@ func (s FileSystemScanner) Scan(ctx context.Context, req ServiceScanRequest) (Se
 	if err != nil {
 		return ServiceScanResponse{}, err
 	}
+	latestMarker := readLatestCheckpointMarker(base)
 	sort.SliceStable(entries, func(i, j int) bool {
 		return entries[i].Name() < entries[j].Name()
 	})
@@ -147,7 +149,15 @@ func (s FileSystemScanner) Scan(ctx context.Context, req ServiceScanRequest) (Se
 			ModTime:     modTime,
 		})
 	}
-	return ServiceScanResponse{Items: items}, nil
+	return ServiceScanResponse{Items: items, LatestMarker: latestMarker}, nil
+}
+
+func readLatestCheckpointMarker(base string) string {
+	data, err := os.ReadFile(filepath.Join(base, latestCheckpointTracker))
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(data))
 }
 
 func cleanStoragePath(raw string) string {

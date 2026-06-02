@@ -602,6 +602,30 @@ func StatRelativePath(ctx context.Context, path string) (Files, error) {
 	}, nil
 }
 
+func ReadRelativePath(ctx context.Context, path string, limit int64) ([]byte, error) {
+	checkfs()
+	if limit <= 0 {
+		limit = 4096
+	}
+	realPath := cleanURLPath(path)
+	f, err := fs.FileSystem.OpenFile(ctx, realPath, os.O_RDONLY, 0)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	if fi, _ := f.Stat(); fi != nil && fi.IsDir() {
+		return nil, fmt.Errorf("%s is a directory", path)
+	}
+	data, err := io.ReadAll(io.LimitReader(f, limit+1))
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(data)) > limit {
+		return nil, fmt.Errorf("%s exceeds read limit", path)
+	}
+	return data, nil
+}
+
 func RemoveRelativePath(ctx context.Context, path string) error {
 	checkfs()
 	return fs.FileSystem.RemoveAll(ctx, cleanURLPath(path))

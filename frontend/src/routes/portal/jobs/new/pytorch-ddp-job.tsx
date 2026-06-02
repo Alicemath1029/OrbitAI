@@ -177,6 +177,17 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>
 
+const torchrunDdpTemplateCommand = `torchrun \\
+  --nnodes="$WORLD_SIZE" \\
+  --node_rank="$RANK" \\
+  --master_addr="$MASTER_ADDR" \\
+  --master_port="$MASTER_PORT" \\
+  --nproc_per_node="\${NPROC_PER_NODE:-1}" \\
+  train.py \\
+  --output_dir "$ORBIT_OUTPUT_DIR" \\
+  --checkpoint_dir "$ORBIT_CHECKPOINT_DIR" \\
+  --resume_from "$ORBIT_RESUME_FROM"`
+
 const dataProcessor = (data: FormSchema) => {
   // 处理镜像字段兼容性
   data.ps.image = ensureImageCompatibility(data.ps.image) as {
@@ -241,6 +252,7 @@ function RouteComponent() {
             replicas: values.ps.replicas,
             resource: convertToResourceList(values.ps.resource),
             image: values.ps.image,
+            shell: values.ps.shell,
             command: values.ps.command,
             workingDir: values.ps.workingDir,
             ports: values.ps.ports,
@@ -250,6 +262,7 @@ function RouteComponent() {
             replicas: values.worker.replicas,
             resource: convertToResourceList(values.worker.resource),
             image: values.worker.image,
+            shell: values.worker.shell,
             command: values.worker.command,
             workingDir: values.worker.workingDir,
             ports: values.worker.ports,
@@ -348,6 +361,20 @@ function RouteComponent() {
     control: form.control,
   })
 
+  const applyTorchrunTemplate = () => {
+    setCheckpointOpen(true)
+    form.setValue('checkpoint.enabled', true, { shouldDirty: true })
+    form.setValue('checkpoint.framework', 'pytorch', { shouldDirty: true })
+    form.setValue('checkpoint.resumeMode', 'auto', { shouldDirty: true })
+    form.setValue('checkpoint.saveSteps', 500, { shouldDirty: true })
+    form.setValue('checkpoint.maxToKeep', 3, { shouldDirty: true })
+    form.setValue('ps.shell', '/orbit-start.sh', { shouldDirty: true })
+    form.setValue('worker.shell', '/orbit-start.sh', { shouldDirty: true })
+    form.setValue('ps.command', torchrunDdpTemplateCommand, { shouldDirty: true })
+    form.setValue('worker.command', torchrunDdpTemplateCommand, { shouldDirty: true })
+    toast.success('已填充 torchrun checkpoint 模板')
+  }
+
   // 2. Define a submit handler.
   const onSubmit = (values: FormSchema) => {
     // Do something with the form values.
@@ -445,6 +472,21 @@ function RouteComponent() {
                     </FormItem>
                   )}
                 />
+                <div className="space-y-2">
+                  <FormLabel>训练模板</FormLabel>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="justify-start"
+                    onClick={applyTorchrunTemplate}
+                  >
+                    PyTorch / torchrun checkpoint
+                  </Button>
+                  <FormDescription>
+                    自动填充 master/worker 命令和 checkpoint 参数；训练脚本需要自行实现 torch.save /
+                    torch.load。
+                  </FormDescription>
+                </div>
               </CardContent>
             </Card>
             <Card>
@@ -741,11 +783,7 @@ function RouteComponent() {
 
           <div className="flex flex-col gap-4 md:gap-6">
             <VolumeMountsCard form={form} />
-            <CheckpointFormCard
-              form={form}
-              open={checkpointOpen}
-              setOpen={setCheckpointOpen}
-            />
+            <CheckpointFormCard form={form} open={checkpointOpen} setOpen={setCheckpointOpen} />
             <EnvFormCard form={form} open={envOpen} setOpen={setEnvOpen} />
             <OtherOptionsFormCard
               form={form}

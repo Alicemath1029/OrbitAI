@@ -20,6 +20,7 @@ import (
 )
 
 const unknownCheckpointStep int64 = -1
+const latestCheckpointTracker = "latest_checkpointed_iteration.txt"
 
 var stepPatterns = []*regexp.Regexp{
 	regexp.MustCompile(`(?i)^checkpoint[-_](\d+)(?:$|[-_.])`),
@@ -184,6 +185,7 @@ func discoverCheckpoints(
 		}
 		items = append(items, newCheckpointRecord(record, info, child.Name, childContainerPath, childStoragePath, size, modTime))
 	}
+	markLatestFromTracker(ctx, storagePath, items)
 	return items, nil
 }
 
@@ -283,6 +285,11 @@ func latestCheckpoint(items []model.JobCheckpoint) *model.JobCheckpoint {
 	}
 	sorted := append([]model.JobCheckpoint(nil), items...)
 	sort.SliceStable(sorted, func(i, j int) bool {
+		iTracked := isTrackerLatest(sorted[i])
+		jTracked := isTrackerLatest(sorted[j])
+		if iTracked != jTracked {
+			return iTracked
+		}
 		if sorted[i].Step >= 0 && sorted[j].Step >= 0 && sorted[i].Step != sorted[j].Step {
 			return sorted[i].Step > sorted[j].Step
 		}
@@ -298,6 +305,71 @@ func latestCheckpoint(items []model.JobCheckpoint) *model.JobCheckpoint {
 		return sorted[i].Name > sorted[j].Name
 	})
 	return &sorted[0]
+}
+
+func markLatestFromTracker(ctx context.Context, storagePath string, items []model.JobCheckpoint) {
+	if len(items) == 0 {
+		return
+	}
+	trackerPath := filepath.ToSlash(filepath.Join(storagePath, latestCheckpointTracker))
+	data, err := storage.ReadRelativePath(ctx, trackerPath, 1024)
+	if err != nil {
+		return
+	}
+	marker := strings.TrimSpace(string(data))
+	if marker == "" {
+		return
+	}
+	markerStep := latestMarkerStep(marker)
+	for i := range items {
+		if checkpointMatchesTracker(&items[i], marker, markerStep) {
+			if items[i].Metadata == nil {
+				items[i].Metadata = datatypes.JSONMap{}
+			}
+			items[i].Metadata["trackedLatest"] = true
+			items[i].Metadata["latestTracker"] = latestCheckpointTracker
+			return
+		}
+	}
+}
+
+func checkpointMatchesTracker(item *model.JobCheckpoint, marker string, markerStep int64) bool {
+	marker = strings.TrimSpace(marker)
+	if item == nil || marker == "" {
+		return false
+	}
+	if item.Name == marker || item.Path == marker || item.StoragePath == marker {
+		return true
+	}
+	if filepath.Base(marker) == item.Name {
+		return true
+	}
+	if markerStep >= 0 && item.Step == markerStep {
+		return true
+	}
+	return false
+}
+
+func latestMarkerStep(marker string) int64 {
+	marker = strings.TrimSpace(marker)
+	if marker == "" {
+		return unknownCheckpointStep
+	}
+	if step := stepFromName(marker); step >= 0 {
+		return step
+	}
+	if step, err := strconv.ParseInt(strings.TrimPrefix(strings.ToLower(marker), "global_step_"), 10, 64); err == nil {
+		return step
+	}
+	return unknownCheckpointStep
+}
+
+func isTrackerLatest(item model.JobCheckpoint) bool {
+	if item.Metadata == nil {
+		return false
+	}
+	tracked, ok := item.Metadata["trackedLatest"].(bool)
+	return ok && tracked
 }
 
 func persistScan(
