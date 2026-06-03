@@ -13,20 +13,7 @@ import (
 )
 
 func TestExperimentServiceRunIngestFlow(t *testing.T) {
-	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
-	if err != nil {
-		t.Fatalf("open sqlite: %v", err)
-	}
-	if err := db.AutoMigrate(
-		&model.User{},
-		&model.Account{},
-		&model.Experiment{},
-		&model.ExperimentRun{},
-		&model.RunMetric{},
-		&model.RunArtifact{},
-	); err != nil {
-		t.Fatalf("migrate: %v", err)
-	}
+	db := newExperimentTestDB(t)
 
 	ctx := context.Background()
 	svc := NewExperimentServiceWithDB(db)
@@ -68,8 +55,13 @@ func TestExperimentServiceRunIngestFlow(t *testing.T) {
 		t.Fatalf("verify run token: %v", err)
 	}
 	if err := svc.LogMetrics(ctx, runResult.Run.ID, []MetricInput{
-		{Name: "loss", Step: 1, Value: 0.9},
-		{Name: "loss", Step: 2, Value: 0.7},
+		{ClientRecordID: "metric-1", Name: "loss", Step: 1, Value: 0.9},
+		{ClientRecordID: "metric-2", Name: "loss", Step: 2, Value: 0.7},
+	}); err != nil {
+		t.Fatalf("log metrics: %v", err)
+	}
+	if err := svc.LogMetrics(ctx, runResult.Run.ID, []MetricInput{
+		{ClientRecordID: "metric-1", Name: "loss", Step: 1, Value: 0.9},
 	}); err != nil {
 		t.Fatalf("log metrics: %v", err)
 	}
@@ -77,9 +69,18 @@ func TestExperimentServiceRunIngestFlow(t *testing.T) {
 		t.Fatalf("merge params: %v", err)
 	}
 	if _, err := svc.CreateArtifact(ctx, runResult.Run.ID, ArtifactInput{
-		Name: "final_model",
-		Type: "model",
-		Path: "/outputs/model",
+		ClientRecordID: "artifact-1",
+		Name:           "final_model",
+		Type:           "model",
+		Path:           "/outputs/model",
+	}); err != nil {
+		t.Fatalf("create artifact: %v", err)
+	}
+	if _, err := svc.CreateArtifact(ctx, runResult.Run.ID, ArtifactInput{
+		ClientRecordID: "artifact-1",
+		Name:           "final_model",
+		Type:           "model",
+		Path:           "/outputs/model",
 	}); err != nil {
 		t.Fatalf("create artifact: %v", err)
 	}
@@ -116,4 +117,79 @@ func TestExperimentServiceRunIngestFlow(t *testing.T) {
 	if len(artifacts) != 1 || artifacts[0].Path != "/outputs/model" {
 		t.Fatalf("artifacts = %#v, want final model artifact", artifacts)
 	}
+}
+
+func TestExperimentRunAccessFollowsExperimentVisibility(t *testing.T) {
+	db := newExperimentTestDB(t)
+	ctx := context.Background()
+	svc := NewExperimentServiceWithDB(db)
+	owner := util.JWTMessage{UserID: 1, AccountID: 1, RolePlatform: model.RoleUser}
+	peer := util.JWTMessage{UserID: 2, AccountID: 1, RolePlatform: model.RoleUser}
+	outsider := util.JWTMessage{UserID: 3, AccountID: 2, RolePlatform: model.RoleUser}
+
+	privateExp, err := svc.CreateExperiment(ctx, CreateExperimentInput{
+		Name: "private", UserID: owner.UserID, AccountID: owner.AccountID, Visibility: model.ExperimentVisibilityPrivate,
+	})
+	if err != nil {
+		t.Fatalf("create private experiment: %v", err)
+	}
+	privateRun, err := svc.CreateRun(ctx, CreateRunInput{
+		ExperimentID: privateExp.ID, JobName: "job-private", UserID: owner.UserID, AccountID: owner.AccountID,
+	})
+	if err != nil {
+		t.Fatalf("create private run: %v", err)
+	}
+	if _, err := svc.GetRun(ctx, privateRun.Run.ID, peer); !IsRecordNotFound(err) {
+		t.Fatalf("peer private run access err = %v, want not found", err)
+	}
+
+	accountExp, err := svc.CreateExperiment(ctx, CreateExperimentInput{
+		Name: "account", UserID: owner.UserID, AccountID: owner.AccountID, Visibility: model.ExperimentVisibilityAccount,
+	})
+	if err != nil {
+		t.Fatalf("create account experiment: %v", err)
+	}
+	accountRun, err := svc.CreateRun(ctx, CreateRunInput{
+		ExperimentID: accountExp.ID, JobName: "job-account", UserID: owner.UserID, AccountID: owner.AccountID,
+	})
+	if err != nil {
+		t.Fatalf("create account run: %v", err)
+	}
+	if err := svc.LogMetrics(ctx, accountRun.Run.ID, []MetricInput{{Name: "loss", Step: 1, Value: 1}}); err != nil {
+		t.Fatalf("log account metric: %v", err)
+	}
+	if _, err := svc.CreateArtifact(ctx, accountRun.Run.ID, ArtifactInput{Name: "model", Path: "/model"}); err != nil {
+		t.Fatalf("create account artifact: %v", err)
+	}
+	if _, err := svc.GetRun(ctx, accountRun.Run.ID, peer); err != nil {
+		t.Fatalf("peer account run access: %v", err)
+	}
+	if _, err := svc.ListMetrics(ctx, accountRun.Run.ID, peer); err != nil {
+		t.Fatalf("peer account metrics access: %v", err)
+	}
+	if _, err := svc.ListArtifacts(ctx, accountRun.Run.ID, peer); err != nil {
+		t.Fatalf("peer account artifacts access: %v", err)
+	}
+	if _, err := svc.GetRun(ctx, accountRun.Run.ID, outsider); !IsRecordNotFound(err) {
+		t.Fatalf("outsider account run access err = %v, want not found", err)
+	}
+}
+
+func newExperimentTestDB(t *testing.T) *gorm.DB {
+	t.Helper()
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("open sqlite: %v", err)
+	}
+	if err := db.AutoMigrate(
+		&model.User{},
+		&model.Account{},
+		&model.Experiment{},
+		&model.ExperimentRun{},
+		&model.RunMetric{},
+		&model.RunArtifact{},
+	); err != nil {
+		t.Fatalf("migrate: %v", err)
+	}
+	return db
 }

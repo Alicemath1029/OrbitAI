@@ -190,7 +190,10 @@ func discoverCheckpoints(
 }
 
 func shouldSkipCheckpointChild(name string) bool {
-	return name == "" || strings.HasPrefix(name, ".") || strings.HasPrefix(name, "_tmp")
+	return name == "" ||
+		strings.HasPrefix(name, ".") ||
+		strings.HasPrefix(name, "_tmp") ||
+		strings.HasSuffix(name, ".tmp")
 }
 
 func looksLikeCheckpoint(framework string, file storage.Files) bool {
@@ -245,8 +248,10 @@ func newCheckpointRecord(
 	size int64,
 	modTime time.Time,
 ) model.JobCheckpoint {
+	runID := experimentRunIDFromRecord(record)
 	return model.JobCheckpoint{
 		JobID:       record.ID,
+		RunID:       runID,
 		JobName:     record.JobName,
 		UserID:      record.UserID,
 		AccountID:   record.AccountID,
@@ -263,6 +268,22 @@ func newCheckpointRecord(
 			"checkpointDir": info.CheckpointDir,
 		},
 	}
+}
+
+func experimentRunIDFromRecord(record *model.Job) *uint {
+	if record == nil || record.Attributes.Data() == nil || record.Attributes.Data().Annotations == nil {
+		return nil
+	}
+	raw := strings.TrimSpace(record.Attributes.Data().Annotations["orbit.raids.io/experiment-run-id"])
+	if raw == "" {
+		return nil
+	}
+	id, err := strconv.ParseUint(raw, 10, 64)
+	if err != nil || id == 0 {
+		return nil
+	}
+	value := uint(id)
+	return &value
 }
 
 func stepFromName(name string) int64 {

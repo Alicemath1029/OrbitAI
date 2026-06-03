@@ -110,7 +110,7 @@ func (mgr *VolcanojobMgr) CreateTensorflowJob(c *gin.Context) {
 		&req.CreateJobCommon,
 		jobName,
 		jobResources,
-		req.Tasks,
+		map[string]any{"tasks": req.Tasks},
 		req.Checkpoint,
 	)
 	if err != nil {
@@ -138,6 +138,8 @@ func (mgr *VolcanojobMgr) CreateTensorflowJob(c *gin.Context) {
 	envs := AppendExperimentEnvs(
 		AppendCheckpointEnvs(GenerateEnvs(c, token, req.Envs), checkpoint, jobName),
 		experimentRuntime,
+		jobName,
+		volumeMounts,
 	)
 
 	// 3. Labels and Annotations

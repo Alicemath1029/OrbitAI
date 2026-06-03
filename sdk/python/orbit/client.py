@@ -1,19 +1,38 @@
+import argparse
+import atexit
 import json
 import os
+import sys
+import threading
 import time
 import urllib.error
 import urllib.request
+import uuid
 from pathlib import Path
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Iterable, List, Optional
+
+
+DEFAULT_FLUSH_INTERVAL_SECONDS = 2.0
+DEFAULT_FLUSH_BATCH_SIZE = 20
 
 
 class OrbitClient:
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        flush_batch_size: int = DEFAULT_FLUSH_BATCH_SIZE,
+        flush_interval_seconds: float = DEFAULT_FLUSH_INTERVAL_SECONDS,
+    ) -> None:
         self.run_id = os.getenv("ORBIT_RUN_ID", "")
         self.token = os.getenv("ORBIT_RUN_TOKEN", "")
         self.api_base = os.getenv("ORBIT_API_BASE", "").rstrip("/")
         output_dir = os.getenv("ORBIT_OUTPUT_DIR") or os.getcwd()
         self.offline_path = Path(output_dir) / ".orbit" / "offline_metrics.jsonl"
+        self.flush_batch_size = max(1, flush_batch_size)
+        self.flush_interval_seconds = max(0.1, flush_interval_seconds)
+        self._metrics: List[Dict[str, Any]] = []
+        self._lock = threading.Lock()
+        self._timer: Optional[threading.Timer] = None
+        atexit.register(self.flush)
 
     @property
     def enabled(self) -> bool:
@@ -33,13 +52,21 @@ class OrbitClient:
         context: Optional[Dict[str, Any]] = None,
     ) -> None:
         metric = {
+            "id": str(uuid.uuid4()),
             "name": name,
             "value": float(value),
             "step": int(step),
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "context": context or {},
         }
-        self._post("metrics", {"metrics": [metric]}, offline_type="metrics")
+        should_flush = False
+        with self._lock:
+            self._metrics.append(metric)
+            should_flush = len(self._metrics) >= self.flush_batch_size
+            if not should_flush:
+                self._ensure_timer_locked()
+        if should_flush:
+            self.flush()
 
     def log_artifact(
         self,
@@ -56,6 +83,7 @@ class OrbitClient:
         except OSError:
             size = 0
         payload = {
+            "id": str(uuid.uuid4()),
             "name": name,
             "path": path,
             "type": type,
@@ -65,15 +93,37 @@ class OrbitClient:
         self._post("artifacts", payload, offline_type="artifact")
 
     def finish(self, status: str = "succeeded") -> None:
+        self.flush()
         self._post("finish", {"status": status}, offline_type="finish")
 
     def sync(self, jsonl_path: str) -> None:
+        self.flush()
         for item in _read_jsonl(Path(jsonl_path)):
             kind = item.get("type")
             payload = item.get("payload")
             if not isinstance(kind, str) or not isinstance(payload, dict):
                 continue
-            self._post(kind, payload, offline_type=kind, write_offline=False)
+            record_id = item.get("id")
+            if isinstance(record_id, str) and record_id:
+                _attach_client_record_id(kind, payload, record_id)
+            self._post(_offline_endpoint(kind), payload, offline_type=kind, write_offline=False)
+
+    def flush(self) -> None:
+        with self._lock:
+            metrics = self._metrics
+            self._metrics = []
+            if self._timer is not None:
+                self._timer.cancel()
+                self._timer = None
+        if metrics:
+            self._post("metrics", {"metrics": metrics}, offline_type="metrics")
+
+    def _ensure_timer_locked(self) -> None:
+        if self._timer is not None:
+            return
+        self._timer = threading.Timer(self.flush_interval_seconds, self.flush)
+        self._timer.daemon = True
+        self._timer.start()
 
     def _post(
         self,
@@ -109,7 +159,7 @@ class OrbitClient:
         try:
             self.offline_path.parent.mkdir(parents=True, exist_ok=True)
             with self.offline_path.open("a", encoding="utf-8") as fp:
-                fp.write(json.dumps({"type": kind, "payload": payload}) + "\n")
+                fp.write(json.dumps({"id": str(uuid.uuid4()), "type": kind, "payload": payload}) + "\n")
         except OSError as exc:
             print(f"[orbit] failed to write offline metrics: {exc}")
 
@@ -117,9 +167,12 @@ class OrbitClient:
 _client: Optional[OrbitClient] = None
 
 
-def init() -> OrbitClient:
+def init(
+    flush_batch_size: int = DEFAULT_FLUSH_BATCH_SIZE,
+    flush_interval_seconds: float = DEFAULT_FLUSH_INTERVAL_SECONDS,
+) -> OrbitClient:
     global _client
-    _client = OrbitClient()
+    _client = OrbitClient(flush_batch_size, flush_interval_seconds)
     return _client
 
 
@@ -160,6 +213,10 @@ def finish(status: str = "succeeded") -> None:
     _get_client().finish(status)
 
 
+def flush() -> None:
+    _get_client().flush()
+
+
 def sync(jsonl_path: str) -> None:
     _get_client().sync(jsonl_path)
 
@@ -176,3 +233,38 @@ def _read_jsonl(path: Path) -> Iterable[Dict[str, Any]]:
                 continue
             if isinstance(item, dict):
                 yield item
+
+
+def _offline_endpoint(kind: str) -> str:
+    if kind == "artifact":
+        return "artifacts"
+    return kind
+
+
+def _attach_client_record_id(kind: str, payload: Dict[str, Any], record_id: str) -> None:
+    if kind == "metrics":
+        metrics = payload.get("metrics")
+        if isinstance(metrics, list):
+            for index, metric in enumerate(metrics):
+                if isinstance(metric, dict) and not metric.get("clientRecordID"):
+                    metric["clientRecordID"] = f"{record_id}:{index}"
+        return
+    if not payload.get("clientRecordID"):
+        payload["clientRecordID"] = record_id
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    parser = argparse.ArgumentParser(prog="orbit")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    sync_parser = subparsers.add_parser("sync", help="Upload offline JSONL records")
+    sync_parser.add_argument("jsonl_path")
+    args = parser.parse_args(argv)
+
+    if args.command == "sync":
+        sync(args.jsonl_path)
+        return 0
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

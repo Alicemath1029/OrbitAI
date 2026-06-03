@@ -1181,6 +1181,55 @@ func main() {
 				)
 			},
 		},
+		{
+			ID: "202606021900",
+			Migrate: func(tx *gorm.DB) error {
+				return tx.AutoMigrate(
+					&model.ExperimentRun{},
+					&model.RunMetric{},
+					&model.RunArtifact{},
+					&model.JobCheckpoint{},
+				)
+			},
+			Rollback: func(tx *gorm.DB) error {
+				type ExperimentRun struct {
+					ParentRunID        *uint             `gorm:"index;comment:来源实验 Run ID"`
+					SourceCheckpointID *uint             `gorm:"index;comment:来源 checkpoint ID"`
+					ReproduceSnapshot  datatypes.JSONMap `gorm:"type:jsonb;comment:复现快照"`
+				}
+				type RunMetric struct {
+					ClientRecordID *string `gorm:"type:varchar(64);uniqueIndex:idx_run_metric_client_record,priority:2;comment:SDK离线记录ID"`
+				}
+				type RunArtifact struct {
+					ClientRecordID *string `gorm:"type:varchar(64);uniqueIndex:idx_run_artifact_client_record,priority:2;comment:SDK离线记录ID"`
+					SourceType     string  `gorm:"type:varchar(64);index;uniqueIndex:idx_run_artifact_source,priority:1;comment:来源类型"`
+					SourceID       *uint   `gorm:"index;uniqueIndex:idx_run_artifact_source,priority:2;comment:来源记录 ID"`
+				}
+				type JobCheckpoint struct {
+					RunID *uint `gorm:"index;comment:关联的实验 Run ID"`
+				}
+				for _, column := range []struct {
+					model any
+					name  string
+				}{
+					{&JobCheckpoint{}, "RunID"},
+					{&RunArtifact{}, "SourceID"},
+					{&RunArtifact{}, "SourceType"},
+					{&RunArtifact{}, "ClientRecordID"},
+					{&RunMetric{}, "ClientRecordID"},
+					{&ExperimentRun{}, "ReproduceSnapshot"},
+					{&ExperimentRun{}, "SourceCheckpointID"},
+					{&ExperimentRun{}, "ParentRunID"},
+				} {
+					if tx.Migrator().HasColumn(column.model, column.name) {
+						if err := tx.Migrator().DropColumn(column.model, column.name); err != nil {
+							return err
+						}
+					}
+				}
+				return nil
+			},
+		},
 	})
 
 	m.InitSchema(func(tx *gorm.DB) error {

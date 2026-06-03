@@ -263,6 +263,25 @@ export function ExperimentFormCard<T extends FieldValues>({
           </div>
           <FormField
             control={form.control}
+            name={path<T>(basePath, 'dataText')}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>数据快照 JSON</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    className="h-20 font-mono"
+                    placeholder={
+                      '{"name": "dataset-v1", "path": "/workspace/data", "digest": "sha256:..."}'
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name={path<T>(basePath, 'tagsText')}
             render={({ field }) => (
               <FormItem>

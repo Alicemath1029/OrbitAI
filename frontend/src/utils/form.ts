@@ -267,6 +267,7 @@ export const experimentConfigSchema = z
     codeRepo: z.string().optional(),
     codeBranch: z.string().optional(),
     codeCommit: z.string().optional(),
+    dataText: z.string().optional(),
     tagsText: z.string().optional(),
   })
   .superRefine((value, ctx) => {
@@ -282,6 +283,7 @@ export const experimentConfigSchema = z
     }
     for (const [field, label] of [
       ['hyperparamsText', '超参数'],
+      ['dataText', '数据快照'],
       ['tagsText', '标签'],
     ] as const) {
       const text = value[field]
@@ -310,6 +312,7 @@ export const defaultExperimentConfig: ExperimentConfigSchema = {
   codeRepo: '',
   codeBranch: '',
   codeCommit: '',
+  dataText: '',
   tagsText: '',
 }
 
@@ -339,6 +342,7 @@ export const buildExperimentRunConfig = (config?: ExperimentConfigSchema) => {
     runName: config.runName,
     hyperparams: parseOptionalJSON(config.hyperparamsText),
     code,
+    data: parseOptionalJSON(config.dataText),
     tags: parseOptionalJSON(config.tagsText),
   }
 }

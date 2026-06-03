@@ -1,4 +1,5 @@
-from .client import finish, init, log_artifact, log_metric, log_param, log_params, sync
+from .client import finish, flush, init, log_artifact, log_metric, log_param, log_params, sync
+from . import checkpoint
 
 __all__ = [
     "init",
@@ -7,5 +8,7 @@ __all__ = [
     "log_metric",
     "log_artifact",
     "finish",
+    "flush",
     "sync",
+    "checkpoint",
 ]

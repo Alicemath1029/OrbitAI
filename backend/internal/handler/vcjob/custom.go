@@ -194,6 +194,8 @@ func GenerateCustomPodSpec(
 	envs := AppendExperimentEnvs(
 		AppendCheckpointEnvs(GenerateEnvs(ctx, token, custom.Envs), checkpoint, jobName),
 		experimentRuntime,
+		jobName,
+		volumeMounts,
 	)
 
 	imagePullSecrets := []v1.LocalObjectReference{}

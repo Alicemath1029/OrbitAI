@@ -318,6 +318,7 @@ export interface JobCheckpoint {
   DeletedAt?: string | null
   jobID: number
   jobName: string
+  runID?: number
   userID: number
   accountID: number
   framework: string
@@ -368,6 +369,7 @@ export interface CheckpointRestoreResp {
   jobName: string
   name: string
   checkpointPath: string
+  experimentRunID?: number
 }
 
 export interface IJupyterDetail {

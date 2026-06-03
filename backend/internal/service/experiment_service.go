@@ -14,6 +14,7 @@ import (
 
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
 	"github.com/raids-lab/orbit/dao/model"
@@ -25,9 +26,10 @@ const (
 	ExperimentAnnotationRunID = "orbit.raids.io/experiment-run-id"
 	ExperimentAnnotationID    = "orbit.raids.io/experiment-id"
 
-	EnvOrbitRunID    = "ORBIT_RUN_ID"
-	EnvOrbitRunToken = "ORBIT_RUN_TOKEN"
-	EnvOrbitAPIBase  = "ORBIT_API_BASE"
+	EnvOrbitRunID     = "ORBIT_RUN_ID"
+	EnvOrbitRunToken  = "ORBIT_RUN_TOKEN"
+	EnvOrbitAPIBase   = "ORBIT_API_BASE"
+	EnvOrbitOutputDir = "ORBIT_OUTPUT_DIR"
 )
 
 type ExperimentRunConfig struct {
@@ -58,6 +60,8 @@ type UpdateExperimentInput struct {
 
 type CreateRunInput struct {
 	ExperimentID       uint
+	ParentRunID        *uint
+	SourceCheckpointID *uint
 	JobName            string
 	RunName            string
 	UserID             uint
@@ -68,6 +72,7 @@ type CreateRunInput struct {
 	ImageSnapshot      datatypes.JSONMap
 	ResourceSnapshot   datatypes.JSONMap
 	CheckpointSnapshot datatypes.JSONMap
+	ReproduceSnapshot  datatypes.JSONMap
 	Tags               datatypes.JSONMap
 }
 
@@ -77,19 +82,25 @@ type CreateRunResult struct {
 }
 
 type MetricInput struct {
-	Name      string            `json:"name"`
-	Value     float64           `json:"value"`
-	Step      int64             `json:"step"`
-	Timestamp *time.Time        `json:"timestamp"`
-	Context   datatypes.JSONMap `json:"context"`
+	ID             string            `json:"id"`
+	ClientRecordID string            `json:"clientRecordID"`
+	Name           string            `json:"name"`
+	Value          float64           `json:"value"`
+	Step           int64             `json:"step"`
+	Timestamp      *time.Time        `json:"timestamp"`
+	Context        datatypes.JSONMap `json:"context"`
 }
 
 type ArtifactInput struct {
-	Name      string            `json:"name"`
-	Type      string            `json:"type"`
-	Path      string            `json:"path"`
-	SizeBytes int64             `json:"sizeBytes"`
-	Metadata  datatypes.JSONMap `json:"metadata"`
+	ID             string            `json:"id"`
+	ClientRecordID string            `json:"clientRecordID"`
+	Name           string            `json:"name"`
+	Type           string            `json:"type"`
+	Path           string            `json:"path"`
+	SizeBytes      int64             `json:"sizeBytes"`
+	SourceType     string            `json:"sourceType"`
+	SourceID       *uint             `json:"sourceID"`
+	Metadata       datatypes.JSONMap `json:"metadata"`
 }
 
 type ExperimentService struct {
@@ -261,6 +272,8 @@ func (s *ExperimentService) CreateRun(
 
 	run := &model.ExperimentRun{
 		ExperimentID:       input.ExperimentID,
+		ParentRunID:        input.ParentRunID,
+		SourceCheckpointID: input.SourceCheckpointID,
 		JobName:            input.JobName,
 		RunName:            runName,
 		Status:             model.ExperimentRunStatusPending,
@@ -273,6 +286,7 @@ func (s *ExperimentService) CreateRun(
 		ImageSnapshot:      safeJSONMap(input.ImageSnapshot),
 		ResourceSnapshot:   safeJSONMap(input.ResourceSnapshot),
 		CheckpointSnapshot: safeJSONMap(input.CheckpointSnapshot),
+		ReproduceSnapshot:  safeJSONMap(input.ReproduceSnapshot),
 		Tags:               safeJSONMap(input.Tags),
 	}
 	if err := s.db.WithContext(ctx).Create(run).Error; err != nil {
@@ -306,14 +320,11 @@ func (s *ExperimentService) GetRun(
 	runID uint,
 	token util.JWTMessage,
 ) (*model.ExperimentRun, error) {
-	var run model.ExperimentRun
-	if err := s.db.WithContext(ctx).Where("id = ?", runID).First(&run).Error; err != nil {
+	run, err := s.getAccessibleRun(ctx, runID, token)
+	if err != nil {
 		return nil, err
 	}
-	if run.AccountID != token.AccountID || (run.UserID != token.UserID && token.RolePlatform != model.RoleAdmin) {
-		return nil, gorm.ErrRecordNotFound
-	}
-	return &run, nil
+	return run, nil
 }
 
 func (s *ExperimentService) VerifyRunToken(ctx context.Context, runID uint, token string) (*model.ExperimentRun, error) {
@@ -350,18 +361,50 @@ func (s *ExperimentService) LogMetrics(ctx context.Context, runID uint, metrics 
 			timestamp = *metric.Timestamp
 		}
 		rows = append(rows, model.RunMetric{
-			RunID:     runID,
-			Name:      name,
-			Step:      metric.Step,
-			Value:     metric.Value,
-			Timestamp: timestamp,
-			Context:   safeJSONMap(metric.Context),
+			RunID:          runID,
+			ClientRecordID: optionalClientRecordID(metric.ID, metric.ClientRecordID),
+			Name:           name,
+			Step:           metric.Step,
+			Value:          metric.Value,
+			Timestamp:      timestamp,
+			Context:        safeJSONMap(metric.Context),
 		})
 	}
 	if len(rows) == 0 {
 		return nil
 	}
-	return s.db.WithContext(ctx).Create(&rows).Error
+	clientRows := make([]model.RunMetric, 0, len(rows))
+	plainRows := make([]model.RunMetric, 0, len(rows))
+	for _, row := range rows {
+		if row.ClientRecordID != nil {
+			clientRows = append(clientRows, row)
+		} else {
+			plainRows = append(plainRows, row)
+		}
+	}
+	db := s.db.WithContext(ctx)
+	if len(clientRows) > 0 {
+		if err := db.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "run_id"}, {Name: "client_record_id"}},
+			DoNothing: true,
+		}).Create(&clientRows).Error; err != nil {
+			return err
+		}
+	}
+	if len(plainRows) > 0 {
+		return db.Create(&plainRows).Error
+	}
+	return nil
+}
+
+func (s *ExperimentService) createArtifact(ctx context.Context, artifact *model.RunArtifact) error {
+	if artifact.ClientRecordID != nil {
+		return s.db.WithContext(ctx).Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "run_id"}, {Name: "client_record_id"}},
+			DoNothing: true,
+		}).Create(artifact).Error
+	}
+	return s.db.WithContext(ctx).Create(artifact).Error
 }
 
 func (s *ExperimentService) ListMetrics(ctx context.Context, runID uint, token util.JWTMessage) ([]model.RunMetric, error) {
@@ -420,17 +463,57 @@ func (s *ExperimentService) CreateArtifact(ctx context.Context, runID uint, inpu
 		artifactType = "file"
 	}
 	artifact := &model.RunArtifact{
-		RunID:     runID,
-		Name:      name,
-		Type:      artifactType,
-		Path:      path,
-		SizeBytes: input.SizeBytes,
-		Metadata:  safeJSONMap(input.Metadata),
+		RunID:          runID,
+		ClientRecordID: optionalClientRecordID(input.ID, input.ClientRecordID),
+		Name:           name,
+		Type:           artifactType,
+		Path:           path,
+		SizeBytes:      input.SizeBytes,
+		SourceType:     strings.TrimSpace(input.SourceType),
+		SourceID:       input.SourceID,
+		Metadata:       safeJSONMap(input.Metadata),
 	}
-	if err := s.db.WithContext(ctx).Create(artifact).Error; err != nil {
+	if err := s.createArtifact(ctx, artifact); err != nil {
 		return nil, err
 	}
 	return artifact, nil
+}
+
+func (s *ExperimentService) UpsertCheckpointArtifact(
+	ctx context.Context,
+	runID uint,
+	checkpoint model.JobCheckpoint,
+) error {
+	if runID == 0 || checkpoint.ID == 0 {
+		return nil
+	}
+	metadata := safeJSONMap(checkpoint.Metadata)
+	metadata["framework"] = checkpoint.Framework
+	metadata["step"] = checkpoint.Step
+	metadata["latest"] = checkpoint.Latest
+	metadata["storagePath"] = checkpoint.StoragePath
+	metadata["modTime"] = checkpoint.ModTime
+	metadata["jobName"] = checkpoint.JobName
+	artifact := model.RunArtifact{
+		RunID:      runID,
+		Name:       checkpoint.Name,
+		Type:       "checkpoint",
+		Path:       checkpoint.Path,
+		SizeBytes:  checkpoint.SizeBytes,
+		SourceType: "checkpoint",
+		SourceID:   &checkpoint.ID,
+		Metadata:   metadata,
+	}
+	return s.db.WithContext(ctx).Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "source_type"}, {Name: "source_id"}},
+		DoUpdates: clause.AssignmentColumns([]string{
+			"name",
+			"path",
+			"size_bytes",
+			"metadata",
+			"updated_at",
+		}),
+	}).Create(&artifact).Error
 }
 
 func (s *ExperimentService) ListArtifacts(ctx context.Context, runID uint, token util.JWTMessage) ([]model.RunArtifact, error) {
@@ -493,11 +576,41 @@ func canAccessExperiment(exp *model.Experiment, token util.JWTMessage) bool {
 	return exp.Visibility == model.ExperimentVisibilityAccount || exp.UserID == token.UserID || token.RolePlatform == model.RoleAdmin
 }
 
+func (s *ExperimentService) getAccessibleRun(
+	ctx context.Context,
+	runID uint,
+	token util.JWTMessage,
+) (*model.ExperimentRun, error) {
+	var run model.ExperimentRun
+	if err := s.db.WithContext(ctx).Preload("Experiment").Where("id = ?", runID).First(&run).Error; err != nil {
+		return nil, err
+	}
+	if token.RolePlatform == model.RoleAdmin {
+		return &run, nil
+	}
+	if run.AccountID != token.AccountID || run.Experiment.AccountID != token.AccountID {
+		return nil, gorm.ErrRecordNotFound
+	}
+	if run.UserID == token.UserID || run.Experiment.Visibility == model.ExperimentVisibilityAccount {
+		return &run, nil
+	}
+	return nil, gorm.ErrRecordNotFound
+}
+
 func safeJSONMap(value datatypes.JSONMap) datatypes.JSONMap {
 	if value == nil {
 		return datatypes.JSONMap{}
 	}
 	return value
+}
+
+func optionalClientRecordID(values ...string) *string {
+	for _, value := range values {
+		if value = strings.TrimSpace(value); value != "" {
+			return &value
+		}
+	}
+	return nil
 }
 
 func newRunToken() (string, string, error) {

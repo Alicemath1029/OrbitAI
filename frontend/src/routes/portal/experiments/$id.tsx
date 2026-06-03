@@ -72,6 +72,7 @@ function RouteComponent() {
   })
 
   const chartData = useMemo(() => buildCompareChartData(selectedMetrics), [selectedMetrics])
+  const hyperparamRows = useMemo(() => buildHyperparamDiffRows(selectedRuns), [selectedRuns])
 
   const toggleRun = (runID: number) => {
     setSelectedRunIDs((current) =>
@@ -128,6 +129,62 @@ function RouteComponent() {
 
       <Card>
         <CardHeader>
+          <CardTitle>超参数差异</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {selectedRuns.length === 0 ? (
+            <div className="text-muted-foreground text-sm">勾选下方 Run 后展示超参数差异。</div>
+          ) : hyperparamRows.length === 0 ? (
+            <div className="text-muted-foreground text-sm">所选 Run 暂无超参数记录。</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-40">参数</TableHead>
+                    {selectedRuns.map((run) => (
+                      <TableHead key={run.ID} className="min-w-44">
+                        <Link
+                          to="/portal/experiments/runs/$runID"
+                          params={{ runID: String(run.ID) }}
+                          className="hover:text-primary block max-w-48 truncate"
+                        >
+                          {run.runName}
+                        </Link>
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {hyperparamRows.map((row) => (
+                    <TableRow key={row.key}>
+                      <TableCell className="font-mono text-xs">
+                        <div className="flex items-center gap-2">
+                          {row.key}
+                          {row.isDifferent && <Badge variant="secondary">不同</Badge>}
+                        </div>
+                      </TableCell>
+                      {row.values.map((value, index) => (
+                        <TableCell
+                          key={`${row.key}-${selectedRuns[index]?.ID}`}
+                          className={
+                            row.isDifferent ? 'bg-primary/5 font-mono text-xs' : 'font-mono text-xs'
+                          }
+                        >
+                          {value}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Runs</CardTitle>
         </CardHeader>
         <CardContent>
@@ -166,7 +223,10 @@ function RouteComponent() {
                     <TableCell>{formatDate(run.startedAt || run.CreatedAt)}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/portal/experiments/runs/$runID" params={{ runID: run.ID }}>
+                        <Link
+                          to="/portal/experiments/runs/$runID"
+                          params={{ runID: String(run.ID) }}
+                        >
                           查看
                         </Link>
                       </Button>
@@ -203,4 +263,22 @@ function buildCompareChartData(groups: { run: ExperimentRun; metrics: RunMetric[
     }
   }
   return Array.from(byStep.values()).sort((a, b) => Number(a.step) - Number(b.step))
+}
+
+function buildHyperparamDiffRows(runs: ExperimentRun[]) {
+  const keys = Array.from(new Set(runs.flatMap((run) => Object.keys(run.hyperparams ?? {})))).sort()
+  return keys.map((key) => {
+    const values = runs.map((run) => formatParamValue(run.hyperparams?.[key]))
+    return {
+      key,
+      values,
+      isDifferent: new Set(values).size > 1,
+    }
+  })
+}
+
+function formatParamValue(value: unknown) {
+  if (value === undefined || value === null || value === '') return '-'
+  if (typeof value === 'string') return value
+  return JSON.stringify(value)
 }

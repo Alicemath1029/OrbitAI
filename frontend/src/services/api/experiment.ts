@@ -27,6 +27,8 @@ export interface ExperimentRun {
   CreatedAt: string
   UpdatedAt: string
   experimentID: number
+  parentRunID?: number
+  sourceCheckpointID?: number
   jobID?: number
   jobName: string
   runName: string
@@ -39,6 +41,7 @@ export interface ExperimentRun {
   imageSnapshot?: Record<string, unknown>
   resourceSnapshot?: Record<string, unknown>
   checkpointSnapshot?: Record<string, unknown>
+  reproduceSnapshot?: Record<string, unknown>
   tags?: Record<string, unknown>
   startedAt?: string
   finishedAt?: string
@@ -48,6 +51,7 @@ export interface RunMetric {
   ID: number
   CreatedAt: string
   runID: number
+  clientRecordID?: string
   name: string
   step: number
   value: number
@@ -59,10 +63,13 @@ export interface RunArtifact {
   ID: number
   CreatedAt: string
   runID: number
+  clientRecordID?: string
   name: string
   type: string
   path: string
   sizeBytes: number
+  sourceType?: string
+  sourceID?: number
   metadata?: Record<string, unknown>
 }
 

@@ -18,6 +18,7 @@ const (
 type JobCheckpoint struct {
 	gorm.Model
 	JobID       uint                `json:"jobID" gorm:"not null;index:idx_job_checkpoints_job;uniqueIndex:idx_job_checkpoint_job_path;comment:作业ID"`
+	RunID       *uint               `json:"runID" gorm:"index;comment:关联的实验 Run ID"`
 	JobName     string              `json:"jobName" gorm:"type:varchar(256);not null;index;comment:作业集群名称"`
 	UserID      uint                `json:"userID" gorm:"not null;index;comment:用户ID"`
 	AccountID   uint                `json:"accountID" gorm:"not null;index;comment:账户ID"`

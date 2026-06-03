@@ -131,7 +131,11 @@ function RouteComponent() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {experiments.map((experiment) => (
-            <Link key={experiment.ID} to="/portal/experiments/$id" params={{ id: experiment.ID }}>
+            <Link
+              key={experiment.ID}
+              to="/portal/experiments/$id"
+              params={{ id: String(experiment.ID) }}
+            >
               <Card className="hover:border-primary/60 h-full transition-colors">
                 <CardHeader className="space-y-2">
                   <div className="flex items-start justify-between gap-3">

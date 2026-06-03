@@ -12,6 +12,19 @@ orbit.log_artifact("final_model", "./outputs/model", type="model")
 orbit.finish(status="succeeded")
 ```
 
+Install locally during image build or development:
+
+```bash
+pip install -e sdk/python
+```
+
+Metrics are buffered and flushed every 20 records or 2 seconds by default.
+You can force a flush before process exit:
+
+```python
+orbit.flush()
+```
+
 The platform injects these variables when a job is bound to an experiment:
 
 - `ORBIT_RUN_ID`
@@ -26,4 +39,34 @@ If the API is unavailable, records are appended to
 import orbit
 
 orbit.sync("/path/to/offline_metrics.jsonl")
+```
+
+The same sync operation is available from the command line:
+
+```bash
+python -m orbit sync /path/to/offline_metrics.jsonl
+```
+
+PyTorch checkpoint helper:
+
+```python
+import orbit
+import orbit.pytorch as orbit_torch
+
+orbit.init()
+
+loaded = orbit_torch.load_checkpoint_if_available(model, optimizer=optimizer)
+start_step = loaded.step if loaded else 0
+
+orbit_torch.save_checkpoint(
+    model=model,
+    optimizer=optimizer,
+    step=step,
+    epoch=epoch,
+    hparams={"lr": 1e-4},
+    async_save=True,
+)
+
+orbit_torch.flush()
+orbit.finish("succeeded")
 ```

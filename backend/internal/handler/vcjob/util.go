@@ -629,16 +629,23 @@ func markExperimentRunSubmitFailed(ctx context.Context, runtime *experimentRunRu
 	}
 }
 
-func AppendExperimentEnvs(envs []v1.EnvVar, runtime *experimentRunRuntime) []v1.EnvVar {
+func AppendExperimentEnvs(envs []v1.EnvVar, runtime *experimentRunRuntime, jobName string, volumeMounts []v1.VolumeMount) []v1.EnvVar {
 	if runtime == nil || runtime.RunID == 0 || runtime.Token == "" {
 		return envs
 	}
-	next := make([]v1.EnvVar, 0, len(envs)+3)
+	hasOutputDir := false
+	next := make([]v1.EnvVar, 0, len(envs)+4)
 	for _, env := range envs {
+		if env.Name == service.EnvOrbitOutputDir {
+			hasOutputDir = true
+		}
 		if strings.HasPrefix(env.Name, "ORBIT_RUN_") || env.Name == service.EnvOrbitAPIBase {
 			continue
 		}
 		next = append(next, env)
+	}
+	if !hasOutputDir {
+		next = append(next, v1.EnvVar{Name: service.EnvOrbitOutputDir, Value: defaultExperimentOutputDir(jobName, volumeMounts)})
 	}
 	next = append(next,
 		v1.EnvVar{Name: service.EnvOrbitRunID, Value: strconv.FormatUint(uint64(runtime.RunID), 10)},
@@ -646,6 +653,21 @@ func AppendExperimentEnvs(envs []v1.EnvVar, runtime *experimentRunRuntime) []v1.
 		v1.EnvVar{Name: service.EnvOrbitAPIBase, Value: service.OrbitAPIBase()},
 	)
 	return next
+}
+
+func defaultExperimentOutputDir(jobName string, volumeMounts []v1.VolumeMount) string {
+	name := strings.TrimSpace(jobName)
+	if name == "" {
+		name = "run"
+	}
+	for _, mount := range volumeMounts {
+		mountPath := strings.TrimSpace(mount.MountPath)
+		if mount.ReadOnly || mountPath == "" || strings.HasPrefix(mountPath, "/dev/") || strings.HasPrefix(mountPath, "/usr/") {
+			continue
+		}
+		return strings.TrimRight(mountPath, "/") + "/orbit/outputs/" + name
+	}
+	return "/tmp/orbit/outputs/" + name
 }
 
 func ApplyExperimentAnnotations(annotations map[string]string, runtime *experimentRunRuntime) {
@@ -746,6 +768,8 @@ func generateInteractivePodSpec(
 	envs := AppendExperimentEnvs(
 		AppendCheckpointEnvs(GenerateEnvs(c, token, req.Envs), checkpoint, jobName),
 		experimentRuntime,
+		jobName,
+		volumeMounts,
 	)
 
 	// 3. Node Affinity and Tolerations
