@@ -31,17 +31,17 @@ imagePullSecrets: []
 images:
   backend:
     # -- Backend service image repository
-    repository: "ghcr.io/raids-lab/orbit-backend"
+    repository: "ghcr.io/alicemath1029/orbit-backend"
     # -- Backend service image tag
     tag: "latest"
   frontend:
     # -- Frontend service image repository
-    repository: "ghcr.io/raids-lab/orbit-frontend"
+    repository: "ghcr.io/alicemath1029/orbit-frontend"
     # -- Frontend service image tag
     tag: "latest"
   storage:
     # -- Storage server image repository
-    repository: "ghcr.io/raids-lab/storage-server"
+    repository: "ghcr.io/alicemath1029/storage-server"
     # -- Storage server image tag
     tag: "latest"
   cronjob:
@@ -61,17 +61,17 @@ images:
     tag: "v0.23.1"
   nerdctl:
     # -- Nerdctl image repository for containerd-based builds
-    repository: "ghcr.io/raids-lab/nerdctl-client"
+    repository: "ghcr.io/alicemath1029/nerdctl-client"
     # -- Nerdctl image tag
     tag: "latest"
   buildx:
     # -- Buildx image repository for Docker Buildx multi-platform builds
-    repository: "ghcr.io/raids-lab/buildx-client"
+    repository: "ghcr.io/alicemath1029/buildx-client"
     # -- Buildx image tag
     tag: "latest"
   envd:
     # -- Envd image repository for environment-based development builds
-    repository: "ghcr.io/raids-lab/envd-client"
+    repository: "ghcr.io/alicemath1029/envd-client"
     # -- Envd image tag
     tag: "latest"
   dbBackup:
