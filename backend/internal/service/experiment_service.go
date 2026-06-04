@@ -30,6 +30,10 @@ const (
 	EnvOrbitRunToken  = "ORBIT_RUN_TOKEN"
 	EnvOrbitAPIBase   = "ORBIT_API_BASE"
 	EnvOrbitOutputDir = "ORBIT_OUTPUT_DIR"
+
+	defaultMetricQueryLimit = 5000
+	maxMetricQueryLimit     = 50000
+	maxMetricDownsample     = 5000
 )
 
 type ExperimentRunConfig struct {
@@ -91,6 +95,14 @@ type MetricInput struct {
 	Context        datatypes.JSONMap `json:"context"`
 }
 
+type MetricListQuery struct {
+	Names      []string
+	StartStep  *int64
+	EndStep    *int64
+	Limit      int
+	Downsample int
+}
+
 type ArtifactInput struct {
 	ID             string            `json:"id"`
 	ClientRecordID string            `json:"clientRecordID"`
@@ -101,6 +113,23 @@ type ArtifactInput struct {
 	SourceType     string            `json:"sourceType"`
 	SourceID       *uint             `json:"sourceID"`
 	Metadata       datatypes.JSONMap `json:"metadata"`
+}
+
+type CheckpointRestorePlan struct {
+	JobName        string `json:"jobName"`
+	CheckpointID   uint   `json:"checkpointID"`
+	Name           string `json:"name"`
+	CheckpointPath string `json:"checkpointPath"`
+}
+
+type ReproduceRunResult struct {
+	Mode                       string                 `json:"mode"`
+	RunID                      uint                   `json:"runID"`
+	ExperimentID               uint                   `json:"experimentID"`
+	RunName                    string                 `json:"runName"`
+	Restore                    *CheckpointRestorePlan `json:"restore,omitempty"`
+	CreateJobExperimentPayload ExperimentRunConfig    `json:"createJobExperimentPayload"`
+	Snapshots                  datatypes.JSONMap      `json:"snapshots"`
 }
 
 type ExperimentService struct {
@@ -407,16 +436,40 @@ func (s *ExperimentService) createArtifact(ctx context.Context, artifact *model.
 	return s.db.WithContext(ctx).Create(artifact).Error
 }
 
-func (s *ExperimentService) ListMetrics(ctx context.Context, runID uint, token util.JWTMessage) ([]model.RunMetric, error) {
+func (s *ExperimentService) ListMetrics(
+	ctx context.Context,
+	runID uint,
+	token util.JWTMessage,
+	opts ...MetricListQuery,
+) ([]model.RunMetric, error) {
 	if _, err := s.GetRun(ctx, runID, token); err != nil {
 		return nil, err
 	}
+	query := MetricListQuery{}
+	if len(opts) > 0 {
+		query = opts[0]
+	}
+	names := normalizeMetricNames(query.Names)
+	limit := normalizeMetricLimit(query.Limit)
 	var metrics []model.RunMetric
-	err := s.db.WithContext(ctx).
-		Where("run_id = ?", runID).
+	db := s.db.WithContext(ctx).
+		Where("run_id = ?", runID)
+	if len(names) > 0 {
+		db = db.Where("name IN ?", names)
+	}
+	if query.StartStep != nil {
+		db = db.Where("step >= ?", *query.StartStep)
+	}
+	if query.EndStep != nil {
+		db = db.Where("step <= ?", *query.EndStep)
+	}
+	if err := db.
 		Order("name ASC, step ASC, timestamp ASC").
-		Find(&metrics).Error
-	return metrics, err
+		Limit(limit).
+		Find(&metrics).Error; err != nil {
+		return nil, err
+	}
+	return downsampleMetrics(metrics, normalizeMetricDownsample(query.Downsample)), nil
 }
 
 func (s *ExperimentService) MergeParams(ctx context.Context, runID uint, params datatypes.JSONMap) error {
@@ -528,6 +581,58 @@ func (s *ExperimentService) ListArtifacts(ctx context.Context, runID uint, token
 	return artifacts, err
 }
 
+func (s *ExperimentService) ReproduceRun(
+	ctx context.Context,
+	runID uint,
+	token util.JWTMessage,
+	nameOverride string,
+) (*ReproduceRunResult, error) {
+	run, err := s.getAccessibleRun(ctx, runID, token)
+	if err != nil {
+		return nil, err
+	}
+	name := strings.TrimSpace(nameOverride)
+	if name == "" {
+		name = strings.TrimSpace(run.RunName) + "-reproduce"
+	}
+	if name == "-reproduce" {
+		name = fmt.Sprintf("run-%d-reproduce", run.ID)
+	}
+	result := &ReproduceRunResult{
+		Mode:         "snapshot",
+		RunID:        run.ID,
+		ExperimentID: run.ExperimentID,
+		RunName:      name,
+		CreateJobExperimentPayload: ExperimentRunConfig{
+			ExperimentID: run.ExperimentID,
+			RunName:      name,
+			Hyperparams:  safeJSONMap(run.Hyperparams),
+			Code:         safeJSONMap(run.CodeSnapshot),
+			Data:         safeJSONMap(run.DataSnapshot),
+			Image:        safeJSONMap(run.ImageSnapshot),
+			Tags:         safeJSONMap(run.Tags),
+		},
+		Snapshots: datatypes.JSONMap{
+			"hyperparams": safeJSONMap(run.Hyperparams),
+			"code":        safeJSONMap(run.CodeSnapshot),
+			"data":        safeJSONMap(run.DataSnapshot),
+			"image":       safeJSONMap(run.ImageSnapshot),
+			"resource":    safeJSONMap(run.ResourceSnapshot),
+			"checkpoint":  safeJSONMap(run.CheckpointSnapshot),
+			"reproduce":   safeJSONMap(run.ReproduceSnapshot),
+		},
+	}
+	restore, err := s.checkpointRestorePlanForRun(ctx, run, name)
+	if err != nil {
+		return nil, err
+	}
+	if restore != nil {
+		result.Mode = "checkpoint-restore"
+		result.Restore = restore
+	}
+	return result, nil
+}
+
 func (s *ExperimentService) FinishRun(ctx context.Context, runID uint, status model.ExperimentRunStatus) error {
 	switch status {
 	case model.ExperimentRunStatusSucceeded,
@@ -567,6 +672,210 @@ func (s *ExperimentService) SyncRunForJob(ctx context.Context, job *model.Job) e
 	return s.db.WithContext(ctx).Model(&model.ExperimentRun{}).
 		Where("job_name = ?", job.JobName).
 		Updates(updates).Error
+}
+
+func normalizeMetricNames(values []string) []string {
+	seen := map[string]struct{}{}
+	names := make([]string, 0, len(values))
+	for _, value := range values {
+		for _, part := range strings.Split(value, ",") {
+			name := strings.TrimSpace(part)
+			if name == "" {
+				continue
+			}
+			if _, ok := seen[name]; ok {
+				continue
+			}
+			seen[name] = struct{}{}
+			names = append(names, name)
+		}
+	}
+	return names
+}
+
+func normalizeMetricLimit(limit int) int {
+	if limit <= 0 {
+		return defaultMetricQueryLimit
+	}
+	if limit > maxMetricQueryLimit {
+		return maxMetricQueryLimit
+	}
+	return limit
+}
+
+func normalizeMetricDownsample(downsample int) int {
+	if downsample <= 0 {
+		return 0
+	}
+	if downsample > maxMetricDownsample {
+		return maxMetricDownsample
+	}
+	return downsample
+}
+
+func downsampleMetrics(metrics []model.RunMetric, maxPointsPerMetric int) []model.RunMetric {
+	if maxPointsPerMetric <= 0 || len(metrics) <= maxPointsPerMetric {
+		return metrics
+	}
+	grouped := make(map[string][]model.RunMetric)
+	order := make([]string, 0)
+	for _, metric := range metrics {
+		if _, ok := grouped[metric.Name]; !ok {
+			order = append(order, metric.Name)
+		}
+		grouped[metric.Name] = append(grouped[metric.Name], metric)
+	}
+	result := make([]model.RunMetric, 0, len(metrics))
+	for _, name := range order {
+		group := grouped[name]
+		if len(group) <= maxPointsPerMetric {
+			result = append(result, group...)
+			continue
+		}
+		if maxPointsPerMetric == 1 {
+			result = append(result, group[len(group)-1])
+			continue
+		}
+		lastIndex := -1
+		for i := 0; i < maxPointsPerMetric; i++ {
+			index := i * (len(group) - 1) / (maxPointsPerMetric - 1)
+			if index == lastIndex {
+				continue
+			}
+			result = append(result, group[index])
+			lastIndex = index
+		}
+	}
+	return result
+}
+
+func (s *ExperimentService) checkpointRestorePlanForRun(
+	ctx context.Context,
+	run *model.ExperimentRun,
+	name string,
+) (*CheckpointRestorePlan, error) {
+	if run == nil {
+		return nil, nil
+	}
+	if plan, err := s.checkpointRestorePlanFromArtifacts(ctx, run.ID, name); err != nil || plan != nil {
+		return plan, err
+	}
+	if run.SourceCheckpointID == nil || *run.SourceCheckpointID == 0 {
+		return nil, nil
+	}
+	var checkpoint model.JobCheckpoint
+	if err := s.db.WithContext(ctx).
+		Where("id = ? AND account_id = ?", *run.SourceCheckpointID, run.AccountID).
+		First(&checkpoint).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return checkpointToRestorePlan(checkpoint, name), nil
+}
+
+func (s *ExperimentService) checkpointRestorePlanFromArtifacts(
+	ctx context.Context,
+	runID uint,
+	name string,
+) (*CheckpointRestorePlan, error) {
+	var artifacts []model.RunArtifact
+	if err := s.db.WithContext(ctx).
+		Where("run_id = ? AND type = ? AND source_type = ? AND source_id IS NOT NULL", runID, "checkpoint", "checkpoint").
+		Order("updated_at DESC").
+		Find(&artifacts).Error; err != nil {
+		return nil, err
+	}
+	if len(artifacts) == 0 {
+		return nil, nil
+	}
+	selected := selectCheckpointArtifact(artifacts)
+	if selected.SourceID == nil || *selected.SourceID == 0 {
+		return nil, nil
+	}
+	jobName := stringFromJSON(selected.Metadata, "jobName")
+	if jobName == "" {
+		var checkpoint model.JobCheckpoint
+		if err := s.db.WithContext(ctx).Where("id = ?", *selected.SourceID).First(&checkpoint).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, nil
+			}
+			return nil, err
+		}
+		return checkpointToRestorePlan(checkpoint, name), nil
+	}
+	return &CheckpointRestorePlan{
+		JobName:        jobName,
+		CheckpointID:   *selected.SourceID,
+		Name:           name,
+		CheckpointPath: selected.Path,
+	}, nil
+}
+
+func selectCheckpointArtifact(artifacts []model.RunArtifact) model.RunArtifact {
+	selected := artifacts[0]
+	for _, artifact := range artifacts {
+		if boolFromJSON(artifact.Metadata, "latest") {
+			return artifact
+		}
+		if numericFromJSON(artifact.Metadata, "step") > numericFromJSON(selected.Metadata, "step") {
+			selected = artifact
+		}
+	}
+	return selected
+}
+
+func checkpointToRestorePlan(checkpoint model.JobCheckpoint, name string) *CheckpointRestorePlan {
+	if checkpoint.ID == 0 || checkpoint.JobName == "" {
+		return nil
+	}
+	return &CheckpointRestorePlan{
+		JobName:        checkpoint.JobName,
+		CheckpointID:   checkpoint.ID,
+		Name:           name,
+		CheckpointPath: checkpoint.Path,
+	}
+}
+
+func stringFromJSON(value datatypes.JSONMap, key string) string {
+	raw, ok := value[key]
+	if !ok {
+		return ""
+	}
+	text, ok := raw.(string)
+	if !ok {
+		return ""
+	}
+	return strings.TrimSpace(text)
+}
+
+func boolFromJSON(value datatypes.JSONMap, key string) bool {
+	raw, ok := value[key]
+	if !ok {
+		return false
+	}
+	text, ok := raw.(bool)
+	return ok && text
+}
+
+func numericFromJSON(value datatypes.JSONMap, key string) float64 {
+	raw, ok := value[key]
+	if !ok {
+		return -1
+	}
+	switch typed := raw.(type) {
+	case int:
+		return float64(typed)
+	case int64:
+		return float64(typed)
+	case float64:
+		return typed
+	case float32:
+		return float64(typed)
+	default:
+		return -1
+	}
 }
 
 func canAccessExperiment(exp *model.Experiment, token util.JWTMessage) bool {

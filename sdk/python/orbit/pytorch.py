@@ -1,3 +1,4 @@
+import copy
 import os
 import threading
 from dataclasses import dataclass
@@ -75,6 +76,8 @@ def save_checkpoint(
     target = target_dir / (filename or f"checkpoint-{int(step)}.pt")
     state = _state_dict(model, optimizer, scheduler, scaler, step, epoch, hparams, metadata)
     if async_save:
+        state = _cpu_snapshot(state)
+    if async_save:
         thread = threading.Thread(target=_write_checkpoint, args=(target, state, int(step), metadata), daemon=False)
         thread.start()
         _threads.append(thread)
@@ -121,6 +124,28 @@ def _write_checkpoint(target: Path, state: Dict[str, Any], step: int, metadata: 
     record_metadata = dict(metadata or {})
     record_metadata["framework"] = "pytorch"
     orbit_checkpoint.record(str(target), step=step, metadata=record_metadata)
+
+
+def _cpu_snapshot(value: Any) -> Any:
+    try:
+        import torch
+
+        if isinstance(value, torch.Tensor):
+            return value.detach().cpu().clone()
+    except ImportError:
+        pass
+    if isinstance(value, dict):
+        return {key: _cpu_snapshot(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_cpu_snapshot(item) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_cpu_snapshot(item) for item in value)
+    if isinstance(value, set):
+        return {_cpu_snapshot(item) for item in value}
+    try:
+        return copy.deepcopy(value)
+    except Exception:
+        return value
 
 
 def _rank() -> int:

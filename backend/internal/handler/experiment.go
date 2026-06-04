@@ -52,6 +52,7 @@ func (mgr *ExperimentMgr) RegisterProtected(g *gin.RouterGroup) {
 	g.GET("runs/:runID", mgr.GetRun)
 	g.GET("runs/:runID/metrics", mgr.ListMetrics)
 	g.GET("runs/:runID/artifacts", mgr.ListArtifacts)
+	g.POST("runs/:runID/reproduce", mgr.ReproduceRun)
 }
 
 func (mgr *ExperimentMgr) RegisterAdmin(_ *gin.RouterGroup) {}
@@ -84,6 +85,10 @@ type tagsReq struct {
 
 type finishRunReq struct {
 	Status model.ExperimentRunStatus `json:"status"`
+}
+
+type reproduceRunReq struct {
+	Name string `json:"name"`
 }
 
 func (mgr *ExperimentMgr) ListExperiments(c *gin.Context) {
@@ -192,7 +197,11 @@ func (mgr *ExperimentMgr) ListMetrics(c *gin.Context) {
 	if !ok {
 		return
 	}
-	metrics, err := mgr.svc.ListMetrics(c.Request.Context(), runID, token)
+	query, ok := bindMetricListQuery(c)
+	if !ok {
+		return
+	}
+	metrics, err := mgr.svc.ListMetrics(c.Request.Context(), runID, token, query)
 	if err != nil {
 		writeExperimentError(c, err)
 		return
@@ -212,6 +221,25 @@ func (mgr *ExperimentMgr) ListArtifacts(c *gin.Context) {
 		return
 	}
 	resputil.Success(c, artifacts)
+}
+
+func (mgr *ExperimentMgr) ReproduceRun(c *gin.Context) {
+	token := util.GetToken(c)
+	runID, ok := bindUintParam(c, "runID")
+	if !ok {
+		return
+	}
+	var req reproduceRunReq
+	if err := c.ShouldBindJSON(&req); err != nil && err.Error() != "EOF" {
+		resputil.BadRequestError(c, err.Error())
+		return
+	}
+	result, err := mgr.svc.ReproduceRun(c.Request.Context(), runID, token, req.Name)
+	if err != nil {
+		writeExperimentError(c, err)
+		return
+	}
+	resputil.Success(c, result)
 }
 
 func (mgr *ExperimentMgr) LogMetricsByRunToken(c *gin.Context) {
@@ -318,6 +346,47 @@ func (mgr *ExperimentMgr) verifyRunToken(c *gin.Context) (*model.ExperimentRun, 
 		return nil, false
 	}
 	return run, true
+}
+
+func bindMetricListQuery(c *gin.Context) (service.MetricListQuery, bool) {
+	var query service.MetricListQuery
+	query.Names = append(query.Names, c.QueryArray("names")...)
+	if single := strings.TrimSpace(c.Query("names")); single != "" && len(query.Names) == 0 {
+		query.Names = append(query.Names, single)
+	}
+	if value := strings.TrimSpace(c.Query("startStep")); value != "" {
+		parsed, err := strconv.ParseInt(value, 10, 64)
+		if err != nil {
+			resputil.BadRequestError(c, "invalid startStep")
+			return query, false
+		}
+		query.StartStep = &parsed
+	}
+	if value := strings.TrimSpace(c.Query("endStep")); value != "" {
+		parsed, err := strconv.ParseInt(value, 10, 64)
+		if err != nil {
+			resputil.BadRequestError(c, "invalid endStep")
+			return query, false
+		}
+		query.EndStep = &parsed
+	}
+	if value := strings.TrimSpace(c.Query("limit")); value != "" {
+		parsed, err := strconv.Atoi(value)
+		if err != nil {
+			resputil.BadRequestError(c, "invalid limit")
+			return query, false
+		}
+		query.Limit = parsed
+	}
+	if value := strings.TrimSpace(c.Query("downsample")); value != "" {
+		parsed, err := strconv.Atoi(value)
+		if err != nil {
+			resputil.BadRequestError(c, "invalid downsample")
+			return query, false
+		}
+		query.Downsample = parsed
+	}
+	return query, true
 }
 
 func bindUintParam(c *gin.Context, name string) (uint, bool) {

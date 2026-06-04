@@ -113,7 +113,6 @@ func (mgr *VolcanojobMgr) ListJobCheckpoints(c *gin.Context) {
 			if refreshErr == nil {
 				job = refreshed
 			}
-			registerCheckpointArtifacts(c.Request.Context(), job)
 		}
 	}
 
@@ -151,7 +150,6 @@ func (mgr *VolcanojobMgr) ScanJobCheckpoints(c *gin.Context) {
 		"totalSizeBytes": result.TotalSizeBytes,
 		"storagePath":    result.StoragePath,
 	}))
-	registerCheckpointArtifacts(c.Request.Context(), job)
 
 	refreshed, refreshErr := getJob(c, req.JobName, &token)
 	if refreshErr == nil {
@@ -370,28 +368,6 @@ func buildCheckpointListResp(c *gin.Context, job *model.Job) (checkpointListResp
 		LastScannedAt: lastScannedAt,
 		Checkpoint:    info,
 	}, nil
-}
-
-func registerCheckpointArtifacts(ctx context.Context, job *model.Job) {
-	if job == nil {
-		return
-	}
-	var items []model.JobCheckpoint
-	if err := query.GetDB().WithContext(ctx).
-		Where("job_id = ? AND status = ? AND run_id IS NOT NULL", job.ID, model.JobCheckpointStatusReady).
-		Find(&items).Error; err != nil {
-		klog.Warningf("list checkpoints for artifact registration failed: %v", err)
-		return
-	}
-	experimentSvc := service.NewExperimentService()
-	for _, item := range items {
-		if item.RunID == nil {
-			continue
-		}
-		if err := experimentSvc.UpsertCheckpointArtifact(ctx, *item.RunID, item); err != nil {
-			klog.Warningf("register checkpoint artifact for job %s checkpoint %d failed: %v", job.JobName, item.ID, err)
-		}
-	}
 }
 
 func shouldAutoScanCheckpoint(job *model.Job) bool {

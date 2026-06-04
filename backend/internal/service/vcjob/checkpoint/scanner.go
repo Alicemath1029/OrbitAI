@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
 	"github.com/raids-lab/orbit/dao/model"
@@ -426,6 +427,13 @@ func persistScan(
 		}).Create(&item).Error; err != nil {
 			return err
 		}
+		if item.RunID != nil {
+			if err := db.Model(&model.JobCheckpoint{}).
+				Where("job_id = ? AND path = ? AND run_id IS NULL", record.ID, item.Path).
+				Update("run_id", *item.RunID).Error; err != nil {
+				return err
+			}
+		}
 	}
 
 	missingQuery := db.Model(&model.JobCheckpoint{}).Where("job_id = ? AND status = ?", record.ID, model.JobCheckpointStatusReady)
@@ -447,7 +455,71 @@ func persistScan(
 		info.LatestCheckpoint = ""
 	}
 	record.Checkpoint = ptrToJSON(info)
-	return db.Model(&model.Job{}).Where("id = ?", record.ID).Update("checkpoint", datatypes.NewJSONType(info)).Error
+	if err := db.Model(&model.Job{}).Where("id = ?", record.ID).Update("checkpoint", datatypes.NewJSONType(info)).Error; err != nil {
+		return err
+	}
+	return syncCheckpointArtifacts(ctx, db, record.ID)
+}
+
+func syncCheckpointArtifacts(ctx context.Context, db *gorm.DB, jobID uint) error {
+	if jobID == 0 {
+		return nil
+	}
+	var items []model.JobCheckpoint
+	if err := db.WithContext(ctx).
+		Where("job_id = ? AND status = ? AND run_id IS NOT NULL", jobID, model.JobCheckpointStatusReady).
+		Find(&items).Error; err != nil {
+		return err
+	}
+	for i := range items {
+		if err := upsertCheckpointArtifact(ctx, db, items[i]); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func upsertCheckpointArtifact(ctx context.Context, db *gorm.DB, checkpoint model.JobCheckpoint) error {
+	if checkpoint.ID == 0 || checkpoint.RunID == nil || *checkpoint.RunID == 0 {
+		return nil
+	}
+	sourceID := checkpoint.ID
+	metadata := cloneJSONMap(checkpoint.Metadata)
+	metadata["framework"] = checkpoint.Framework
+	metadata["step"] = checkpoint.Step
+	metadata["latest"] = checkpoint.Latest
+	metadata["storagePath"] = checkpoint.StoragePath
+	metadata["modTime"] = checkpoint.ModTime
+	metadata["jobName"] = checkpoint.JobName
+	artifact := model.RunArtifact{
+		RunID:      *checkpoint.RunID,
+		Name:       checkpoint.Name,
+		Type:       "checkpoint",
+		Path:       checkpoint.Path,
+		SizeBytes:  checkpoint.SizeBytes,
+		SourceType: "checkpoint",
+		SourceID:   &sourceID,
+		Metadata:   metadata,
+	}
+	return db.WithContext(ctx).Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "source_type"}, {Name: "source_id"}},
+		DoUpdates: clause.AssignmentColumns([]string{
+			"run_id",
+			"name",
+			"path",
+			"size_bytes",
+			"metadata",
+			"updated_at",
+		}),
+	}).Create(&artifact).Error
+}
+
+func cloneJSONMap(value datatypes.JSONMap) datatypes.JSONMap {
+	next := datatypes.JSONMap{}
+	for key, item := range value {
+		next[key] = item
+	}
+	return next
 }
 
 func jobCheckpointInfo(record *model.Job) *model.CheckpointInfo {

@@ -41,6 +41,10 @@ export const Route = createFileRoute('/portal/experiments/$id')({
 })
 
 const palette = ['#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c', '#0891b2']
+const compareMetricQuery = {
+  limit: 5000,
+  downsample: 800,
+}
 
 function RouteComponent() {
   const { id } = Route.useParams()
@@ -63,7 +67,9 @@ function RouteComponent() {
       const groups = await Promise.all(
         selectedRuns.map(async (run) => ({
           run,
-          metrics: await apiExperimentRunMetrics(run.ID).then((res) => res.data),
+          metrics: await apiExperimentRunMetrics(run.ID, compareMetricQuery).then(
+            (res) => res.data
+          ),
         }))
       )
       return groups

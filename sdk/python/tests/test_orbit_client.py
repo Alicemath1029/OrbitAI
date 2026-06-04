@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import tempfile
+import types
 import unittest
 import urllib.request
 from pathlib import Path
@@ -9,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from orbit import checkpoint  # noqa: E402
+from orbit import pytorch as orbit_torch  # noqa: E402
 import orbit.client as client_module  # noqa: E402
 from orbit.client import OrbitClient, main  # noqa: E402
 
@@ -125,6 +127,38 @@ class OrbitClientTest(unittest.TestCase):
             self.assertEqual(manifest["step"], 3)
             self.assertTrue(manifest_path.exists())
             self.assertEqual(latest_path.read_text(encoding="utf-8"), "global_step_3")
+
+    def test_pytorch_async_snapshot_recursively_clones_tensors_to_cpu(self):
+        class FakeTensor:
+            def __init__(self, value, device="cuda"):
+                self.value = value
+                self.device = device
+
+            def detach(self):
+                return self
+
+            def cpu(self):
+                return FakeTensor(self.value, "cpu")
+
+            def clone(self):
+                return FakeTensor(self.value, self.device)
+
+        previous_torch = sys.modules.get("torch")
+        sys.modules["torch"] = types.SimpleNamespace(Tensor=FakeTensor)
+        try:
+            tensor = FakeTensor(1)
+            snapshot = orbit_torch._cpu_snapshot({"model": {"weight": tensor}, "items": [tensor]})
+            tensor.value = 2
+        finally:
+            if previous_torch is None:
+                sys.modules.pop("torch", None)
+            else:
+                sys.modules["torch"] = previous_torch
+
+        self.assertIsNot(snapshot["model"]["weight"], tensor)
+        self.assertEqual(snapshot["model"]["weight"].device, "cpu")
+        self.assertEqual(snapshot["model"]["weight"].value, 1)
+        self.assertEqual(snapshot["items"][0].device, "cpu")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
-import { ArchiveRestoreIcon, CopyIcon, ExternalLinkIcon } from 'lucide-react'
+import { ArchiveRestoreIcon, CopyIcon, ExternalLinkIcon, RefreshCcwIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import {
   CartesianGrid,
@@ -35,6 +35,7 @@ import {
   apiExperimentRunArtifacts,
   apiExperimentRunGet,
   apiExperimentRunMetrics,
+  apiExperimentRunReproduce,
 } from '@/services/api/experiment'
 import { apiJobCheckpointRestore } from '@/services/api/vcjob'
 
@@ -55,8 +56,8 @@ function RouteComponent() {
     queryFn: () => apiExperimentRunGet(id).then((res) => res.data),
   })
   const { data: metrics = [] } = useQuery({
-    queryKey: ['experiments', 'runs', id, 'metrics'],
-    queryFn: () => apiExperimentRunMetrics(id).then((res) => res.data),
+    queryKey: ['experiments', 'runs', id, 'metrics', runMetricQuery],
+    queryFn: () => apiExperimentRunMetrics(id, runMetricQuery).then((res) => res.data),
   })
   const { data: artifacts = [] } = useQuery({
     queryKey: ['experiments', 'runs', id, 'artifacts'],
@@ -93,10 +94,47 @@ function RouteComponent() {
       toast.error(error instanceof Error ? error.message : '提交恢复作业失败')
     },
   })
+  const reproduceMutation = useMutation({
+    mutationFn: async () => {
+      const plan = await apiExperimentRunReproduce(id, {
+        name: `${run?.runName ?? 'run'}-reproduce`,
+      }).then((res) => res.data)
+      if (!plan.restore) {
+        return { plan }
+      }
+      const restored = await apiJobCheckpointRestore(
+        plan.restore.jobName,
+        plan.restore.checkpointID,
+        { name: plan.restore.name }
+      ).then((res) => res.data)
+      return { plan, restored }
+    },
+    onSuccess: async ({ restored }) => {
+      if (!restored) {
+        toast.info('该 Run 暂无可恢复 checkpoint，已生成复现配置')
+        return
+      }
+      toast.success(`已提交复现作业 ${restored.jobName}`)
+      await queryClient.invalidateQueries({ queryKey: ['job'] })
+      navigate({
+        to: '/portal/jobs/detail/$name',
+        params: { name: restored.jobName },
+      })
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : '提交复现作业失败')
+    },
+  })
 
   return (
     <div className="flex flex-col gap-6">
       <PageTitle title={run?.runName ?? 'Run 详情'} description={run?.jobName || '训练运行记录'}>
+        {run && (
+          <Button onClick={() => reproduceMutation.mutate()} disabled={reproduceMutation.isPending}>
+            <RefreshCcwIcon className="size-4" />
+            一键复现
+          </Button>
+        )}
         {run && (
           <Button variant="outline" onClick={copyReproductionInfo}>
             <CopyIcon className="size-4" />
@@ -257,6 +295,11 @@ function RouteComponent() {
       </Card>
     </div>
   )
+}
+
+const runMetricQuery = {
+  limit: 10000,
+  downsample: 1000,
 }
 
 function InfoCard({ title, value, mono }: { title: string; value: string; mono?: boolean }) {

@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"gorm.io/datatypes"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
@@ -324,6 +326,53 @@ func TestNormalizeServiceScannerOptionsReadsLegacyCraterEnv(t *testing.T) {
 	}
 	if opts.Timeout != 7*time.Second {
 		t.Fatalf("Timeout = %v, want 7s", opts.Timeout)
+	}
+}
+
+func TestUpsertCheckpointArtifactUpdatesExistingSource(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("open sqlite: %v", err)
+	}
+	if err := db.AutoMigrate(&model.RunArtifact{}); err != nil {
+		t.Fatalf("migrate: %v", err)
+	}
+
+	runID := uint(7)
+	checkpoint := model.JobCheckpoint{
+		Model:       gorm.Model{ID: 11},
+		RunID:       &runID,
+		JobName:     "job-a",
+		Framework:   FrameworkPytorch,
+		Name:        "checkpoint-4.pt",
+		Path:        "/workspace/checkpoints/checkpoint-4.pt",
+		StoragePath: "users/u/checkpoint-4.pt",
+		Step:        4,
+		SizeBytes:   64,
+		Latest:      true,
+		Metadata:    datatypes.JSONMap{"source": "scan"},
+	}
+	if err := upsertCheckpointArtifact(context.Background(), db, checkpoint); err != nil {
+		t.Fatalf("upsert checkpoint artifact: %v", err)
+	}
+
+	nextRunID := uint(8)
+	checkpoint.RunID = &nextRunID
+	checkpoint.SizeBytes = 128
+	checkpoint.Latest = false
+	if err := upsertCheckpointArtifact(context.Background(), db, checkpoint); err != nil {
+		t.Fatalf("second upsert checkpoint artifact: %v", err)
+	}
+
+	var artifact model.RunArtifact
+	if err := db.Where("source_type = ? AND source_id = ?", "checkpoint", checkpoint.ID).First(&artifact).Error; err != nil {
+		t.Fatalf("find artifact: %v", err)
+	}
+	if artifact.RunID != nextRunID || artifact.SizeBytes != 128 {
+		t.Fatalf("artifact = %#v, want updated run and size", artifact)
+	}
+	if artifact.Metadata["latest"] != false || artifact.Metadata["jobName"] != "job-a" {
+		t.Fatalf("artifact metadata = %#v, want latest/jobName metadata", artifact.Metadata)
 	}
 }
 
