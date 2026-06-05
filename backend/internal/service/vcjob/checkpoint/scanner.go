@@ -20,8 +20,11 @@ import (
 	"github.com/raids-lab/orbit/internal/storage"
 )
 
-const unknownCheckpointStep int64 = -1
-const latestCheckpointTracker = "latest_checkpointed_iteration.txt"
+const (
+	unknownCheckpointStep            int64 = -1
+	latestCheckpointTracker                = "latest_checkpointed_iteration.txt"
+	latestCheckpointTrackerReadLimit       = 1024
+)
 
 var stepPatterns = []*regexp.Regexp{
 	regexp.MustCompile(`(?i)^checkpoint[-_](\d+)(?:$|[-_.])`),
@@ -114,25 +117,7 @@ func ResolveStoragePath(record *model.Job, containerPath string) (string, error)
 		return "", fmt.Errorf("checkpoint path %q must be absolute", containerPath)
 	}
 
-	var bestMountPath string
-	var bestSubPath string
-	for _, task := range record.Attributes.Data().Spec.Tasks {
-		for _, container := range task.Template.Spec.Containers {
-			for _, mount := range container.VolumeMounts {
-				mountPath := filepath.Clean(strings.TrimSpace(mount.MountPath))
-				if mountPath == "." || mount.SubPath == "" || mount.ReadOnly {
-					continue
-				}
-				if !isPathUnderOrEqual(containerPath, mountPath) {
-					continue
-				}
-				if len(mountPath) > len(bestMountPath) {
-					bestMountPath = mountPath
-					bestSubPath = mount.SubPath
-				}
-			}
-		}
-	}
+	bestMountPath, bestSubPath := bestWritableMount(record, containerPath)
 	if bestMountPath == "" {
 		return "", fmt.Errorf("checkpoint path %s is not under a writable persistent mount", containerPath)
 	}
@@ -147,6 +132,33 @@ func ResolveStoragePath(record *model.Job, containerPath string) (string, error)
 	return filepath.ToSlash(filepath.Clean(filepath.Join(bestSubPath, rel))), nil
 }
 
+func bestWritableMount(record *model.Job, containerPath string) (mountPath, subPath string) {
+	var bestMountPath string
+	var bestSubPath string
+	tasks := record.Attributes.Data().Spec.Tasks
+	for taskIndex := range tasks {
+		containers := tasks[taskIndex].Template.Spec.Containers
+		for containerIndex := range containers {
+			mounts := containers[containerIndex].VolumeMounts
+			for mountIndex := range mounts {
+				mount := &mounts[mountIndex]
+				mountPath := filepath.Clean(strings.TrimSpace(mount.MountPath))
+				if mountPath == "." || mount.SubPath == "" || mount.ReadOnly {
+					continue
+				}
+				if !isPathUnderOrEqual(containerPath, mountPath) {
+					continue
+				}
+				if len(mountPath) > len(bestMountPath) {
+					bestMountPath = mountPath
+					bestSubPath = mount.SubPath
+				}
+			}
+		}
+	}
+	return bestMountPath, bestSubPath
+}
+
 func discoverCheckpoints(
 	ctx context.Context,
 	record *model.Job,
@@ -159,7 +171,9 @@ func discoverCheckpoints(
 		if err != nil {
 			return nil, err
 		}
-		return []model.JobCheckpoint{newCheckpointRecord(record, info, filepath.Base(storagePath), info.CheckpointDir, storagePath, size, modTime)}, nil
+		return []model.JobCheckpoint{
+			newCheckpointRecord(record, info, filepath.Base(storagePath), info.CheckpointDir, storagePath, size, modTime),
+		}, nil
 	}
 
 	children, err := storage.ListRelativePath(ctx, storagePath)
@@ -203,12 +217,18 @@ func looksLikeCheckpoint(framework string, file storage.Files) bool {
 	}
 	switch strings.ToLower(framework) {
 	case FrameworkPytorch, FrameworkLightning:
-		return !file.IsDir && (strings.HasSuffix(file.Name, ".pt") || strings.HasSuffix(file.Name, ".pth") || strings.HasSuffix(file.Name, ".ckpt"))
+		return !file.IsDir && hasCheckpointFileExt(file.Name)
 	case FrameworkCustom:
-		return file.IsDir || strings.HasSuffix(file.Name, ".pt") || strings.HasSuffix(file.Name, ".pth") || strings.HasSuffix(file.Name, ".ckpt")
+		return file.IsDir || hasCheckpointFileExt(file.Name)
 	default:
 		return file.IsDir
 	}
+}
+
+func hasCheckpointFileExt(name string) bool {
+	return strings.HasSuffix(name, ".pt") ||
+		strings.HasSuffix(name, ".pth") ||
+		strings.HasSuffix(name, ".ckpt")
 }
 
 func scanTree(ctx context.Context, root string) (int64, time.Time, error) {
@@ -307,8 +327,8 @@ func latestCheckpoint(items []model.JobCheckpoint) *model.JobCheckpoint {
 	}
 	sorted := append([]model.JobCheckpoint(nil), items...)
 	sort.SliceStable(sorted, func(i, j int) bool {
-		iTracked := isTrackerLatest(sorted[i])
-		jTracked := isTrackerLatest(sorted[j])
+		iTracked := isTrackerLatest(&sorted[i])
+		jTracked := isTrackerLatest(&sorted[j])
 		if iTracked != jTracked {
 			return iTracked
 		}
@@ -334,7 +354,7 @@ func markLatestFromTracker(ctx context.Context, storagePath string, items []mode
 		return
 	}
 	trackerPath := filepath.ToSlash(filepath.Join(storagePath, latestCheckpointTracker))
-	data, err := storage.ReadRelativePath(ctx, trackerPath, 1024)
+	data, err := storage.ReadRelativePath(ctx, trackerPath, latestCheckpointTrackerReadLimit)
 	if err != nil {
 		return
 	}
@@ -386,8 +406,8 @@ func latestMarkerStep(marker string) int64 {
 	return unknownCheckpointStep
 }
 
-func isTrackerLatest(item model.JobCheckpoint) bool {
-	if item.Metadata == nil {
+func isTrackerLatest(item *model.JobCheckpoint) bool {
+	if item == nil || item.Metadata == nil {
 		return false
 	}
 	tracked, ok := item.Metadata["trackedLatest"].(bool)
@@ -404,7 +424,8 @@ func persistScan(
 	db := query.GetDB().WithContext(ctx)
 	now := time.Now()
 	seenPaths := make([]string, 0, len(items))
-	for _, item := range items {
+	for i := range items {
+		item := &items[i]
 		seenPaths = append(seenPaths, item.Path)
 		if err := db.Clauses(clause.OnConflict{
 			Columns: []clause.Column{{Name: "job_id"}, {Name: "path"}},
@@ -424,7 +445,7 @@ func persistScan(
 				"metadata",
 				"updated_at",
 			}),
-		}).Create(&item).Error; err != nil {
+		}).Create(item).Error; err != nil {
 			return err
 		}
 		if item.RunID != nil {
@@ -472,15 +493,15 @@ func syncCheckpointArtifacts(ctx context.Context, db *gorm.DB, jobID uint) error
 		return err
 	}
 	for i := range items {
-		if err := upsertCheckpointArtifact(ctx, db, items[i]); err != nil {
+		if err := upsertCheckpointArtifact(ctx, db, &items[i]); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func upsertCheckpointArtifact(ctx context.Context, db *gorm.DB, checkpoint model.JobCheckpoint) error {
-	if checkpoint.ID == 0 || checkpoint.RunID == nil || *checkpoint.RunID == 0 {
+func upsertCheckpointArtifact(ctx context.Context, db *gorm.DB, checkpoint *model.JobCheckpoint) error {
+	if checkpoint == nil || checkpoint.ID == 0 || checkpoint.RunID == nil || *checkpoint.RunID == 0 {
 		return nil
 	}
 	sourceID := checkpoint.ID

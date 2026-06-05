@@ -38,6 +38,8 @@ var (
 	}
 )
 
+const experimentEnvCapacity = 4
+
 type experimentRunRuntime struct {
 	RunID uint
 	Token string
@@ -599,7 +601,7 @@ func prepareExperimentRun(
 		return nil, nil
 	}
 	experimentSvc := service.NewExperimentService()
-	result, err := experimentSvc.CreateRun(ctx, service.CreateRunInput{
+	result, err := experimentSvc.CreateRun(ctx, &service.CreateRunInput{
 		ExperimentID:       req.Experiment.ExperimentID,
 		JobName:            jobName,
 		RunName:            req.Experiment.RunName,
@@ -634,7 +636,7 @@ func AppendExperimentEnvs(envs []v1.EnvVar, runtime *experimentRunRuntime, jobNa
 		return envs
 	}
 	hasOutputDir := false
-	next := make([]v1.EnvVar, 0, len(envs)+4)
+	next := make([]v1.EnvVar, 0, len(envs)+experimentEnvCapacity)
 	for _, env := range envs {
 		if env.Name == service.EnvOrbitOutputDir {
 			hasOutputDir = true

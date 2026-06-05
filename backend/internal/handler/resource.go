@@ -78,17 +78,17 @@ type (
 	}
 
 	ResourceResp struct {
-		ID              uint                      `json:"ID"`
-		Name            string                    `json:"name"`
-		VendorDomain    *string                   `json:"vendorDomain"`
-		ResourceType    string                    `json:"resourceType"`
-		Amount          int64                     `json:"amount"`
-		AmountSingleMax int64                     `json:"amountSingleMax"`
-		Format          string                    `json:"format"`
-		Priority        int                       `json:"priority"`
-		Label           string                    `json:"label"`
+		ID              uint                     `json:"ID"`
+		Name            string                   `json:"name"`
+		VendorDomain    *string                  `json:"vendorDomain"`
+		ResourceType    string                   `json:"resourceType"`
+		Amount          int64                    `json:"amount"`
+		AmountSingleMax int64                    `json:"amountSingleMax"`
+		Format          string                   `json:"format"`
+		Priority        int                      `json:"priority"`
+		Label           string                   `json:"label"`
 		Type            *model.OrbitResourceType `json:"type"`
-		Networks        []*model.Resource         `json:"networks"`
+		Networks        []*model.Resource        `json:"networks"`
 	}
 
 	ResourceBillingPriceResp struct {
@@ -390,7 +390,7 @@ func (mgr *ResourceMgr) SyncResource(c *gin.Context) {
 
 type (
 	UpdateResourceReq struct {
-		Label *string                   `json:"label" binding:"omitempty"`
+		Label *string                  `json:"label" binding:"omitempty"`
 		Type  *model.OrbitResourceType `json:"type" binding:"omitempty"`
 	}
 	ResourcePathReq struct {

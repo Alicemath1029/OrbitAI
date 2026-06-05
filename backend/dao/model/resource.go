@@ -33,7 +33,7 @@ type Resource struct {
 
 	// Resource relationship
 	Type     *OrbitResourceType `gorm:"type:varchar(32);comment:资源类型" json:"type"`
-	Networks []*Resource         `gorm:"many2many:resource_networks;" json:"networks"`
+	Networks []*Resource        `gorm:"many2many:resource_networks;" json:"networks"`
 }
 
 // ResourceNetwork is the join table between Resource and Resource self

@@ -22,7 +22,8 @@ const (
 	ExperimentRunStatusSucceeded  ExperimentRunStatus = "succeeded"
 	ExperimentRunStatusFailed     ExperimentRunStatus = "failed"
 	ExperimentRunStatusTerminated ExperimentRunStatus = "terminated"
-	ExperimentRunStatusCancelled  ExperimentRunStatus = "cancelled"
+	//nolint:misspell // Keep the existing API value spelling for compatibility.
+	ExperimentRunStatusCancelled ExperimentRunStatus = "cancelled"
 )
 
 type Experiment struct {
@@ -64,9 +65,9 @@ type ExperimentRun struct {
 
 type RunMetric struct {
 	gorm.Model
-	RunID          uint              `json:"runID" gorm:"not null;index:idx_run_metric_name_step,priority:1;uniqueIndex:idx_run_metric_client_record,priority:1"`
+	RunID          uint              `json:"runID" gorm:"not null;index:idx_run_metric_name_step,priority:1;uniqueIndex:idx_run_metric_client_record,priority:1"` //nolint:lll // GORM index tags are intentionally descriptive.
 	Run            ExperimentRun     `json:"-" gorm:"foreignKey:RunID"`
-	ClientRecordID *string           `json:"clientRecordID" gorm:"type:varchar(64);uniqueIndex:idx_run_metric_client_record,priority:2;comment:SDK离线记录ID"`
+	ClientRecordID *string           `json:"clientRecordID" gorm:"type:varchar(64);uniqueIndex:idx_run_metric_client_record,priority:2;comment:SDK离线记录ID"` //nolint:lll // GORM index tags are intentionally descriptive.
 	Name           string            `json:"name" gorm:"type:varchar(256);not null;index:idx_run_metric_name_step,priority:2"`
 	Step           int64             `json:"step" gorm:"not null;index:idx_run_metric_name_step,priority:3"`
 	Value          float64           `json:"value" gorm:"not null"`
@@ -78,12 +79,12 @@ type RunArtifact struct {
 	gorm.Model
 	RunID          uint              `json:"runID" gorm:"not null;index;uniqueIndex:idx_run_artifact_client_record,priority:1"`
 	Run            ExperimentRun     `json:"-" gorm:"foreignKey:RunID"`
-	ClientRecordID *string           `json:"clientRecordID" gorm:"type:varchar(64);uniqueIndex:idx_run_artifact_client_record,priority:2;comment:SDK离线记录ID"`
+	ClientRecordID *string           `json:"clientRecordID" gorm:"type:varchar(64);uniqueIndex:idx_run_artifact_client_record,priority:2;comment:SDK离线记录ID"` //nolint:lll // GORM index tags are intentionally descriptive.
 	Name           string            `json:"name" gorm:"type:varchar(256);not null"`
 	Type           string            `json:"type" gorm:"type:varchar(64);not null;default:file"`
 	Path           string            `json:"path" gorm:"type:text;not null"`
 	SizeBytes      int64             `json:"sizeBytes" gorm:"not null;default:0"`
-	SourceType     string            `json:"sourceType" gorm:"type:varchar(64);index;uniqueIndex:idx_run_artifact_source,priority:1;comment:来源类型"`
+	SourceType     string            `json:"sourceType" gorm:"type:varchar(64);index;uniqueIndex:idx_run_artifact_source,priority:1;comment:来源类型"` //nolint:lll // GORM index tags are intentionally descriptive.
 	SourceID       *uint             `json:"sourceID" gorm:"index;uniqueIndex:idx_run_artifact_source,priority:2;comment:来源记录ID"`
 	Metadata       datatypes.JSONMap `json:"metadata" gorm:"type:jsonb"`
 }

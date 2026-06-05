@@ -141,15 +141,17 @@ func (mgr *VolcanojobMgr) ScanJobCheckpoints(c *gin.Context) {
 
 	result, err := checkpointsvc.ScanJobWithKubernetes(c.Request.Context(), job, mgr.kubeClient)
 	if err != nil {
-		recordCheckpointOperation(c, constants.OpTypeScanCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), checkpointOpDetails(job, nil, map[string]any{}))
+		details := checkpointOpDetails(job, nil, map[string]any{})
+		recordCheckpointOperation(c, constants.OpTypeScanCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
-	recordCheckpointOperation(c, constants.OpTypeScanCheckpoint, req.JobName, constants.OpStatusSuccess, "", checkpointOpDetails(job, result.Latest, map[string]any{
+	details := checkpointOpDetails(job, result.Latest, map[string]any{
 		"count":          len(result.Items),
 		"totalSizeBytes": result.TotalSizeBytes,
 		"storagePath":    result.StoragePath,
-	}))
+	})
+	recordCheckpointOperation(c, constants.OpTypeScanCheckpoint, req.JobName, constants.OpStatusSuccess, "", details)
 
 	refreshed, refreshErr := getJob(c, req.JobName, &token)
 	if refreshErr == nil {
@@ -184,37 +186,56 @@ func (mgr *VolcanojobMgr) RestoreJobFromCheckpoint(c *gin.Context) {
 	}
 	checkpoint, err := getReadyCheckpoint(c, job, uriReq.CheckpointID)
 	if err != nil {
-		recordCheckpointOperation(c, constants.OpTypeRestoreCheckpoint, uriReq.JobName, constants.OpStatusFailed, err.Error(), checkpointOpDetails(job, nil, nil))
+		details := checkpointOpDetails(job, nil, nil)
+		recordCheckpointOperation(c, constants.OpTypeRestoreCheckpoint, uriReq.JobName, constants.OpStatusFailed, err.Error(), details)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
 
 	if !mgr.preCheckCreateJob(c, token, resolveScheduleType(job), false) {
-		recordCheckpointOperation(c, constants.OpTypeRestoreCheckpoint, uriReq.JobName, constants.OpStatusFailed, "job creation precheck failed", checkpointOpDetails(job, checkpoint, nil))
+		details := checkpointOpDetails(job, checkpoint, nil)
+		recordCheckpointOperation(
+			c,
+			constants.OpTypeRestoreCheckpoint,
+			uriReq.JobName,
+			constants.OpStatusFailed,
+			"job creation precheck failed",
+			details,
+		)
 		return
 	}
 
-	restored, displayName, experimentRuntime, err := buildCheckpointRestoreJob(c.Request.Context(), job, checkpoint, token, strings.TrimSpace(bodyReq.Name))
+	displayNameOverride := strings.TrimSpace(bodyReq.Name)
+	restored, displayName, experimentRuntime, err := buildCheckpointRestoreJob(
+		c.Request.Context(),
+		job,
+		checkpoint,
+		token,
+		displayNameOverride,
+	)
 	if err != nil {
-		recordCheckpointOperation(c, constants.OpTypeRestoreCheckpoint, uriReq.JobName, constants.OpStatusFailed, err.Error(), checkpointOpDetails(job, checkpoint, nil))
+		details := checkpointOpDetails(job, checkpoint, nil)
+		recordCheckpointOperation(c, constants.OpTypeRestoreCheckpoint, uriReq.JobName, constants.OpStatusFailed, err.Error(), details)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
 
 	if err := mgr.submitJob(c, token, restored); err != nil {
 		markExperimentRunSubmitFailed(c.Request.Context(), experimentRuntime, err)
-		recordCheckpointOperation(c, constants.OpTypeRestoreCheckpoint, uriReq.JobName, constants.OpStatusFailed, err.Error(), checkpointOpDetails(job, checkpoint, map[string]any{
+		details := checkpointOpDetails(job, checkpoint, map[string]any{
 			"restoredJobName": restored.Name,
-		}))
+		})
+		recordCheckpointOperation(c, constants.OpTypeRestoreCheckpoint, uriReq.JobName, constants.OpStatusFailed, err.Error(), details)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
 
-	recordCheckpointOperation(c, constants.OpTypeRestoreCheckpoint, uriReq.JobName, constants.OpStatusSuccess, "", checkpointOpDetails(job, checkpoint, map[string]any{
+	details := checkpointOpDetails(job, checkpoint, map[string]any{
 		"restoredJobName": restored.Name,
 		"displayName":     displayName,
 		"experimentRunID": experimentRuntimeID(experimentRuntime),
-	}))
+	})
+	recordCheckpointOperation(c, constants.OpTypeRestoreCheckpoint, uriReq.JobName, constants.OpStatusSuccess, "", details)
 	resputil.Success(c, restoreCheckpointResp{
 		JobName:         restored.Name,
 		Name:            displayName,
@@ -239,22 +260,25 @@ func (mgr *VolcanojobMgr) DeleteJobCheckpoint(c *gin.Context) {
 	}
 	checkpoint, err := getReadyCheckpoint(c, job, req.CheckpointID)
 	if err != nil {
-		recordCheckpointOperation(c, constants.OpTypeDeleteCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), checkpointOpDetails(job, nil, nil))
+		details := checkpointOpDetails(job, nil, nil)
+		recordCheckpointOperation(c, constants.OpTypeDeleteCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
 
 	if err := deleteCheckpoint(c, checkpoint); err != nil {
-		recordCheckpointOperation(c, constants.OpTypeDeleteCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), checkpointOpDetails(job, checkpoint, nil))
+		details := checkpointOpDetails(job, checkpoint, nil)
+		recordCheckpointOperation(c, constants.OpTypeDeleteCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
 	if err := refreshLatestAfterMutation(c, job); err != nil {
 		klog.Warningf("failed to refresh latest checkpoint for job %s: %v", job.JobName, err)
 	}
-	recordCheckpointOperation(c, constants.OpTypeDeleteCheckpoint, req.JobName, constants.OpStatusSuccess, "", checkpointOpDetails(job, checkpoint, map[string]any{
+	details := checkpointOpDetails(job, checkpoint, map[string]any{
 		"sizeBytes": checkpoint.SizeBytes,
-	}))
+	})
+	recordCheckpointOperation(c, constants.OpTypeDeleteCheckpoint, req.JobName, constants.OpStatusSuccess, "", details)
 	resputil.Success(c, checkpoint)
 }
 
@@ -279,7 +303,8 @@ func (mgr *VolcanojobMgr) CleanupJobCheckpoints(c *gin.Context) {
 	}
 	candidates, err := selectCleanupCheckpoints(c, job, bodyReq)
 	if err != nil {
-		recordCheckpointOperation(c, constants.OpTypeCleanupCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), checkpointOpDetails(job, nil, nil))
+		details := checkpointOpDetails(job, nil, nil)
+		recordCheckpointOperation(c, constants.OpTypeCleanupCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
@@ -291,7 +316,8 @@ func (mgr *VolcanojobMgr) CleanupJobCheckpoints(c *gin.Context) {
 	if !bodyReq.DryRun {
 		for i := range candidates {
 			if err := deleteCheckpoint(c, &candidates[i]); err != nil {
-				recordCheckpointOperation(c, constants.OpTypeCleanupCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), checkpointOpDetails(job, &candidates[i], nil))
+				details := checkpointOpDetails(job, &candidates[i], nil)
+				recordCheckpointOperation(c, constants.OpTypeCleanupCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
 				resputil.Error(c, err.Error(), resputil.NotSpecified)
 				return
 			}
@@ -301,11 +327,12 @@ func (mgr *VolcanojobMgr) CleanupJobCheckpoints(c *gin.Context) {
 		}
 	}
 
-	recordCheckpointOperation(c, constants.OpTypeCleanupCheckpoint, req.JobName, constants.OpStatusSuccess, "", checkpointOpDetails(job, nil, map[string]any{
+	details := checkpointOpDetails(job, nil, map[string]any{
 		"deletedCount":   len(candidates),
 		"reclaimedBytes": reclaimed,
 		"dryRun":         bodyReq.DryRun,
-	}))
+	})
+	recordCheckpointOperation(c, constants.OpTypeCleanupCheckpoint, req.JobName, constants.OpStatusSuccess, "", details)
 	resputil.Success(c, cleanupCheckpointResp{
 		Deleted:        candidates,
 		ReclaimedBytes: reclaimed,
@@ -384,7 +411,7 @@ func getReadyCheckpoint(c *gin.Context, job *model.Job, id uint) (*model.JobChec
 		Where("id = ? AND job_id = ? AND status = ?", id, job.ID, model.JobCheckpointStatusReady).
 		First(&checkpoint).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("checkpoint does not exist")
 		}
 		return nil, err
@@ -426,33 +453,55 @@ func selectCleanupCheckpoints(c *gin.Context, job *model.Job, req cleanupCheckpo
 		cutoff = time.Now().AddDate(0, 0, -*req.MaxAgeDays)
 	}
 
-	candidates := make([]model.JobCheckpoint, 0)
-	currentBytes := int64(0)
+	currentBytes := checkpointTotalBytes(items)
+	candidates := retentionCleanupCandidates(items, keepLast, cutoff)
+	maxBytes := checkpointMaxBytes(job)
+	if maxBytes > 0 && currentBytes > maxBytes {
+		candidates = appendMaxBytesCleanupCandidates(items, candidates, currentBytes, maxBytes)
+	}
+	return candidates, nil
+}
+
+func checkpointTotalBytes(items []model.JobCheckpoint) int64 {
+	total := int64(0)
 	for i := range items {
-		currentBytes += items[i].SizeBytes
+		total += items[i].SizeBytes
+	}
+	return total
+}
+
+func retentionCleanupCandidates(items []model.JobCheckpoint, keepLast int, cutoff time.Time) []model.JobCheckpoint {
+	candidates := make([]model.JobCheckpoint, 0)
+	for i := range items {
 		overRetention := keepLast > 0 && i >= keepLast
 		expired := !cutoff.IsZero() && items[i].ModTime.Before(cutoff)
 		if overRetention || expired {
 			candidates = append(candidates, items[i])
 		}
 	}
-	maxBytes := checkpointMaxBytes(job)
-	if maxBytes > 0 && currentBytes > maxBytes {
-		selected := make(map[uint]struct{}, len(candidates))
-		for i := range candidates {
-			selected[candidates[i].ID] = struct{}{}
-		}
-		for i := len(items) - 1; i >= 0 && currentBytes > maxBytes; i-- {
-			if _, ok := selected[items[i].ID]; ok {
-				currentBytes -= items[i].SizeBytes
-				continue
-			}
-			candidates = append(candidates, items[i])
-			selected[items[i].ID] = struct{}{}
-			currentBytes -= items[i].SizeBytes
-		}
+	return candidates
+}
+
+func appendMaxBytesCleanupCandidates(
+	items []model.JobCheckpoint,
+	candidates []model.JobCheckpoint,
+	currentBytes int64,
+	maxBytes int64,
+) []model.JobCheckpoint {
+	selected := make(map[uint]struct{}, len(candidates))
+	for i := range candidates {
+		selected[candidates[i].ID] = struct{}{}
 	}
-	return candidates, nil
+	for i := len(items) - 1; i >= 0 && currentBytes > maxBytes; i-- {
+		if _, ok := selected[items[i].ID]; ok {
+			currentBytes -= items[i].SizeBytes
+			continue
+		}
+		candidates = append(candidates, items[i])
+		selected[items[i].ID] = struct{}{}
+		currentBytes -= items[i].SizeBytes
+	}
+	return candidates
 }
 
 func checkpointKeepLast(job *model.Job, override *int) int {
@@ -636,7 +685,7 @@ func createRestoreExperimentRun(
 		tags["restoredFromRunID"] = *parentRunID
 	}
 	checkpointSnapshot := checkpointSnapshotFromRestore(checkpoint, checkpointInfo)
-	result, err := service.NewExperimentService().CreateRun(ctx, service.CreateRunInput{
+	result, err := service.NewExperimentService().CreateRun(ctx, &service.CreateRunInput{
 		ExperimentID:       experimentID,
 		ParentRunID:        parentRunID,
 		SourceCheckpointID: &checkpoint.ID,

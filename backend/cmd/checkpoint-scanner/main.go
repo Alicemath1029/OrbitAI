@@ -21,6 +21,12 @@ var (
 	BuildTime  string
 )
 
+const (
+	defaultScannerConcurrency = 4
+	maxScanRequestBodyBytes   = 1 << 20
+	readHeaderTimeout         = 5 * time.Second
+)
+
 type scanServer struct {
 	scanner checkpointsvc.FileSystemScanner
 	sem     chan struct{}
@@ -45,7 +51,7 @@ func main() {
 	}
 	concurrency := positiveIntEnv(
 		firstNonEmptyEnv("ORBIT_CHECKPOINT_SCANNER_CONCURRENCY", "CRATER_CHECKPOINT_SCANNER_CONCURRENCY"),
-		4,
+		defaultScannerConcurrency,
 	)
 
 	server := &scanServer{
@@ -61,7 +67,12 @@ func main() {
 	addr := normalizePort(port)
 	klog.Infof("checkpoint-scanner starting on %s root=%s concurrency=%d version=%s commit=%s buildType=%s buildTime=%s",
 		addr, root, concurrency, AppVersion, CommitSHA, BuildType, BuildTime)
-	if err := http.ListenAndServe(addr, mux); err != nil {
+	httpServer := &http.Server{
+		Addr:              addr,
+		Handler:           mux,
+		ReadHeaderTimeout: readHeaderTimeout,
+	}
+	if err := httpServer.ListenAndServe(); err != nil {
 		klog.Fatalf("checkpoint-scanner failed: %v", err)
 	}
 }
@@ -81,7 +92,7 @@ func (s *scanServer) scan(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer r.Body.Close()
-	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
+	r.Body = http.MaxBytesReader(w, r.Body, maxScanRequestBodyBytes)
 	var req checkpointsvc.ServiceScanRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, http.StatusBadRequest, fmt.Sprintf("invalid request body: %v", err))

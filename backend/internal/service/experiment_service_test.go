@@ -14,7 +14,6 @@ import (
 
 func TestExperimentServiceRunIngestFlow(t *testing.T) {
 	db := newExperimentTestDB(t)
-
 	ctx := context.Background()
 	svc := NewExperimentServiceWithDB(db)
 	token := util.JWTMessage{
@@ -23,18 +22,14 @@ func TestExperimentServiceRunIngestFlow(t *testing.T) {
 		RolePlatform: model.RoleUser,
 	}
 
-	exp, err := svc.CreateExperiment(ctx, CreateExperimentInput{
+	exp := mustCreateExperiment(t, svc, ctx, CreateExperimentInput{
 		Name:       "baseline",
 		UserID:     token.UserID,
 		AccountID:  token.AccountID,
 		Visibility: model.ExperimentVisibilityPrivate,
 		Tags:       datatypes.JSONMap{"stage": "test"},
 	})
-	if err != nil {
-		t.Fatalf("create experiment: %v", err)
-	}
-
-	runResult, err := svc.CreateRun(ctx, CreateRunInput{
+	runResult := mustCreateRun(t, svc, ctx, &CreateRunInput{
 		ExperimentID: exp.ID,
 		JobName:      "job-001",
 		RunName:      "lr-1e-4",
@@ -44,79 +39,12 @@ func TestExperimentServiceRunIngestFlow(t *testing.T) {
 		CodeSnapshot: datatypes.JSONMap{"commit": "abc123"},
 		Tags:         datatypes.JSONMap{"kind": "sft"},
 	})
-	if err != nil {
-		t.Fatalf("create run: %v", err)
-	}
 	if runResult.Token == "" {
 		t.Fatal("create run returned empty token")
 	}
 
-	if _, err := svc.VerifyRunToken(ctx, runResult.Run.ID, runResult.Token); err != nil {
-		t.Fatalf("verify run token: %v", err)
-	}
-	if err := svc.LogMetrics(ctx, runResult.Run.ID, []MetricInput{
-		{ClientRecordID: "metric-1", Name: "loss", Step: 1, Value: 0.9},
-		{ClientRecordID: "metric-2", Name: "loss", Step: 2, Value: 0.7},
-	}); err != nil {
-		t.Fatalf("log metrics: %v", err)
-	}
-	if err := svc.LogMetrics(ctx, runResult.Run.ID, []MetricInput{
-		{ClientRecordID: "metric-1", Name: "loss", Step: 1, Value: 0.9},
-	}); err != nil {
-		t.Fatalf("log metrics: %v", err)
-	}
-	if err := svc.MergeParams(ctx, runResult.Run.ID, datatypes.JSONMap{"batch_size": 32}); err != nil {
-		t.Fatalf("merge params: %v", err)
-	}
-	if _, err := svc.CreateArtifact(ctx, runResult.Run.ID, ArtifactInput{
-		ClientRecordID: "artifact-1",
-		Name:           "final_model",
-		Type:           "model",
-		Path:           "/outputs/model",
-	}); err != nil {
-		t.Fatalf("create artifact: %v", err)
-	}
-	if _, err := svc.CreateArtifact(ctx, runResult.Run.ID, ArtifactInput{
-		ClientRecordID: "artifact-1",
-		Name:           "final_model",
-		Type:           "model",
-		Path:           "/outputs/model",
-	}); err != nil {
-		t.Fatalf("create artifact: %v", err)
-	}
-	if err := svc.FinishRun(ctx, runResult.Run.ID, model.ExperimentRunStatusSucceeded); err != nil {
-		t.Fatalf("finish run: %v", err)
-	}
-
-	runs, err := svc.ListRuns(ctx, exp.ID, token)
-	if err != nil {
-		t.Fatalf("list runs: %v", err)
-	}
-	if len(runs) != 1 || runs[0].RunName != "lr-1e-4" {
-		t.Fatalf("runs = %#v, want one lr-1e-4 run", runs)
-	}
-	if runs[0].Status != model.ExperimentRunStatusSucceeded {
-		t.Fatalf("run status = %s, want succeeded", runs[0].Status)
-	}
-	if _, ok := runs[0].Hyperparams["batch_size"]; !ok {
-		t.Fatalf("merged hyperparams = %#v, want batch_size", runs[0].Hyperparams)
-	}
-
-	metrics, err := svc.ListMetrics(ctx, runResult.Run.ID, token)
-	if err != nil {
-		t.Fatalf("list metrics: %v", err)
-	}
-	if len(metrics) != 2 || metrics[1].Value != 0.7 {
-		t.Fatalf("metrics = %#v, want two loss points", metrics)
-	}
-
-	artifacts, err := svc.ListArtifacts(ctx, runResult.Run.ID, token)
-	if err != nil {
-		t.Fatalf("list artifacts: %v", err)
-	}
-	if len(artifacts) != 1 || artifacts[0].Path != "/outputs/model" {
-		t.Fatalf("artifacts = %#v, want final model artifact", artifacts)
-	}
+	exerciseRunIngest(t, svc, ctx, runResult.Run.ID, runResult.Token)
+	assertRunIngestFlow(t, svc, ctx, exp.ID, runResult.Run.ID, token)
 }
 
 func TestExperimentRunAccessFollowsExperimentVisibility(t *testing.T) {
@@ -133,7 +61,7 @@ func TestExperimentRunAccessFollowsExperimentVisibility(t *testing.T) {
 	if err != nil {
 		t.Fatalf("create private experiment: %v", err)
 	}
-	privateRun, err := svc.CreateRun(ctx, CreateRunInput{
+	privateRun, err := svc.CreateRun(ctx, &CreateRunInput{
 		ExperimentID: privateExp.ID, JobName: "job-private", UserID: owner.UserID, AccountID: owner.AccountID,
 	})
 	if err != nil {
@@ -149,7 +77,7 @@ func TestExperimentRunAccessFollowsExperimentVisibility(t *testing.T) {
 	if err != nil {
 		t.Fatalf("create account experiment: %v", err)
 	}
-	accountRun, err := svc.CreateRun(ctx, CreateRunInput{
+	accountRun, err := svc.CreateRun(ctx, &CreateRunInput{
 		ExperimentID: accountExp.ID, JobName: "job-account", UserID: owner.UserID, AccountID: owner.AccountID,
 	})
 	if err != nil {
@@ -158,7 +86,7 @@ func TestExperimentRunAccessFollowsExperimentVisibility(t *testing.T) {
 	if err := svc.LogMetrics(ctx, accountRun.Run.ID, []MetricInput{{Name: "loss", Step: 1, Value: 1}}); err != nil {
 		t.Fatalf("log account metric: %v", err)
 	}
-	if _, err := svc.CreateArtifact(ctx, accountRun.Run.ID, ArtifactInput{Name: "model", Path: "/model"}); err != nil {
+	if _, err := svc.CreateArtifact(ctx, accountRun.Run.ID, &ArtifactInput{Name: "model", Path: "/model"}); err != nil {
 		t.Fatalf("create account artifact: %v", err)
 	}
 	if _, err := svc.GetRun(ctx, accountRun.Run.ID, peer); err != nil {
@@ -181,23 +109,126 @@ func TestExperimentMetricsQueryAndReproducePlan(t *testing.T) {
 	svc := NewExperimentServiceWithDB(db)
 	token := util.JWTMessage{UserID: 1, AccountID: 1, RolePlatform: model.RoleUser}
 
-	exp, err := svc.CreateExperiment(ctx, CreateExperimentInput{
+	exp := mustCreateExperiment(t, svc, ctx, CreateExperimentInput{
 		Name: "query", UserID: token.UserID, AccountID: token.AccountID, Visibility: model.ExperimentVisibilityPrivate,
 	})
-	if err != nil {
-		t.Fatalf("create experiment: %v", err)
-	}
-	runResult, err := svc.CreateRun(ctx, CreateRunInput{
+	runResult := mustCreateRun(t, svc, ctx, &CreateRunInput{
 		ExperimentID: exp.ID,
 		JobName:      "job-query",
 		RunName:      "query-run",
 		UserID:       token.UserID,
 		AccountID:    token.AccountID,
 	})
+
+	assertMetricsQuery(t, svc, ctx, runResult.Run.ID, token)
+	checkpoint := createCheckpointArtifactForRun(t, db, svc, ctx, runResult.Run.ID, token)
+	assertReproducePlan(t, svc, ctx, runResult.Run.ID, token, checkpoint.ID)
+}
+
+func mustCreateExperiment(
+	t *testing.T,
+	svc *ExperimentService,
+	ctx context.Context,
+	input CreateExperimentInput,
+) *model.Experiment {
+	t.Helper()
+	exp, err := svc.CreateExperiment(ctx, input)
+	if err != nil {
+		t.Fatalf("create experiment: %v", err)
+	}
+	return exp
+}
+
+func mustCreateRun(
+	t *testing.T,
+	svc *ExperimentService,
+	ctx context.Context,
+	input *CreateRunInput,
+) *CreateRunResult {
+	t.Helper()
+	result, err := svc.CreateRun(ctx, input)
 	if err != nil {
 		t.Fatalf("create run: %v", err)
 	}
+	return result
+}
 
+func exerciseRunIngest(t *testing.T, svc *ExperimentService, ctx context.Context, runID uint, token string) {
+	t.Helper()
+	if _, err := svc.VerifyRunToken(ctx, runID, token); err != nil {
+		t.Fatalf("verify run token: %v", err)
+	}
+	if err := svc.LogMetrics(ctx, runID, []MetricInput{
+		{ClientRecordID: "metric-1", Name: "loss", Step: 1, Value: 0.9},
+		{ClientRecordID: "metric-2", Name: "loss", Step: 2, Value: 0.7},
+	}); err != nil {
+		t.Fatalf("log metrics: %v", err)
+	}
+	if err := svc.LogMetrics(ctx, runID, []MetricInput{
+		{ClientRecordID: "metric-1", Name: "loss", Step: 1, Value: 0.9},
+	}); err != nil {
+		t.Fatalf("log metrics: %v", err)
+	}
+	if err := svc.MergeParams(ctx, runID, datatypes.JSONMap{"batch_size": 32}); err != nil {
+		t.Fatalf("merge params: %v", err)
+	}
+	artifact := &ArtifactInput{
+		ClientRecordID: "artifact-1",
+		Name:           "final_model",
+		Type:           "model",
+		Path:           "/outputs/model",
+	}
+	if _, err := svc.CreateArtifact(ctx, runID, artifact); err != nil {
+		t.Fatalf("create artifact: %v", err)
+	}
+	if _, err := svc.CreateArtifact(ctx, runID, artifact); err != nil {
+		t.Fatalf("create artifact: %v", err)
+	}
+	if err := svc.FinishRun(ctx, runID, model.ExperimentRunStatusSucceeded); err != nil {
+		t.Fatalf("finish run: %v", err)
+	}
+}
+
+func assertRunIngestFlow(
+	t *testing.T,
+	svc *ExperimentService,
+	ctx context.Context,
+	experimentID uint,
+	runID uint,
+	token util.JWTMessage,
+) {
+	t.Helper()
+	runs, err := svc.ListRuns(ctx, experimentID, token)
+	if err != nil {
+		t.Fatalf("list runs: %v", err)
+	}
+	if len(runs) != 1 || runs[0].RunName != "lr-1e-4" {
+		t.Fatalf("runs = %#v, want one lr-1e-4 run", runs)
+	}
+	if runs[0].Status != model.ExperimentRunStatusSucceeded {
+		t.Fatalf("run status = %s, want succeeded", runs[0].Status)
+	}
+	if _, ok := runs[0].Hyperparams["batch_size"]; !ok {
+		t.Fatalf("merged hyperparams = %#v, want batch_size", runs[0].Hyperparams)
+	}
+	metrics, err := svc.ListMetrics(ctx, runID, token)
+	if err != nil {
+		t.Fatalf("list metrics: %v", err)
+	}
+	if len(metrics) != 2 || metrics[1].Value != 0.7 {
+		t.Fatalf("metrics = %#v, want two loss points", metrics)
+	}
+	artifacts, err := svc.ListArtifacts(ctx, runID, token)
+	if err != nil {
+		t.Fatalf("list artifacts: %v", err)
+	}
+	if len(artifacts) != 1 || artifacts[0].Path != "/outputs/model" {
+		t.Fatalf("artifacts = %#v, want final model artifact", artifacts)
+	}
+}
+
+func assertMetricsQuery(t *testing.T, svc *ExperimentService, ctx context.Context, runID uint, token util.JWTMessage) {
+	t.Helper()
 	var inputs []MetricInput
 	for step := int64(0); step < 10; step++ {
 		inputs = append(inputs,
@@ -205,11 +236,11 @@ func TestExperimentMetricsQueryAndReproducePlan(t *testing.T) {
 			MetricInput{Name: "acc", Step: step, Value: float64(step) / 10},
 		)
 	}
-	if err := svc.LogMetrics(ctx, runResult.Run.ID, inputs); err != nil {
+	if err := svc.LogMetrics(ctx, runID, inputs); err != nil {
 		t.Fatalf("log metrics: %v", err)
 	}
 	start, end := int64(2), int64(8)
-	metrics, err := svc.ListMetrics(ctx, runResult.Run.ID, token, MetricListQuery{
+	metrics, err := svc.ListMetrics(ctx, runID, token, MetricListQuery{
 		Names:      []string{"loss"},
 		StartStep:  &start,
 		EndStep:    &end,
@@ -219,19 +250,33 @@ func TestExperimentMetricsQueryAndReproducePlan(t *testing.T) {
 	if err != nil {
 		t.Fatalf("list filtered metrics: %v", err)
 	}
+	assertFilteredMetrics(t, metrics, start, end)
+}
+
+func assertFilteredMetrics(t *testing.T, metrics []model.RunMetric, start, end int64) {
+	t.Helper()
 	if len(metrics) != 3 {
 		t.Fatalf("metrics len = %d, want 3: %#v", len(metrics), metrics)
 	}
-	for _, metric := range metrics {
-		if metric.Name != "loss" || metric.Step < start || metric.Step > end {
-			t.Fatalf("metric = %#v, want filtered loss metric", metric)
+	for i := range metrics {
+		if metrics[i].Name != "loss" || metrics[i].Step < start || metrics[i].Step > end {
+			t.Fatalf("metric = %#v, want filtered loss metric", metrics[i])
 		}
 	}
-	if metrics[0].Step != 2 || metrics[2].Step != 8 {
+	if metrics[0].Step != start || metrics[2].Step != end {
 		t.Fatalf("downsampled steps = (%d, %d), want first/last in range", metrics[0].Step, metrics[2].Step)
 	}
+}
 
-	runID := runResult.Run.ID
+func createCheckpointArtifactForRun(
+	t *testing.T,
+	db *gorm.DB,
+	svc *ExperimentService,
+	ctx context.Context,
+	runID uint,
+	token util.JWTMessage,
+) model.JobCheckpoint {
+	t.Helper()
 	checkpoint := model.JobCheckpoint{
 		RunID:       &runID,
 		JobName:     "job-query",
@@ -249,17 +294,29 @@ func TestExperimentMetricsQueryAndReproducePlan(t *testing.T) {
 	if err := db.Create(&checkpoint).Error; err != nil {
 		t.Fatalf("create checkpoint: %v", err)
 	}
-	if err := svc.UpsertCheckpointArtifact(ctx, runResult.Run.ID, checkpoint); err != nil {
+	if err := svc.UpsertCheckpointArtifact(ctx, runID, &checkpoint); err != nil {
 		t.Fatalf("upsert checkpoint artifact: %v", err)
 	}
-	plan, err := svc.ReproduceRun(ctx, runResult.Run.ID, token, "query-rerun")
+	return checkpoint
+}
+
+func assertReproducePlan(
+	t *testing.T,
+	svc *ExperimentService,
+	ctx context.Context,
+	runID uint,
+	token util.JWTMessage,
+	checkpointID uint,
+) {
+	t.Helper()
+	plan, err := svc.ReproduceRun(ctx, runID, token, "query-rerun")
 	if err != nil {
 		t.Fatalf("reproduce run: %v", err)
 	}
 	if plan.Mode != "checkpoint-restore" || plan.Restore == nil {
 		t.Fatalf("plan = %#v, want checkpoint restore plan", plan)
 	}
-	if plan.Restore.JobName != "job-query" || plan.Restore.CheckpointID != checkpoint.ID || plan.Restore.Name != "query-rerun" {
+	if plan.Restore.JobName != "job-query" || plan.Restore.CheckpointID != checkpointID || plan.Restore.Name != "query-rerun" {
 		t.Fatalf("restore plan = %#v, want checkpoint restore target", plan.Restore)
 	}
 }

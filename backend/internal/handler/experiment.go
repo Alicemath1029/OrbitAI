@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 	"strings"
@@ -243,54 +244,51 @@ func (mgr *ExperimentMgr) ReproduceRun(c *gin.Context) {
 }
 
 func (mgr *ExperimentMgr) LogMetricsByRunToken(c *gin.Context) {
-	run, ok := mgr.verifyRunToken(c)
-	if !ok {
-		return
-	}
 	var req metricsBatchReq
-	if err := c.ShouldBindJSON(&req); err != nil {
-		resputil.BadRequestError(c, err.Error())
-		return
-	}
-	if err := mgr.svc.LogMetrics(c.Request.Context(), run.ID, req.Metrics); err != nil {
-		resputil.Error(c, err.Error(), resputil.ServiceError)
-		return
-	}
-	resputil.Success(c, gin.H{"accepted": len(req.Metrics)})
+	mgr.handleRunTokenJSON(c, &req, func() int {
+		return len(req.Metrics)
+	}, func(ctx context.Context, runID uint) error {
+		return mgr.svc.LogMetrics(ctx, runID, req.Metrics)
+	})
 }
 
 func (mgr *ExperimentMgr) LogParamsByRunToken(c *gin.Context) {
-	run, ok := mgr.verifyRunToken(c)
-	if !ok {
-		return
-	}
 	var req paramsReq
-	if err := c.ShouldBindJSON(&req); err != nil {
-		resputil.BadRequestError(c, err.Error())
-		return
-	}
-	if err := mgr.svc.MergeParams(c.Request.Context(), run.ID, req.Params); err != nil {
-		resputil.Error(c, err.Error(), resputil.ServiceError)
-		return
-	}
-	resputil.Success(c, gin.H{"accepted": len(req.Params)})
+	mgr.handleRunTokenJSON(c, &req, func() int {
+		return len(req.Params)
+	}, func(ctx context.Context, runID uint) error {
+		return mgr.svc.MergeParams(ctx, runID, req.Params)
+	})
 }
 
 func (mgr *ExperimentMgr) LogTagsByRunToken(c *gin.Context) {
+	var req tagsReq
+	mgr.handleRunTokenJSON(c, &req, func() int {
+		return len(req.Tags)
+	}, func(ctx context.Context, runID uint) error {
+		return mgr.svc.MergeTags(ctx, runID, req.Tags)
+	})
+}
+
+func (mgr *ExperimentMgr) handleRunTokenJSON(
+	c *gin.Context,
+	req any,
+	accepted func() int,
+	apply func(context.Context, uint) error,
+) {
 	run, ok := mgr.verifyRunToken(c)
 	if !ok {
 		return
 	}
-	var req tagsReq
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(req); err != nil {
 		resputil.BadRequestError(c, err.Error())
 		return
 	}
-	if err := mgr.svc.MergeTags(c.Request.Context(), run.ID, req.Tags); err != nil {
+	if err := apply(c.Request.Context(), run.ID); err != nil {
 		resputil.Error(c, err.Error(), resputil.ServiceError)
 		return
 	}
-	resputil.Success(c, gin.H{"accepted": len(req.Tags)})
+	resputil.Success(c, gin.H{"accepted": accepted()})
 }
 
 func (mgr *ExperimentMgr) CreateArtifactByRunToken(c *gin.Context) {
@@ -303,7 +301,7 @@ func (mgr *ExperimentMgr) CreateArtifactByRunToken(c *gin.Context) {
 		resputil.BadRequestError(c, err.Error())
 		return
 	}
-	artifact, err := mgr.svc.CreateArtifact(c.Request.Context(), run.ID, req)
+	artifact, err := mgr.svc.CreateArtifact(c.Request.Context(), run.ID, &req)
 	if err != nil {
 		resputil.Error(c, err.Error(), resputil.ServiceError)
 		return

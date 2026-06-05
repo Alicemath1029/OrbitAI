@@ -207,7 +207,6 @@ func TestValidateServiceScanRequest(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -352,7 +351,7 @@ func TestUpsertCheckpointArtifactUpdatesExistingSource(t *testing.T) {
 		Latest:      true,
 		Metadata:    datatypes.JSONMap{"source": "scan"},
 	}
-	if err := upsertCheckpointArtifact(context.Background(), db, checkpoint); err != nil {
+	if err := upsertCheckpointArtifact(context.Background(), db, &checkpoint); err != nil {
 		t.Fatalf("upsert checkpoint artifact: %v", err)
 	}
 
@@ -360,7 +359,7 @@ func TestUpsertCheckpointArtifactUpdatesExistingSource(t *testing.T) {
 	checkpoint.RunID = &nextRunID
 	checkpoint.SizeBytes = 128
 	checkpoint.Latest = false
-	if err := upsertCheckpointArtifact(context.Background(), db, checkpoint); err != nil {
+	if err := upsertCheckpointArtifact(context.Background(), db, &checkpoint); err != nil {
 		t.Fatalf("second upsert checkpoint artifact: %v", err)
 	}
 
@@ -412,12 +411,12 @@ func TestScanJobWithKubernetesDoesNotCreateFallbackPod(t *testing.T) {
 	}
 }
 
-func mustWriteFile(t *testing.T, path string, content string) {
+func mustWriteFile(t *testing.T, path, content string) {
 	t.Helper()
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		t.Fatalf("MkdirAll(%q) error = %v", filepath.Dir(path), err)
 	}
-	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 		t.Fatalf("WriteFile(%q) error = %v", path, err)
 	}
 }

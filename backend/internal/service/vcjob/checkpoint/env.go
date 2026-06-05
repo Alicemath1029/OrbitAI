@@ -7,12 +7,14 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
+const checkpointEnvCapacity = 12
+
 func AppendEnvs(envs []v1.EnvVar, cfg *Config, jobName string) []v1.EnvVar {
 	if cfg == nil || !cfg.Enabled {
 		return envs
 	}
 
-	filtered := make([]v1.EnvVar, 0, len(envs)+12)
+	filtered := make([]v1.EnvVar, 0, len(envs)+checkpointEnvCapacity)
 	for _, env := range envs {
 		if strings.HasPrefix(env.Name, "ORBIT_") {
 			continue

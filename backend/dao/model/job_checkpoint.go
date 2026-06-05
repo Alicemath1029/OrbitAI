@@ -17,14 +17,14 @@ const (
 
 type JobCheckpoint struct {
 	gorm.Model
-	JobID       uint                `json:"jobID" gorm:"not null;index:idx_job_checkpoints_job;uniqueIndex:idx_job_checkpoint_job_path;comment:作业ID"`
+	JobID       uint                `json:"jobID" gorm:"not null;index:idx_job_checkpoints_job;uniqueIndex:idx_job_checkpoint_job_path;comment:作业ID"` //nolint:lll // GORM index tags are intentionally descriptive.
 	RunID       *uint               `json:"runID" gorm:"index;comment:关联的实验 Run ID"`
 	JobName     string              `json:"jobName" gorm:"type:varchar(256);not null;index;comment:作业集群名称"`
 	UserID      uint                `json:"userID" gorm:"not null;index;comment:用户ID"`
 	AccountID   uint                `json:"accountID" gorm:"not null;index;comment:账户ID"`
 	Framework   string              `json:"framework" gorm:"type:varchar(32);index;comment:训练框架"`
 	Name        string              `json:"name" gorm:"type:varchar(256);not null;comment:checkpoint名称"`
-	Path        string              `json:"path" gorm:"type:varchar(1024);not null;uniqueIndex:idx_job_checkpoint_job_path;comment:容器内checkpoint路径"`
+	Path        string              `json:"path" gorm:"type:varchar(1024);not null;uniqueIndex:idx_job_checkpoint_job_path;comment:容器内checkpoint路径"` //nolint:lll // GORM index tags are intentionally descriptive.
 	StoragePath string              `json:"storagePath" gorm:"type:varchar(1024);not null;comment:存储根目录下的相对路径"`
 	Step        int64               `json:"step" gorm:"index;comment:checkpoint步数，无法识别时为-1"`
 	SizeBytes   int64               `json:"sizeBytes" gorm:"not null;default:0;comment:checkpoint大小"`

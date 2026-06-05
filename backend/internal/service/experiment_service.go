@@ -26,7 +26,8 @@ const (
 	ExperimentAnnotationRunID = "orbit.raids.io/experiment-run-id"
 	ExperimentAnnotationID    = "orbit.raids.io/experiment-id"
 
-	EnvOrbitRunID     = "ORBIT_RUN_ID"
+	EnvOrbitRunID = "ORBIT_RUN_ID"
+	//nolint:gosec // This is the environment variable name, not a token value.
 	EnvOrbitRunToken  = "ORBIT_RUN_TOKEN"
 	EnvOrbitAPIBase   = "ORBIT_API_BASE"
 	EnvOrbitOutputDir = "ORBIT_OUTPUT_DIR"
@@ -34,6 +35,8 @@ const (
 	defaultMetricQueryLimit = 5000
 	maxMetricQueryLimit     = 50000
 	maxMetricDownsample     = 5000
+	maxMetricsPerRequest    = 1000
+	runTokenBytes           = 32
 )
 
 type ExperimentRunConfig struct {
@@ -271,8 +274,11 @@ func (s *ExperimentService) ListRuns(
 
 func (s *ExperimentService) CreateRun(
 	ctx context.Context,
-	input CreateRunInput,
+	input *CreateRunInput,
 ) (*CreateRunResult, error) {
+	if input == nil {
+		return nil, fmt.Errorf("run input is required")
+	}
 	if input.ExperimentID == 0 {
 		return nil, fmt.Errorf("experimentId is required")
 	}
@@ -375,7 +381,7 @@ func (s *ExperimentService) LogMetrics(ctx context.Context, runID uint, metrics 
 	if len(metrics) == 0 {
 		return nil
 	}
-	if len(metrics) > 1000 {
+	if len(metrics) > maxMetricsPerRequest {
 		return fmt.Errorf("too many metrics in one request")
 	}
 	now := time.Now()
@@ -404,11 +410,11 @@ func (s *ExperimentService) LogMetrics(ctx context.Context, runID uint, metrics 
 	}
 	clientRows := make([]model.RunMetric, 0, len(rows))
 	plainRows := make([]model.RunMetric, 0, len(rows))
-	for _, row := range rows {
-		if row.ClientRecordID != nil {
-			clientRows = append(clientRows, row)
+	for i := range rows {
+		if rows[i].ClientRecordID != nil {
+			clientRows = append(clientRows, rows[i])
 		} else {
-			plainRows = append(plainRows, row)
+			plainRows = append(plainRows, rows[i])
 		}
 	}
 	db := s.db.WithContext(ctx)
@@ -445,23 +451,23 @@ func (s *ExperimentService) ListMetrics(
 	if _, err := s.GetRun(ctx, runID, token); err != nil {
 		return nil, err
 	}
-	query := MetricListQuery{}
+	metricQuery := MetricListQuery{}
 	if len(opts) > 0 {
-		query = opts[0]
+		metricQuery = opts[0]
 	}
-	names := normalizeMetricNames(query.Names)
-	limit := normalizeMetricLimit(query.Limit)
+	names := normalizeMetricNames(metricQuery.Names)
+	limit := normalizeMetricLimit(metricQuery.Limit)
 	var metrics []model.RunMetric
 	db := s.db.WithContext(ctx).
 		Where("run_id = ?", runID)
 	if len(names) > 0 {
 		db = db.Where("name IN ?", names)
 	}
-	if query.StartStep != nil {
-		db = db.Where("step >= ?", *query.StartStep)
+	if metricQuery.StartStep != nil {
+		db = db.Where("step >= ?", *metricQuery.StartStep)
 	}
-	if query.EndStep != nil {
-		db = db.Where("step <= ?", *query.EndStep)
+	if metricQuery.EndStep != nil {
+		db = db.Where("step <= ?", *metricQuery.EndStep)
 	}
 	if err := db.
 		Order("name ASC, step ASC, timestamp ASC").
@@ -469,40 +475,46 @@ func (s *ExperimentService) ListMetrics(
 		Find(&metrics).Error; err != nil {
 		return nil, err
 	}
-	return downsampleMetrics(metrics, normalizeMetricDownsample(query.Downsample)), nil
+	return downsampleMetrics(metrics, normalizeMetricDownsample(metricQuery.Downsample)), nil
 }
 
 func (s *ExperimentService) MergeParams(ctx context.Context, runID uint, params datatypes.JSONMap) error {
-	if len(params) == 0 {
-		return nil
-	}
-	var run model.ExperimentRun
-	if err := s.db.WithContext(ctx).Where("id = ?", runID).First(&run).Error; err != nil {
-		return err
-	}
-	next := safeJSONMap(run.Hyperparams)
-	for key, value := range params {
-		next[key] = value
-	}
-	return s.db.WithContext(ctx).Model(&run).Update("hyperparams", next).Error
+	return s.mergeRunJSONMap(ctx, runID, "hyperparams", params, func(run *model.ExperimentRun) datatypes.JSONMap {
+		return run.Hyperparams
+	})
 }
 
 func (s *ExperimentService) MergeTags(ctx context.Context, runID uint, tags datatypes.JSONMap) error {
-	if len(tags) == 0 {
+	return s.mergeRunJSONMap(ctx, runID, "tags", tags, func(run *model.ExperimentRun) datatypes.JSONMap {
+		return run.Tags
+	})
+}
+
+func (s *ExperimentService) mergeRunJSONMap(
+	ctx context.Context,
+	runID uint,
+	column string,
+	values datatypes.JSONMap,
+	current func(*model.ExperimentRun) datatypes.JSONMap,
+) error {
+	if len(values) == 0 {
 		return nil
 	}
 	var run model.ExperimentRun
 	if err := s.db.WithContext(ctx).Where("id = ?", runID).First(&run).Error; err != nil {
 		return err
 	}
-	next := safeJSONMap(run.Tags)
-	for key, value := range tags {
+	next := safeJSONMap(current(&run))
+	for key, value := range values {
 		next[key] = value
 	}
-	return s.db.WithContext(ctx).Model(&run).Update("tags", next).Error
+	return s.db.WithContext(ctx).Model(&run).Update(column, next).Error
 }
 
-func (s *ExperimentService) CreateArtifact(ctx context.Context, runID uint, input ArtifactInput) (*model.RunArtifact, error) {
+func (s *ExperimentService) CreateArtifact(ctx context.Context, runID uint, input *ArtifactInput) (*model.RunArtifact, error) {
+	if input == nil {
+		return nil, fmt.Errorf("artifact input is required")
+	}
 	name := strings.TrimSpace(input.Name)
 	path := strings.TrimSpace(input.Path)
 	if name == "" {
@@ -535,9 +547,9 @@ func (s *ExperimentService) CreateArtifact(ctx context.Context, runID uint, inpu
 func (s *ExperimentService) UpsertCheckpointArtifact(
 	ctx context.Context,
 	runID uint,
-	checkpoint model.JobCheckpoint,
+	checkpoint *model.JobCheckpoint,
 ) error {
-	if runID == 0 || checkpoint.ID == 0 {
+	if runID == 0 || checkpoint == nil || checkpoint.ID == 0 {
 		return nil
 	}
 	metadata := safeJSONMap(checkpoint.Metadata)
@@ -719,11 +731,11 @@ func downsampleMetrics(metrics []model.RunMetric, maxPointsPerMetric int) []mode
 	}
 	grouped := make(map[string][]model.RunMetric)
 	order := make([]string, 0)
-	for _, metric := range metrics {
-		if _, ok := grouped[metric.Name]; !ok {
-			order = append(order, metric.Name)
+	for i := range metrics {
+		if _, ok := grouped[metrics[i].Name]; !ok {
+			order = append(order, metrics[i].Name)
 		}
-		grouped[metric.Name] = append(grouped[metric.Name], metric)
+		grouped[metrics[i].Name] = append(grouped[metrics[i].Name], metrics[i])
 	}
 	result := make([]model.RunMetric, 0, len(metrics))
 	for _, name := range order {
@@ -772,7 +784,7 @@ func (s *ExperimentService) checkpointRestorePlanForRun(
 		}
 		return nil, err
 	}
-	return checkpointToRestorePlan(checkpoint, name), nil
+	return checkpointToRestorePlan(&checkpoint, name), nil
 }
 
 func (s *ExperimentService) checkpointRestorePlanFromArtifacts(
@@ -791,7 +803,7 @@ func (s *ExperimentService) checkpointRestorePlanFromArtifacts(
 		return nil, nil
 	}
 	selected := selectCheckpointArtifact(artifacts)
-	if selected.SourceID == nil || *selected.SourceID == 0 {
+	if selected == nil || selected.SourceID == nil || *selected.SourceID == 0 {
 		return nil, nil
 	}
 	jobName := stringFromJSON(selected.Metadata, "jobName")
@@ -803,7 +815,7 @@ func (s *ExperimentService) checkpointRestorePlanFromArtifacts(
 			}
 			return nil, err
 		}
-		return checkpointToRestorePlan(checkpoint, name), nil
+		return checkpointToRestorePlan(&checkpoint, name), nil
 	}
 	return &CheckpointRestorePlan{
 		JobName:        jobName,
@@ -813,21 +825,24 @@ func (s *ExperimentService) checkpointRestorePlanFromArtifacts(
 	}, nil
 }
 
-func selectCheckpointArtifact(artifacts []model.RunArtifact) model.RunArtifact {
-	selected := artifacts[0]
-	for _, artifact := range artifacts {
-		if boolFromJSON(artifact.Metadata, "latest") {
-			return artifact
+func selectCheckpointArtifact(artifacts []model.RunArtifact) *model.RunArtifact {
+	if len(artifacts) == 0 {
+		return nil
+	}
+	selected := 0
+	for i := range artifacts {
+		if boolFromJSON(artifacts[i].Metadata, "latest") {
+			return &artifacts[i]
 		}
-		if numericFromJSON(artifact.Metadata, "step") > numericFromJSON(selected.Metadata, "step") {
-			selected = artifact
+		if numericFromJSON(artifacts[i].Metadata, "step") > numericFromJSON(artifacts[selected].Metadata, "step") {
+			selected = i
 		}
 	}
-	return selected
+	return &artifacts[selected]
 }
 
-func checkpointToRestorePlan(checkpoint model.JobCheckpoint, name string) *CheckpointRestorePlan {
-	if checkpoint.ID == 0 || checkpoint.JobName == "" {
+func checkpointToRestorePlan(checkpoint *model.JobCheckpoint, name string) *CheckpointRestorePlan {
+	if checkpoint == nil || checkpoint.ID == 0 || checkpoint.JobName == "" {
 		return nil
 	}
 	return &CheckpointRestorePlan{
@@ -922,12 +937,12 @@ func optionalClientRecordID(values ...string) *string {
 	return nil
 }
 
-func newRunToken() (string, string, error) {
-	raw := make([]byte, 32)
+func newRunToken() (token, tokenHash string, err error) {
+	raw := make([]byte, runTokenBytes)
 	if _, err := rand.Read(raw); err != nil {
 		return "", "", err
 	}
-	token := base64.RawURLEncoding.EncodeToString(raw)
+	token = base64.RawURLEncoding.EncodeToString(raw)
 	return token, hashRunToken(token), nil
 }
 
