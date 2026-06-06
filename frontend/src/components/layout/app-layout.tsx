@@ -72,7 +72,7 @@ const AppLayout = ({ groups, rawPath, children }: AppLayoutProps) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: 'spring', duration: 0.48, bounce: 0.08 }}
         className={cn(
-          '@container/main mx-auto flex w-full max-w-[1440px] flex-col gap-4 px-3 py-4 sm:px-4 md:px-5 md:py-5',
+          '@container/main mx-auto flex w-full max-w-[1440px] flex-col gap-4 px-3 py-4 sm:px-4 md:px-4 md:py-5',
           fixedLayout && 'h-full overflow-hidden'
         )}
       >

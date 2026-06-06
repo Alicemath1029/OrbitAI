@@ -15,19 +15,22 @@
  */
 // i18n-processed-v1.1.0
 // Modified code
-import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
+import Divider from '@mui/material/Divider'
+import ListItemText from '@mui/material/ListItemText'
+import MenuItem from '@mui/material/MenuItem'
+import MenuList from '@mui/material/MenuList'
+import Typography from '@mui/material/Typography'
 import { Table } from '@tanstack/react-table'
 import { Settings2Icon } from 'lucide-react'
+import { varAlpha } from 'minimal-shared/utils'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu'
+import { CustomPopover } from '@/components/minimal-ui/custom-popover'
+
+const MINIMAL_PRIMARY_CHANNEL = '0 167 111'
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>
@@ -39,34 +42,80 @@ export function DataTableViewOptions<TData>({
   getHeader,
 }: DataTableViewOptionsProps<TData>) {
   const { t } = useTranslation()
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+  const open = Boolean(anchorEl)
+
+  const columns = table
+    .getAllColumns()
+    .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="ml-auto flex h-9">
-          <Settings2Icon className="size-4" />
-          <span className="text-xs">{t('dataTableViewOptions.viewButtonText')}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>{t('dataTableViewOptions.viewLabel')}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {table
-          .getAllColumns()
-          .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
-          .map((column) => {
+    <>
+      <Button
+        type="button"
+        color="inherit"
+        size="small"
+        startIcon={<Settings2Icon size={16} />}
+        onClick={(event) => setAnchorEl(event.currentTarget)}
+        sx={{
+          ml: 'auto',
+          minHeight: 36,
+          px: 1.25,
+          color: open ? 'primary.dark' : 'text.secondary',
+          bgcolor: open ? varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.08) : 'transparent',
+          '&:hover': {
+            color: 'primary.dark',
+            bgcolor: varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.08),
+          },
+          '& .MuiButton-startIcon': {
+            mr: 0.5,
+          },
+        }}
+      >
+        <Typography component="span" sx={{ fontSize: 12, fontWeight: 700 }}>
+          {t('dataTableViewOptions.viewButtonText')}
+        </Typography>
+      </Button>
+
+      <CustomPopover
+        anchorEl={anchorEl}
+        open={open}
+        onClose={() => setAnchorEl(null)}
+        slotProps={{
+          arrow: { placement: 'top-right' },
+          paper: { sx: { width: 220 } },
+        }}
+      >
+        <MenuList sx={{ p: 0.5 }}>
+          <MenuItem disabled>
+            <Typography variant="caption">{t('dataTableViewOptions.viewLabel')}</Typography>
+          </MenuItem>
+          <Divider sx={{ my: 0.5 }} />
+          {columns.map((column) => {
+            const visible = column.getIsVisible()
+
             return (
-              <DropdownMenuCheckboxItem
+              <MenuItem
                 key={column.id}
-                className="capitalize"
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                selected={visible}
+                onClick={() => column.toggleVisibility(!visible)}
               >
-                {getHeader(column.id)}
-              </DropdownMenuCheckboxItem>
+                <Checkbox disableRipple checked={visible} size="small" />
+                <ListItemText
+                  primary={getHeader(column.id)}
+                  slotProps={{
+                    primary: {
+                      noWrap: true,
+                      variant: 'body2',
+                      sx: { textTransform: 'capitalize' },
+                    },
+                  }}
+                />
+              </MenuItem>
             )
           })}
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </MenuList>
+      </CustomPopover>
+    </>
   )
 }

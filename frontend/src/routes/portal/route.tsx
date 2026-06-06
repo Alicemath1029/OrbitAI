@@ -72,6 +72,7 @@ const useUserSidebarGroups = (): NavGroupProps[] => {
   return [
     {
       title: t('sidebar.resourceAndMonitoring'),
+      icon: BarChartBigIcon,
       items: [
         {
           title: t('navigation.platformOverview'),
@@ -105,6 +106,7 @@ const useUserSidebarGroups = (): NavGroupProps[] => {
     },
     {
       title: t('sidebar.jobsAndServices'),
+      icon: FlaskConicalIcon,
       items: [
         {
           title: t('navigation.myJobs'),
@@ -134,6 +136,7 @@ const useUserSidebarGroups = (): NavGroupProps[] => {
     },
     {
       title: t('sidebar.dataAndImages'),
+      icon: DatabaseIcon,
       items: [
         {
           title: t('navigation.imageManagement'),
@@ -176,6 +179,7 @@ const useUserSidebarGroups = (): NavGroupProps[] => {
     },
     {
       title: t('sidebar.others'),
+      icon: SettingsIcon,
       items: [
         {
           title: t('navigation.more'),

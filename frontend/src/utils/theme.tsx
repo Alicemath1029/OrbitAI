@@ -57,6 +57,10 @@ const minimalGrey = createPaletteChannel({
   900: '#141A21',
 })
 const minimalGrey500Channel = '145 158 171'
+const minimalGrey900Channel = '20 26 33'
+const minimalPrimaryChannel = '0 167 111'
+const minimalRadius = 8
+const minimalDropdownRadius = 10
 
 const minimalPrimary = createPaletteChannel({
   lighter: '#C8FAD6',
@@ -124,7 +128,7 @@ export function ThemeProvider({
             palette: minimalPalette,
           },
         },
-        shape: { borderRadius: 8 },
+        shape: { borderRadius: minimalRadius },
         typography: {
           fontFamily:
             '"Public Sans Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -139,6 +143,253 @@ export function ThemeProvider({
               body: {
                 backgroundColor: '#F4F6F8',
               },
+            },
+          },
+          MuiPaper: {
+            styleOverrides: {
+              root: {
+                backgroundImage: 'none',
+              },
+            },
+          },
+          MuiPopover: {
+            styleOverrides: {
+              paper: ({ theme }) => ({
+                borderRadius: minimalDropdownRadius,
+                border: `1px solid ${varAlpha(minimalGrey500Channel, 0.12)}`,
+                boxShadow: `0 0 2px 0 ${varAlpha(minimalGrey500Channel, 0.16)}, 0 18px 36px -18px ${varAlpha(
+                  minimalGrey900Channel,
+                  0.28
+                )}`,
+                backgroundImage: 'none',
+                backgroundColor: theme.palette.background.paper,
+              }),
+            },
+          },
+          MuiMenu: {
+            styleOverrides: {
+              list: {
+                padding: 4,
+              },
+              paper: {
+                borderRadius: minimalDropdownRadius,
+              },
+            },
+          },
+          MuiTablePagination: {
+            styleOverrides: {
+              root: {
+                overflow: 'visible',
+              },
+              toolbar: {
+                paddingLeft: 0,
+                paddingRight: 0,
+              },
+            },
+          },
+          MuiMenuItem: {
+            styleOverrides: {
+              root: ({ theme }) => ({
+                minHeight: 36,
+                gap: theme.spacing(1.25),
+                margin: theme.spacing(0.25, 0),
+                padding: theme.spacing(1, 1.25),
+                borderRadius: 10,
+                color: theme.palette.text.secondary,
+                transition: theme.transitions.create(['background-color', 'color'], {
+                  duration: theme.transitions.duration.shorter,
+                }),
+                '&:hover': {
+                  color: theme.palette.text.primary,
+                  backgroundColor: theme.palette.action.hover,
+                },
+                '&.Mui-selected': {
+                  color: theme.palette.primary.dark,
+                  backgroundColor: varAlpha(minimalPrimaryChannel, 0.08),
+                  '&:hover': {
+                    backgroundColor: varAlpha(minimalPrimaryChannel, 0.14),
+                  },
+                },
+                '&.Mui-disabled': {
+                  opacity: 1,
+                  color: theme.palette.text.disabled,
+                },
+              }),
+            },
+          },
+          MuiButton: {
+            defaultProps: {
+              disableElevation: true,
+            },
+            styleOverrides: {
+              root: ({ theme }) => ({
+                minHeight: 36,
+                borderRadius: theme.shape.borderRadius,
+                fontWeight: 700,
+                textTransform: 'none',
+                boxShadow: 'none',
+                transition: theme.transitions.create(
+                  ['background-color', 'border-color', 'color', 'box-shadow', 'transform'],
+                  { duration: theme.transitions.duration.shorter }
+                ),
+                '&:hover': {
+                  boxShadow: 'none',
+                },
+                '&:active': {
+                  transform: 'translateY(1px)',
+                },
+              }),
+              contained: {
+                boxShadow: `0 8px 16px 0 ${varAlpha(minimalPrimaryChannel, 0.22)}`,
+                '&:hover': {
+                  boxShadow: `0 10px 20px 0 ${varAlpha(minimalPrimaryChannel, 0.22)}`,
+                },
+              },
+              outlined: ({ theme }) => ({
+                borderColor: 'transparent',
+                color: theme.palette.text.secondary,
+                backgroundColor: varAlpha(minimalGrey500Channel, 0.08),
+                '&:hover': {
+                  borderColor: 'transparent',
+                  color: theme.palette.primary.dark,
+                  backgroundColor: varAlpha(minimalPrimaryChannel, 0.08),
+                },
+              }),
+              text: ({ theme }) => ({
+                color: theme.palette.text.secondary,
+                '&:hover': {
+                  color: theme.palette.primary.dark,
+                  backgroundColor: varAlpha(minimalPrimaryChannel, 0.08),
+                },
+              }),
+            },
+          },
+          MuiIconButton: {
+            styleOverrides: {
+              root: ({ theme }) => ({
+                borderRadius: minimalDropdownRadius,
+                transition: theme.transitions.create(['background-color', 'color', 'transform'], {
+                  duration: theme.transitions.duration.shorter,
+                }),
+                '&:hover': {
+                  color: theme.palette.primary.dark,
+                  backgroundColor: varAlpha(minimalPrimaryChannel, 0.08),
+                },
+                '&:active': {
+                  transform: 'translateY(1px)',
+                },
+              }),
+            },
+          },
+          MuiChip: {
+            styleOverrides: {
+              root: ({ theme }) => ({
+                borderRadius: minimalDropdownRadius,
+                fontWeight: 700,
+                backgroundColor: varAlpha(minimalGrey500Channel, 0.12),
+                color: theme.palette.text.secondary,
+              }),
+              sizeSmall: {
+                borderRadius: minimalRadius,
+              },
+              colorPrimary: ({ theme }) => ({
+                color: theme.palette.primary.dark,
+                backgroundColor: varAlpha(minimalPrimaryChannel, 0.12),
+              }),
+            },
+          },
+          MuiTextField: {
+            defaultProps: {
+              variant: 'outlined',
+            },
+          },
+          MuiInputBase: {
+            styleOverrides: {
+              root: ({ theme }) => ({
+                fontSize: theme.typography.pxToRem(14),
+              }),
+              input: ({ theme }) => ({
+                '&::placeholder': {
+                  color: theme.palette.text.disabled,
+                  opacity: 1,
+                },
+              }),
+            },
+          },
+          MuiFilledInput: {
+            defaultProps: {
+              disableUnderline: true,
+            },
+            styleOverrides: {
+              root: ({ theme }) => ({
+                minHeight: 36,
+                borderRadius: theme.shape.borderRadius,
+                backgroundColor: varAlpha(minimalGrey500Channel, 0.08),
+                transition: theme.transitions.create(['background-color', 'box-shadow'], {
+                  duration: theme.transitions.duration.shorter,
+                }),
+                '&:hover, &.Mui-focused': {
+                  backgroundColor: varAlpha(minimalGrey500Channel, 0.14),
+                },
+                '&.Mui-focused': {
+                  boxShadow: `0 0 0 3px ${varAlpha(minimalPrimaryChannel, 0.12)}`,
+                },
+              }),
+              input: {
+                paddingTop: 9,
+                paddingBottom: 9,
+              },
+            },
+          },
+          MuiOutlinedInput: {
+            styleOverrides: {
+              root: ({ theme }) => ({
+                borderRadius: theme.shape.borderRadius,
+                backgroundColor: theme.palette.background.paper,
+                transition: theme.transitions.create(['background-color', 'box-shadow'], {
+                  duration: theme.transitions.duration.shorter,
+                }),
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: varAlpha(minimalGrey500Channel, 0.2),
+                  transition: theme.transitions.create('border-color', {
+                    duration: theme.transitions.duration.shorter,
+                  }),
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: varAlpha(minimalPrimaryChannel, 0.4),
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.palette.text.primary,
+                  borderWidth: 1,
+                },
+                '&.Mui-focused': {
+                  boxShadow: `0 0 0 3px ${varAlpha(minimalPrimaryChannel, 0.12)}`,
+                },
+              }),
+              input: {
+                paddingTop: 9,
+                paddingBottom: 9,
+              },
+            },
+          },
+          MuiSelect: {
+            styleOverrides: {
+              icon: {
+                right: 10,
+                width: 18,
+                height: 18,
+              },
+            },
+          },
+          MuiCheckbox: {
+            styleOverrides: {
+              root: ({ theme }) => ({
+                padding: 6,
+                color: theme.palette.text.disabled,
+                '&.Mui-checked': {
+                  color: theme.palette.primary.main,
+                },
+              }),
             },
           },
         },

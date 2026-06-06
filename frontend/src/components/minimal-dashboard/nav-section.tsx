@@ -34,7 +34,7 @@ type StyledState = {
   active?: boolean
   open?: boolean
   mini?: boolean
-  itemVariant: 'rootItem' | 'subItem'
+  itemVariant: 'rootItem' | 'sectionItem' | 'subItem'
 }
 
 const navSectionClasses = {
@@ -48,8 +48,8 @@ export function MinimalNavSection({ groups, mini, onNavigate }: MinimalNavSectio
   const cssVars = useMemo(() => createNavCssVars(theme), [theme])
 
   return (
-    <Box component="nav" sx={{ ...cssVars, px: mini ? 1 : 2, py: 1.5, overflowY: 'auto' }}>
-      <NavUl sx={{ gap: 'var(--nav-item-gap)' }}>
+    <Box component="nav" sx={{ ...cssVars, px: mini ? 1 : 2, py: 1, overflowY: 'auto' }}>
+      <NavUl sx={{ gap: mini ? 'var(--nav-item-gap)' : '2px' }}>
         {groups.map((group) => (
           <NavGroup
             key={group.title}
@@ -76,18 +76,34 @@ function NavGroup({
   onNavigate?: () => void
 }) {
   const [open, setOpen] = useState(true)
+  const active = group.items.some((item) => isItemActive(item, pathname))
+  const GroupIcon = group.icon
 
   return (
     <NavLi>
       {!mini && (
-        <NavSubheader open={open} onClick={() => setOpen((value) => !value)}>
-          <ChevronRight size={14} />
-          {group.title}
+        <NavSubheader active={active} open={open} onClick={() => setOpen((value) => !value)}>
+          <ChevronRight className="minimal-nav-subheader-arrow" size={14} />
+          <Box component="span" className="minimal-nav-subheader-body">
+            {GroupIcon && (
+              <Box component="span" className="minimal-nav-subheader-icon">
+                <GroupIcon size={17} strokeWidth={2.25} />
+              </Box>
+            )}
+            <Box component="span" className="minimal-nav-subheader-title">
+              {group.title}
+            </Box>
+          </Box>
         </NavSubheader>
       )}
 
       <Collapse in={mini || open} timeout={180}>
-        <NavUl sx={{ gap: 'var(--nav-item-gap)' }}>
+        <NavUl
+          sx={{
+            gap: 'var(--nav-item-gap)',
+            pl: mini ? 0 : 'var(--nav-group-content-pl)',
+          }}
+        >
           {group.items.map((item) => (
             <NavList
               key={getItemKey(item)}
@@ -113,6 +129,7 @@ function NavList({ item, depth, mini, pathname, onNavigate }: NavItemProps) {
   const Icon = item.icon
   const path = getItemPath(item)
   const isRootItem = depth === 1
+  const itemVariant = mini && isRootItem ? 'rootItem' : isRootItem ? 'sectionItem' : 'subItem'
 
   useEffect(() => {
     setOpen(active)
@@ -147,21 +164,28 @@ function NavList({ item, depth, mini, pathname, onNavigate }: NavItemProps) {
       active={active}
       open={open}
       mini={mini && isRootItem}
-      itemVariant={isRootItem ? 'rootItem' : 'subItem'}
+      itemVariant={itemVariant}
       onClick={handleClick}
     >
-      {Icon && (
-        <ItemIcon>
-          <Icon size={isRootItem ? 22 : 18} strokeWidth={2.2} />
-        </ItemIcon>
-      )}
+      <ItemBody className="minimal-nav-item-body">
+        {Icon && (
+          <ItemIcon className="minimal-nav-item-icon">
+            <Icon
+              size={itemVariant === 'rootItem' ? 23 : itemVariant === 'sectionItem' ? 21 : 17}
+              strokeWidth={2.2}
+            />
+          </ItemIcon>
+        )}
+
+        {!mini && (
+          <ItemTexts>
+            <ItemTitle className="minimal-nav-item-title">{title}</ItemTitle>
+          </ItemTexts>
+        )}
+      </ItemBody>
 
       {!mini && (
         <>
-          <ItemTexts>
-            <ItemTitle>{title}</ItemTitle>
-          </ItemTexts>
-
           {item.badge && <ItemInfo>{item.badge}</ItemInfo>}
 
           {hasChild && (
@@ -206,9 +230,13 @@ function NavList({ item, depth, mini, pathname, onNavigate }: NavItemProps) {
 function createNavCssVars(theme: Theme): CSSObject {
   const palette = theme.vars?.palette
   const primaryMainChannel = palette?.primary.mainChannel ?? '0 167 111'
+  const sectionActiveColor = '#006C80'
+  const sectionActiveChannel = '0 184 217'
+  const subActiveColor = '#B76E00'
+  const subActiveChannel = '255 171 0'
 
   return {
-    '--nav-item-color': palette?.text.secondary ?? theme.palette.text.secondary,
+    '--nav-item-color': palette?.text.primary ?? theme.palette.text.primary,
     '--nav-item-hover-bg': palette?.action.hover ?? theme.palette.action.hover,
     '--nav-item-caption-color': palette?.text.disabled ?? theme.palette.text.disabled,
     '--nav-item-root-active-color': palette?.primary.main ?? theme.palette.primary.main,
@@ -217,22 +245,34 @@ function createNavCssVars(theme: Theme): CSSObject {
     '--nav-item-root-active-hover-bg': varAlpha(primaryMainChannel, 0.16),
     '--nav-item-root-open-color': palette?.text.primary ?? theme.palette.text.primary,
     '--nav-item-root-open-bg': palette?.action.hover ?? theme.palette.action.hover,
-    '--nav-item-sub-active-color': palette?.text.primary ?? theme.palette.text.primary,
-    '--nav-item-sub-active-bg': palette?.action.hover ?? theme.palette.action.hover,
+    '--nav-item-section-active-color': sectionActiveColor,
+    '--nav-item-section-active-bg': varAlpha(sectionActiveChannel, 0.14),
+    '--nav-item-section-active-hover-bg': varAlpha(sectionActiveChannel, 0.2),
+    '--nav-item-section-open-color': palette?.text.primary ?? theme.palette.text.primary,
+    '--nav-item-section-open-bg': palette?.action.hover ?? theme.palette.action.hover,
+    '--nav-item-sub-active-color': subActiveColor,
+    '--nav-item-sub-active-bg': varAlpha(subActiveChannel, 0.18),
+    '--nav-item-sub-active-hover-bg': varAlpha(subActiveChannel, 0.26),
     '--nav-item-sub-open-color': palette?.text.primary ?? theme.palette.text.primary,
     '--nav-item-sub-open-bg': palette?.action.hover ?? theme.palette.action.hover,
-    '--nav-subheader-color': palette?.text.disabled ?? theme.palette.text.disabled,
+    '--nav-item-sub-bullet-active-color': subActiveColor,
+    '--nav-subheader-color': palette?.text.primary ?? theme.palette.text.primary,
     '--nav-subheader-hover-color': palette?.text.primary ?? theme.palette.text.primary,
-    '--nav-item-gap': '4px',
+    '--nav-subheader-active-color': palette?.primary.main ?? theme.palette.primary.main,
+    '--nav-subheader-active-bg': varAlpha(primaryMainChannel, 0.12),
+    '--nav-subheader-active-hover-bg': varAlpha(primaryMainChannel, 0.18),
+    '--nav-group-content-pl': '14px',
+    '--nav-item-gap': '5px',
     '--nav-item-radius': `${theme.shape.borderRadius}px`,
-    '--nav-item-pt': '4px',
-    '--nav-item-pr': '8px',
-    '--nav-item-pb': '4px',
-    '--nav-item-pl': '12px',
-    '--nav-item-root-height': '44px',
-    '--nav-item-sub-height': '36px',
-    '--nav-icon-size': '24px',
-    '--nav-icon-margin': '0 12px 0 0',
+    '--nav-item-pt': '5px',
+    '--nav-item-pr': '16px',
+    '--nav-item-pb': '5px',
+    '--nav-item-pl': '18px',
+    '--nav-item-root-height': '48px',
+    '--nav-item-section-height': '44px',
+    '--nav-item-sub-height': '39px',
+    '--nav-icon-size': '25px',
+    '--nav-icon-margin': '0 13px 0 0',
     '--nav-bullet-size': '12px',
     '--nav-bullet-light-color': '#EDEFF2',
     '--nav-bullet-dark-color': '#282F37',
@@ -295,36 +335,88 @@ const NavLi = styled((props: { children: ReactNode; className?: string; sx?: obj
   minWidth: 0,
 })
 
-const NavSubheader = styled(ListSubheader)<{ open?: boolean }>(({ theme, open }) => ({
-  ...theme.typography.overline,
+const navSubheaderShouldForwardProp = (prop: string) => !['active', 'open'].includes(prop)
+
+const NavSubheader = styled(ListSubheader, {
+  shouldForwardProp: navSubheaderShouldForwardProp,
+})<{ active?: boolean; open?: boolean }>(({ active, theme, open }) => ({
   cursor: 'pointer',
+  width: '100%',
+  boxSizing: 'border-box',
+  userSelect: 'none',
   alignItems: 'center',
   position: 'relative',
   gap: theme.spacing(0.75),
-  display: 'inline-flex',
-  alignSelf: 'flex-start',
-  minHeight: 34,
-  padding: theme.spacing(1.5, 1, 0.75, 1.5),
+  display: 'flex',
+  justifyContent: 'center',
+  minHeight: 48,
+  margin: theme.spacing(0.25, 0),
+  padding: theme.spacing(0.75, 1.5),
+  borderRadius: 'var(--nav-item-radius)',
   color: 'var(--nav-subheader-color)',
-  fontSize: theme.typography.pxToRem(11),
-  lineHeight: 1,
-  letterSpacing: 0.4,
+  fontSize: theme.typography.pxToRem(15.5),
+  fontWeight: 800,
+  lineHeight: 1.4,
+  letterSpacing: 0,
+  textTransform: 'none',
   backgroundColor: 'transparent',
-  transition: theme.transitions.create(['color', 'padding-left'], {
+  transition: theme.transitions.create(['background-color', 'color'], {
     duration: theme.transitions.duration.shorter,
   }),
-  '& svg': {
-    opacity: 0,
+  '& .minimal-nav-subheader-arrow': {
+    left: theme.spacing(1.25),
+    width: 17,
+    height: 17,
+    flexShrink: 0,
+    opacity: 0.86,
+    position: 'absolute',
     transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
     transition: theme.transitions.create(['opacity', 'transform'], {
       duration: theme.transitions.duration.shorter,
     }),
   },
-  '&:hover': {
-    paddingLeft: theme.spacing(2),
-    color: 'var(--nav-subheader-hover-color)',
-    '& svg': { opacity: 1 },
+  '& .minimal-nav-subheader-body': {
+    minWidth: 0,
+    maxWidth: 'calc(100% - 44px)',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing(0.85),
+    transform: 'translateX(-10px)',
   },
+  '& .minimal-nav-subheader-icon': {
+    width: 21,
+    height: 21,
+    flexShrink: 0,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.92,
+    '& svg': {
+      width: '100%',
+      height: '100%',
+    },
+  },
+  '& .minimal-nav-subheader-title': {
+    display: 'block',
+    minWidth: 0,
+    overflow: 'hidden',
+    textAlign: 'center',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+  },
+  '&:hover': {
+    color: 'var(--nav-subheader-hover-color)',
+    backgroundColor: 'var(--nav-item-hover-bg)',
+    '& .minimal-nav-subheader-arrow, & .minimal-nav-subheader-icon': { opacity: 1 },
+  },
+  ...(active && {
+    color: 'var(--nav-subheader-active-color)',
+    backgroundColor: 'var(--nav-subheader-active-bg)',
+    '&:hover': {
+      backgroundColor: 'var(--nav-subheader-active-hover-bg)',
+    },
+  }),
 }))
 
 const shouldForwardProp = (prop: string) =>
@@ -338,7 +430,8 @@ const ItemRoot = styled(ButtonBase, { shouldForwardProp })<StyledState>(
     display: 'flex',
     position: 'relative',
     alignItems: 'center',
-    textAlign: 'left',
+    justifyContent: 'center',
+    textAlign: 'center',
     borderRadius: 'var(--nav-item-radius)',
     color: 'var(--nav-item-color)',
     paddingTop: 'var(--nav-item-pt)',
@@ -355,6 +448,10 @@ const ItemRoot = styled(ButtonBase, { shouldForwardProp })<StyledState>(
       ...(mini && {
         justifyContent: 'center',
         padding: 0,
+        [`& .minimal-nav-item-body`]: {
+          maxWidth: 'none',
+          transform: 'none',
+        },
       }),
       ...(open &&
         !active &&
@@ -362,10 +459,50 @@ const ItemRoot = styled(ButtonBase, { shouldForwardProp })<StyledState>(
           color: 'var(--nav-item-root-open-color)',
           backgroundColor: 'var(--nav-item-root-open-bg)',
         }),
+      ...(active &&
+        (mini
+          ? {
+              color: 'var(--nav-item-root-active-color)',
+              backgroundColor: 'var(--nav-item-root-active-bg)',
+              '&:hover': { backgroundColor: 'var(--nav-item-root-active-hover-bg)' },
+            }
+          : {
+              color: 'var(--nav-item-sub-active-color)',
+              backgroundColor: 'var(--nav-item-sub-active-bg)',
+            })),
+    }),
+    ...(itemVariant === 'sectionItem' && {
+      minHeight: 'var(--nav-item-section-height)',
+      paddingLeft: theme.spacing(1.75),
+      paddingRight: theme.spacing(1.5),
+      color: 'var(--nav-item-color)',
+      [`& .minimal-nav-item-title`]: {
+        fontSize: theme.typography.pxToRem(15),
+        fontWeight: 800,
+      },
+      [`& .minimal-nav-item-icon`]: {
+        width: 22,
+        height: 22,
+        margin: theme.spacing(0, 1.25, 0, 0),
+        opacity: 0.95,
+        transition: theme.transitions.create('opacity', {
+          duration: theme.transitions.duration.shorter,
+        }),
+      },
+      ...(open &&
+        !active && {
+          color: 'var(--nav-item-section-open-color)',
+          backgroundColor: 'var(--nav-item-section-open-bg)',
+        }),
       ...(active && {
-        color: 'var(--nav-item-root-active-color)',
-        backgroundColor: 'var(--nav-item-root-active-bg)',
-        '&:hover': { backgroundColor: 'var(--nav-item-root-active-hover-bg)' },
+        color: 'var(--nav-item-section-active-color)',
+        backgroundColor: 'var(--nav-item-section-active-bg)',
+        '&:hover': {
+          backgroundColor: 'var(--nav-item-section-active-hover-bg)',
+        },
+        [`& .minimal-nav-item-icon`]: {
+          opacity: 1,
+        },
       }),
     }),
     ...(itemVariant === 'subItem' && {
@@ -379,6 +516,9 @@ const ItemRoot = styled(ButtonBase, { shouldForwardProp })<StyledState>(
         borderRadius: '50%',
         backgroundColor: 'var(--nav-bullet-light-color)',
         transform: 'translate(calc(var(--nav-bullet-size) * -1), 0) scale(0.38)',
+        transition: theme.transitions.create(['background-color', 'transform'], {
+          duration: theme.transitions.duration.shorter,
+        }),
       },
       ...(open && {
         color: 'var(--nav-item-sub-open-color)',
@@ -387,6 +527,13 @@ const ItemRoot = styled(ButtonBase, { shouldForwardProp })<StyledState>(
       ...(active && {
         color: 'var(--nav-item-sub-active-color)',
         backgroundColor: 'var(--nav-item-sub-active-bg)',
+        '&:hover': {
+          backgroundColor: 'var(--nav-item-sub-active-hover-bg)',
+        },
+        '&::before': {
+          backgroundColor: 'var(--nav-item-sub-bullet-active-color)',
+          transform: 'translate(calc(var(--nav-bullet-size) * -1), 0) scale(0.56)',
+        },
       }),
     }),
   })
@@ -406,8 +553,22 @@ const ItemIcon = styled('span')({
   },
 })
 
+const ItemBody = styled('span')(({ theme }) => ({
+  minWidth: 0,
+  maxWidth: 'calc(100% - 40px)',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  margin: '0 auto',
+  transform: 'translateX(-10px)',
+  [theme.breakpoints.down('sm')]: {
+    maxWidth: 'calc(100% - 24px)',
+    transform: 'translateX(-5px)',
+  },
+}))
+
 const ItemTexts = styled('span')({
-  flex: '1 1 auto',
+  flex: '0 1 auto',
   display: 'inline-flex',
   flexDirection: 'column',
   minWidth: 0,
@@ -415,11 +576,13 @@ const ItemTexts = styled('span')({
 
 const ItemTitle = styled('span')(({ theme }) => ({
   ...theme.typography.body2,
-  flex: '1 1 auto',
+  flex: '0 1 auto',
   overflow: 'hidden',
+  textAlign: 'center',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
-  fontWeight: theme.typography.fontWeightMedium,
+  fontSize: theme.typography.pxToRem(14),
+  fontWeight: 600,
 }))
 
 const ItemInfo = styled('span')(({ theme }) => {
@@ -448,7 +611,8 @@ const ItemArrow = styled('span', { shouldForwardProp })<{ open?: boolean }>(({ o
   width: 16,
   height: 16,
   flexShrink: 0,
-  marginLeft: 6,
+  right: theme.spacing(1.25),
+  position: 'absolute',
   display: 'inline-flex',
   transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
   transition: theme.transitions.create('transform', {

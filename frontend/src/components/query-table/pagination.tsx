@@ -14,27 +14,16 @@
  * limitations under the License.
  */
 // i18n-processed-v1.1.0
-// Modified code
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
 import { Row, Table } from '@tanstack/react-table'
-import { ChevronLeftIcon, ChevronRightIcon, RefreshCcw } from 'lucide-react'
+import { RefreshCcw } from 'lucide-react'
+import { varAlpha } from 'minimal-shared/utils'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-} from '@/components/ui/pagination'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-
+import { TablePaginationCustom } from '@/components/minimal-ui/table-pagination-custom'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,66 +38,9 @@ import {
 
 import TooltipButton from '../button/tooltip-button'
 
-const DOTS = '...'
-
-function usePagination({
-  currentPage,
-  totalPages,
-  siblingCount = 1,
-}: {
-  currentPage: number
-  totalPages: number
-  siblingCount?: number
-}) {
-  return React.useMemo(() => {
-    const totalPageNumbers = siblingCount + 5 // Start, end, current, and 2 siblings
-
-    // Case 1: If the number of pages is less than the page numbers we want to show
-    if (totalPageNumbers >= totalPages) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1)
-    }
-
-    const leftSiblingIndex = Math.max(currentPage - siblingCount, 1)
-    const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages)
-
-    const shouldShowLeftDots = leftSiblingIndex > 2
-    const shouldShowRightDots = rightSiblingIndex < totalPages - 2
-
-    const firstPageIndex = 1
-    const lastPageIndex = totalPages
-
-    // Case 2: No left dots to show, but rights dots to be shown
-    if (!shouldShowLeftDots && shouldShowRightDots) {
-      const leftItemCount = 3 + 2 * siblingCount
-      const leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1)
-
-      return [...leftRange, DOTS, totalPages]
-    }
-
-    // Case 3: No right dots to show, but left dots to be shown
-    if (shouldShowLeftDots && !shouldShowRightDots) {
-      const rightItemCount = 3 + 2 * siblingCount
-      const rightRange = Array.from(
-        { length: rightItemCount },
-        (_, i) => totalPages - rightItemCount + i + 1
-      )
-
-      return [firstPageIndex, DOTS, ...rightRange]
-    }
-
-    // Case 4: Both left and right dots to be shown
-    if (shouldShowLeftDots && shouldShowRightDots) {
-      const middleRange = Array.from(
-        { length: rightSiblingIndex - leftSiblingIndex + 1 },
-        (_, i) => leftSiblingIndex + i
-      )
-
-      return [firstPageIndex, DOTS, ...middleRange, DOTS, lastPageIndex]
-    }
-
-    return []
-  }, [currentPage, totalPages, siblingCount])
-}
+const MINIMAL_GREY_500_CHANNEL = '145 158 171'
+const MINIMAL_GREY_900_CHANNEL = '20 26 33'
+const MINIMAL_PRIMARY_CHANNEL = '0 167 111'
 
 export interface MultipleHandler<TData> {
   title: (rows: Row<TData>[]) => string
@@ -123,6 +55,8 @@ interface DataTablePaginationProps<TData> {
   refetch: () => void
   table: Table<TData>
   multipleHandlers?: MultipleHandler<TData>[]
+  totalCount?: number
+  surface?: 'card' | 'inline'
 }
 
 export function DataTablePagination<TData>({
@@ -130,28 +64,54 @@ export function DataTablePagination<TData>({
   refetch,
   table,
   multipleHandlers,
+  totalCount,
+  surface = 'card',
 }: DataTablePaginationProps<TData>) {
   const { t } = useTranslation()
-
-  const currentPage = table.getState().pagination.pageIndex + 1
-  const totalPages = table.getPageCount()
-
-  const paginationRange = usePagination({
-    currentPage,
-    totalPages,
-    siblingCount: 1,
-  })
-
-  const onPageChange = (page: number) => {
-    table.setPageIndex(page - 1)
-  }
+  const isInline = surface === 'inline'
+  const pagination = table.getState().pagination
+  const selectedRows = table.getFilteredSelectedRowModel().rows
+  const filteredRowsCount = table.getFilteredRowModel().rows.length
+  const pageCount = table.getPageCount()
+  const fallbackManualCount = pageCount > -1 ? pageCount * pagination.pageSize : -1
+  const count =
+    totalCount ?? (table.options.manualPagination ? fallbackManualCount : filteredRowsCount)
+  const rowsPerPageLabel = t('dataTablePagination.itemsPerPage', { count: 0 })
+    .replace('0', '')
+    .trim()
 
   return (
-    <div className="border-border/70 bg-card flex w-full flex-col gap-2 rounded-lg border px-3 py-2 shadow-[0_0_2px_0_hsl(211_31%_9%/0.06),0_10px_20px_-16px_hsl(211_31%_9%/0.14)] sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex flex-wrap items-center gap-1.5 text-xs">
-        {table.getFilteredSelectedRowModel().rows.length > 0 &&
+    <Box
+      sx={{
+        p: isInline ? { xs: 1, md: 1.25 } : 2,
+        gap: isInline ? 1.25 : 2,
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        alignItems: { xs: 'stretch', md: 'center' },
+        justifyContent: 'space-between',
+        border: '1px solid',
+        borderColor: isInline
+          ? varAlpha(MINIMAL_GREY_500_CHANNEL, 0.08)
+          : varAlpha(MINIMAL_GREY_500_CHANNEL, 0.16),
+        borderRadius: isInline ? 2.5 : 2,
+        bgcolor: isInline ? varAlpha(MINIMAL_GREY_500_CHANNEL, 0.035) : 'background.paper',
+        boxShadow: isInline
+          ? 'none'
+          : `0 0 2px 0 ${varAlpha(MINIMAL_GREY_500_CHANNEL, 0.16)}, 0 16px 32px -24px ${varAlpha(MINIMAL_GREY_900_CHANNEL, 0.22)}`,
+      }}
+    >
+      <Box
+        sx={{
+          gap: 1,
+          minWidth: 0,
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+        }}
+      >
+        {selectedRows.length > 0 &&
           multipleHandlers &&
-          multipleHandlers?.length > 0 &&
+          multipleHandlers.length > 0 &&
           multipleHandlers.map((multipleHandler, index) => (
             <AlertDialog key={index}>
               <AlertDialogTrigger asChild>
@@ -159,7 +119,7 @@ export function DataTablePagination<TData>({
                   variant="outline"
                   size="icon"
                   className="size-9"
-                  tooltipContent={multipleHandler.title(table.getFilteredSelectedRowModel().rows)}
+                  tooltipContent={multipleHandler.title(selectedRows)}
                 >
                   {multipleHandler.icon}
                 </TooltipButton>
@@ -167,11 +127,9 @@ export function DataTablePagination<TData>({
               <AlertDialogContent>
                 <>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      {multipleHandler.title(table.getFilteredSelectedRowModel().rows)}
-                    </AlertDialogTitle>
+                    <AlertDialogTitle>{multipleHandler.title(selectedRows)}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      {multipleHandler.description(table.getFilteredSelectedRowModel().rows)}
+                      {multipleHandler.description(selectedRows)}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -179,8 +137,7 @@ export function DataTablePagination<TData>({
                     <AlertDialogAction
                       variant={multipleHandler.isDanger ? 'destructive' : 'default'}
                       onClick={() => {
-                        multipleHandler.handleSubmit(table.getFilteredSelectedRowModel().rows)
-                        // cancel selection
+                        multipleHandler.handleSubmit(selectedRows)
                         table.resetRowSelection()
                       }}
                     >
@@ -191,113 +148,61 @@ export function DataTablePagination<TData>({
               </AlertDialogContent>
             </AlertDialog>
           ))}
-        <TooltipButton
-          variant="outline"
-          size="icon"
-          className="size-9"
-          tooltipContent={t('dataTablePagination.refresh')}
-          onClick={refetch}
-        >
-          <RefreshCcw className="h-3.5 w-3.5" />
-        </TooltipButton>
-        <Select
-          value={`${table.getState().pagination.pageSize}`}
-          onValueChange={(value) => {
-            table.setPageSize(Number(value))
+
+        <Tooltip title={t('dataTablePagination.refresh')}>
+          <IconButton
+            size="small"
+            onClick={refetch}
+            sx={{
+              width: 36,
+              height: 36,
+              color: 'text.secondary',
+              bgcolor: varAlpha(MINIMAL_GREY_500_CHANNEL, 0.08),
+              '&:hover': {
+                color: 'primary.dark',
+                bgcolor: varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.08),
+              },
+            }}
+          >
+            <RefreshCcw className="h-3.5 w-3.5" />
+          </IconButton>
+        </Tooltip>
+
+        <Box
+          component="p"
+          sx={{
+            m: 0,
+            minWidth: 0,
+            typography: 'caption',
+            color: 'text.secondary',
+            fontWeight: 600,
           }}
         >
-          <SelectTrigger className="h-9 w-[100px] pr-2 pl-3 text-xs">
-            <SelectValue placeholder={table.getState().pagination.pageSize} />
-          </SelectTrigger>
-          <SelectContent side="top">
-            {[10, 20, 50, 100, 200].map((pageSize) => (
-              <SelectItem key={pageSize} value={`${pageSize}`}>
-                {t('dataTablePagination.itemsPerPage', { count: pageSize })}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <p className="text-muted-foreground min-w-0 pl-1.5 font-medium">
           {t('dataTablePagination.updatedAt', { time: updatedAt })}
           {', '}
-          {table.getFilteredSelectedRowModel().rows.length === 0 ? (
-            <>
-              {t('dataTablePagination.totalItems', {
-                count: table.getFilteredRowModel().rows.length,
+          {selectedRows.length === 0
+            ? t('dataTablePagination.totalItems', { count: totalCount ?? filteredRowsCount })
+            : t('dataTablePagination.selectedItems', {
+                selected: selectedRows.length,
+                total: totalCount ?? filteredRowsCount,
               })}
-            </>
-          ) : (
-            <>
-              {t('dataTablePagination.selectedItems', {
-                selected: table.getFilteredSelectedRowModel().rows.length,
-                total: table.getFilteredRowModel().rows.length,
-              })}
-            </>
-          )}
-        </p>
-      </div>
-      <div className="flex items-center sm:space-x-6">
-        <div className="flex max-w-full items-center overflow-x-auto sm:space-x-2">
-          <Pagination>
-            <PaginationContent>
-              {/* Previous button */}
-              <PaginationItem>
-                <PaginationLink
-                  aria-label={t('dataTablePagination.previousPage')}
-                  size="icon"
-                  className={
-                    currentPage <= 1
-                      ? 'pointer-events-none cursor-not-allowed opacity-50'
-                      : 'cursor-pointer'
-                  }
-                  onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
-                >
-                  <ChevronLeftIcon className="size-4" />
-                </PaginationLink>
-              </PaginationItem>
+        </Box>
+      </Box>
 
-              {/* Page numbers */}
-              {paginationRange.map((pageNumber, index) => {
-                if (pageNumber === DOTS) {
-                  return (
-                    <PaginationItem key={`dots-${index}`}>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                  )
-                }
-
-                return (
-                  <PaginationItem key={pageNumber}>
-                    <PaginationLink
-                      onClick={() => onPageChange(pageNumber as number)}
-                      isActive={pageNumber === currentPage}
-                      className="cursor-pointer"
-                    >
-                      {pageNumber}
-                    </PaginationLink>
-                  </PaginationItem>
-                )
-              })}
-
-              {/* Next button */}
-              <PaginationItem>
-                <PaginationLink
-                  aria-label={t('dataTablePagination.nextPage')}
-                  size="icon"
-                  className={
-                    currentPage >= totalPages
-                      ? 'pointer-events-none cursor-not-allowed opacity-50'
-                      : 'cursor-pointer'
-                  }
-                  onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
-                >
-                  <ChevronRightIcon className="size-4" />
-                </PaginationLink>
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      </div>
-    </div>
+      <TablePaginationCustom
+        page={pagination.pageIndex}
+        count={count}
+        rowsPerPage={pagination.pageSize}
+        onPageChange={(_, page) => table.setPageIndex(page)}
+        onRowsPerPageChange={(event) => {
+          table.setPageSize(Number(event.target.value))
+          table.setPageIndex(0)
+        }}
+        labelRowsPerPage={rowsPerPageLabel}
+        labelDisplayedRows={({ from, to, count: total }) =>
+          total === -1 ? `${from}-${to}` : `${from}-${to} / ${total}`
+        }
+      />
+    </Box>
   )
 }

@@ -78,7 +78,7 @@ const ListedButton = ({
     >
       <Button
         className={cn(
-          'cursor-pointer rounded-r-none pr-3 capitalize shadow-none hover:bg-transparent dark:hover:bg-transparent',
+          'cursor-pointer rounded-r-none pr-3 whitespace-nowrap capitalize shadow-none hover:bg-transparent dark:hover:bg-transparent',
           variant === 'secondary'
             ? 'text-secondary-foreground hover:text-secondary-foreground'
             : 'text-primary-foreground hover:text-primary-foreground'
@@ -107,15 +107,26 @@ const ListedButton = ({
             />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" alignOffset={-5} className="w-[200px]" forceMount>
-          <DropdownMenuLabel className="text-muted-foreground text-xs">
+        <DropdownMenuContent
+          align="end"
+          alignOffset={-5}
+          className="w-[240px] max-w-[calc(100vw-24px)] p-1"
+          forceMount
+        >
+          <DropdownMenuLabel className="text-muted-foreground px-2 py-1 text-xs">
             {itemTitle}
           </DropdownMenuLabel>
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="my-0.5" />
           <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
             {items.map((item) => (
-              <DropdownMenuRadioItem key={item.key} value={item.key} disabled={item.disabled}>
-                {item.title}
+              <DropdownMenuRadioItem
+                key={item.key}
+                value={item.key}
+                disabled={item.disabled}
+                title={item.title}
+                className="min-h-8 py-1.5 pr-3 text-[13px] leading-5 whitespace-nowrap"
+              >
+                <span className="min-w-0 truncate whitespace-nowrap">{item.title}</span>
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>

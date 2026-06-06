@@ -1100,6 +1100,7 @@ function OperationLogsPage() {
           table={table}
           updatedAt={lastUpdatedAt}
           refetch={() => void refetch()}
+          totalCount={data?.data?.total ?? 0}
         />
       </div>
 

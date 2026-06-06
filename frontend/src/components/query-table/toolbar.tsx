@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 // i18n-processed-v1.1.0
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import InputAdornment from '@mui/material/InputAdornment'
+import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
 import { Table } from '@tanstack/react-table'
 import { SearchIcon, XIcon } from 'lucide-react'
+import { varAlpha } from 'minimal-shared/utils'
 import { useTranslation } from 'react-i18next'
-
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './faceted-filter'
 import { DataTableViewOptions } from './view-options'
+
+const MINIMAL_GREY_500_CHANNEL = '145 158 171'
+const MINIMAL_GREY_900_CHANNEL = '20 26 33'
+const MINIMAL_PRIMARY_CHANNEL = '0 167 111'
 
 export type DataTableToolbarConfig = {
   filterOptions: readonly {
@@ -47,6 +54,7 @@ interface DataTableToolbarProps<TData> extends React.HTMLAttributes<HTMLDivEleme
   table: Table<TData>
   config: DataTableToolbarConfig
   isLoading: boolean
+  surface?: 'card' | 'inline'
 }
 
 export function DataTableToolbar<TData>({
@@ -54,40 +62,151 @@ export function DataTableToolbar<TData>({
   config: { filterInput, filterOptions, getHeader, globalSearch },
   isLoading,
   children,
+  surface = 'card',
 }: DataTableToolbarProps<TData>) {
   const { t } = useTranslation()
+  const isInline = surface === 'inline'
   const isFiltered =
     table.getState().columnFilters.length > 0 ||
     (globalSearch?.enabled && Boolean(table.getState().globalFilter))
 
   return (
-    <div className="border-border/70 bg-card flex flex-col gap-2 rounded-lg border px-3 py-2 shadow-[0_0_2px_0_hsl(211_31%_9%/0.06),0_10px_20px_-16px_hsl(211_31%_9%/0.14)] sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
+    <Box
+      sx={{
+        p: isInline ? { xs: 1, md: 1.25 } : 2,
+        gap: isInline ? 1.25 : 2,
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        alignItems: { xs: 'stretch', md: 'center' },
+        justifyContent: 'space-between',
+        border: '1px solid',
+        borderColor: isInline
+          ? varAlpha(MINIMAL_GREY_500_CHANNEL, 0.08)
+          : varAlpha(MINIMAL_GREY_500_CHANNEL, 0.16),
+        borderRadius: isInline ? 2.5 : 2,
+        bgcolor: 'background.paper',
+        backgroundImage: isInline
+          ? `linear-gradient(135deg, ${varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.05)}, ${varAlpha(
+              MINIMAL_GREY_500_CHANNEL,
+              0.04
+            )})`
+          : 'none',
+        boxShadow: isInline
+          ? 'none'
+          : `0 0 2px 0 ${varAlpha(MINIMAL_GREY_500_CHANNEL, 0.16)}, 0 16px 32px -24px ${varAlpha(MINIMAL_GREY_900_CHANNEL, 0.22)}`,
+      }}
+    >
+      <Box
+        sx={{
+          gap: isInline ? 1 : 2,
+          width: 1,
+          minWidth: 0,
+          display: 'flex',
+          flexGrow: 1,
+          flexWrap: 'wrap',
+          alignItems: 'center',
+        }}
+      >
         {children}
         {(globalSearch?.enabled || filterInput) && (
-          <div className="relative h-9 w-full min-w-0 sm:ml-auto sm:w-auto sm:flex-none">
-            <SearchIcon className="text-muted-foreground absolute top-2.5 left-2.5 size-4" />
+          <Box sx={{ width: { xs: 1, sm: 'auto' }, minWidth: 0 }}>
             {globalSearch?.enabled && (
-              <Input
+              <TextField
+                hiddenLabel
+                size="small"
                 placeholder={
                   globalSearch.placeholder ?? t('dataTableToolbar.globalSearchPlaceholder')
                 }
                 value={table.getState().globalFilter || ''}
                 onChange={(event) => table.setGlobalFilter(event.target.value)}
-                className="h-9 w-full min-w-0 pl-8 sm:w-[150px] lg:w-[250px]"
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon className="text-muted-foreground size-4" />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                sx={{
+                  width: { xs: '100%', sm: 150, lg: 250 },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 999,
+                    bgcolor: varAlpha(MINIMAL_GREY_500_CHANNEL, 0.04),
+                    transition: (theme) =>
+                      theme.transitions.create(['background-color', 'box-shadow'], {
+                        duration: theme.transitions.duration.shorter,
+                      }),
+                    '& fieldset': {
+                      borderColor: varAlpha(MINIMAL_GREY_500_CHANNEL, 0.14),
+                    },
+                    '&:hover fieldset': {
+                      borderColor: varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.32),
+                    },
+                    '&.Mui-focused': {
+                      bgcolor: varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.06),
+                      boxShadow: `0 0 0 3px ${varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.1)}`,
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.48),
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    fontSize: 13,
+                    fontWeight: 650,
+                  },
+                }}
               />
             )}
             {filterInput && (
-              <Input
+              <TextField
+                hiddenLabel
+                size="small"
                 placeholder={filterInput.placeholder}
                 value={(table.getColumn(filterInput.key)?.getFilterValue() as string) ?? ''}
                 onChange={(event) =>
                   table.getColumn(filterInput.key)?.setFilterValue(event.target.value)
                 }
-                className="h-9 w-full min-w-0 pl-8 sm:w-[150px] lg:w-[250px]"
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon className="text-muted-foreground size-4" />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                sx={{
+                  width: { xs: '100%', sm: 150, lg: 250 },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 999,
+                    bgcolor: varAlpha(MINIMAL_GREY_500_CHANNEL, 0.04),
+                    transition: (theme) =>
+                      theme.transitions.create(['background-color', 'box-shadow'], {
+                        duration: theme.transitions.duration.shorter,
+                      }),
+                    '& fieldset': {
+                      borderColor: varAlpha(MINIMAL_GREY_500_CHANNEL, 0.14),
+                    },
+                    '&:hover fieldset': {
+                      borderColor: varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.32),
+                    },
+                    '&.Mui-focused': {
+                      bgcolor: varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.06),
+                      boxShadow: `0 0 0 3px ${varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.1)}`,
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.48),
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    fontSize: 13,
+                    fontWeight: 650,
+                  },
+                }}
               />
             )}
-          </div>
+          </Box>
         )}
         {filterOptions.map(
           (filterOption) =>
@@ -102,26 +221,34 @@ export function DataTableToolbar<TData>({
             )
         )}
         {isFiltered && !isLoading && (
-          <Button
-            variant="outline"
-            size="icon"
-            title={t('dataTableToolbar.clearFiltersButtonTitle')}
-            type="button"
-            onClick={() => {
-              table.resetColumnFilters()
-              if (globalSearch?.enabled) {
-                table.setGlobalFilter('')
-              }
-            }}
-            className="size-9 border-dashed"
-          >
-            <XIcon className="size-4" />
-          </Button>
+          <Tooltip title={t('dataTableToolbar.clearFiltersButtonTitle')}>
+            <IconButton
+              size="small"
+              type="button"
+              onClick={() => {
+                table.resetColumnFilters()
+                if (globalSearch?.enabled) {
+                  table.setGlobalFilter('')
+                }
+              }}
+              sx={{
+                width: 36,
+                height: 36,
+                color: 'primary.dark',
+                bgcolor: varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.08),
+                '&:hover': {
+                  bgcolor: varAlpha(MINIMAL_PRIMARY_CHANNEL, 0.14),
+                },
+              }}
+            >
+              <XIcon className="size-4" />
+            </IconButton>
+          </Tooltip>
         )}
-      </div>
-      <div className="shrink-0 self-start sm:self-auto">
+      </Box>
+      <Box sx={{ flexShrink: 0, alignSelf: { xs: 'flex-end', md: 'center' } }}>
         <DataTableViewOptions table={table} getHeader={getHeader} />
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }

@@ -36,11 +36,15 @@ export const PhaseBadge = <T,>({
   disableDefaultTooltip = false,
 }: PhaseBadgeProps<T>) => {
   const data = getPhaseLabel(phase)
+  const badgeClassName = cn(
+    'border-none rounded-full px-2.5 py-1 text-[11px] leading-none font-bold ring-1 ring-current/10 shadow-none transition-[background-color,color,box-shadow,transform]',
+    data.color
+  )
 
   // 如果禁用 tooltip,直接返回 badge
   if (disableDefaultTooltip) {
     return (
-      <Badge className={cn('border-none', data.color)} variant="outline">
+      <Badge className={badgeClassName} variant="outline">
         <div>{data.label}</div>
       </Badge>
     )
@@ -50,7 +54,10 @@ export const PhaseBadge = <T,>({
     <TooltipProvider delayDuration={100}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Badge className={cn('cursor-help border-none', data.color)} variant="outline">
+          <Badge
+            className={cn('cursor-help hover:-translate-y-px', badgeClassName)}
+            variant="outline"
+          >
             <div>{data.label}</div>
           </Badge>
         </TooltipTrigger>

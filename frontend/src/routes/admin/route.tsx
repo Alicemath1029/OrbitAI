@@ -57,6 +57,7 @@ const useAdminSidebarGroups = (): NavGroupProps[] => {
   return [
     {
       title: t('sidebar.resourceAndMonitoring'),
+      icon: ServerIcon,
       items: [
         {
           title: t('navigation.resourceManagement'),
@@ -99,6 +100,7 @@ const useAdminSidebarGroups = (): NavGroupProps[] => {
     },
     {
       title: t('sidebar.jobsAndServices'),
+      icon: FlaskConicalIcon,
       items: [
         {
           title: t('navigation.jobManagement'),
@@ -124,6 +126,7 @@ const useAdminSidebarGroups = (): NavGroupProps[] => {
     },
     {
       title: t('sidebar.usersAndAccounts'),
+      icon: UsersRoundIcon,
       items: [
         {
           title: t('navigation.userManagement'),
@@ -139,6 +142,7 @@ const useAdminSidebarGroups = (): NavGroupProps[] => {
     },
     {
       title: t('sidebar.dataAndImages'),
+      icon: DatabaseIcon,
       items: [
         {
           title: t('navigation.imageManagement'),
@@ -168,6 +172,7 @@ const useAdminSidebarGroups = (): NavGroupProps[] => {
     },
     {
       title: t('navigation.more'),
+      icon: SettingsIcon,
       items: [
         {
           title: t('navigation.platformSettings'),

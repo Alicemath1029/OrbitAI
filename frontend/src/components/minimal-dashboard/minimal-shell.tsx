@@ -57,8 +57,8 @@ import { showErrorToast } from '@/utils/toast'
 
 import { MinimalNavSection } from './nav-section'
 
-const NAV_WIDTH = 280
-const NAV_MINI_WIDTH = 88
+const NAV_WIDTH = 296
+const NAV_MINI_WIDTH = 92
 const HEADER_HEIGHT = 72
 
 type MinimalDashboardShellProps = PropsWithChildren<{
@@ -179,28 +179,37 @@ function NavHeader({
     <Box
       sx={{
         px: mini ? 1.25 : 3,
-        pt: 2.5,
-        pb: 1.5,
+        pt: 2.75,
+        pb: 1.75,
         gap: 1.25,
-        minHeight: 72,
+        minHeight: 78,
         display: 'flex',
+        position: 'relative',
         alignItems: 'center',
-        justifyContent: mini ? 'center' : 'space-between',
+        justifyContent: 'center',
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}>
-        <Box component={OrbitIcon} sx={{ width: 34, height: 34, color: 'primary.main' }} />
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.25,
+          minWidth: 0,
+          transform: mini ? 'none' : 'translateX(-10px)',
+        }}
+      >
+        <Box component={OrbitIcon} sx={{ width: 36, height: 36, color: 'primary.main' }} />
         {!mini && (
           <Box
             component={OrbitTextIcon}
-            sx={{ width: 92, height: 30, color: 'text.primary', display: { xs: 'block' } }}
+            sx={{ width: 98, height: 32, color: 'text.primary', display: { xs: 'block' } }}
           />
         )}
       </Box>
 
       {!mini && onToggleMini && (
         <Tooltip title="折叠侧边栏">
-          <IconButton size="small" onClick={onToggleMini}>
+          <IconButton size="small" onClick={onToggleMini} sx={{ position: 'absolute', right: 16 }}>
             <ChevronsLeft size={18} />
           </IconButton>
         </Tooltip>
@@ -208,14 +217,18 @@ function NavHeader({
 
       {mini && onToggleMini && (
         <Tooltip title="展开侧边栏">
-          <IconButton size="small" onClick={onToggleMini}>
+          <IconButton size="small" onClick={onToggleMini} sx={{ position: 'absolute', right: 6 }}>
             <ChevronsRight size={18} />
           </IconButton>
         </Tooltip>
       )}
 
       {onCloseMobile && (
-        <IconButton size="small" onClick={onCloseMobile} sx={{ display: { xl: 'none' } }}>
+        <IconButton
+          size="small"
+          onClick={onCloseMobile}
+          sx={{ position: 'absolute', right: 16, display: { xl: 'none' } }}
+        >
           <XIcon size={18} />
         </IconButton>
       )}
@@ -272,11 +285,11 @@ function QueueSwitcher({ mini }: { mini?: boolean }) {
           mini={mini}
           onClick={(event) => setAnchorEl(event.currentTarget)}
         >
-          <QueueAvatar queueName={currentQueue?.name} size={36} />
+          <QueueAvatar queueName={currentQueue?.name} size={38} />
 
           {!mini && (
             <>
-              <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+              <Box sx={{ minWidth: 0, maxWidth: 148, flex: '0 1 auto', textAlign: 'center' }}>
                 <Typography variant="subtitle2" noWrap>
                   {currentQueue?.nickname ?? '账户'}
                 </Typography>
@@ -291,7 +304,7 @@ function QueueSwitcher({ mini }: { mini?: boolean }) {
                   </Typography>
                 )}
               </Box>
-              <ChevronsUpDown size={16} />
+              <ChevronsUpDown size={17} />
             </>
           )}
         </AccountButton>
@@ -610,9 +623,9 @@ const AccountButton = styled(ButtonBase, {
   gap: theme.spacing(1.5),
   display: 'flex',
   alignItems: 'center',
-  justifyContent: mini ? 'center' : 'flex-start',
-  minHeight: mini ? 48 : 58,
-  padding: mini ? theme.spacing(0.75) : theme.spacing(1, 1.25),
+  justifyContent: 'center',
+  minHeight: mini ? 52 : 64,
+  padding: mini ? theme.spacing(0.75) : theme.spacing(1.1, 1.75),
   borderRadius: Number(theme.shape.borderRadius) * 1.5,
   color: theme.vars?.palette.text.primary ?? theme.palette.text.primary,
   textAlign: 'left',
@@ -625,4 +638,9 @@ const AccountButton = styled(ButtonBase, {
   '&.Mui-disabled': {
     opacity: 0.58,
   },
+  ...(!mini && {
+    '& > *': {
+      transform: 'translateX(-10px)',
+    },
+  }),
 }))
