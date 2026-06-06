@@ -216,7 +216,7 @@ export function DataTable<TData, TValue>({
           {!info && <>{children}</>}
         </DataTableToolbar>
       )}
-      <Card className="overflow-hidden p-0">
+      <Card className="border-border/70 bg-card/95 overflow-hidden p-0 shadow-[0_0_2px_0_hsl(211_31%_9%/0.06),0_12px_24px_-18px_hsl(211_31%_9%/0.18)]">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -227,7 +227,7 @@ export function DataTable<TData, TValue>({
                       <TableHead
                         key={header.id}
                         colSpan={header.colSpan}
-                        className="text-muted-foreground px-4"
+                        className="text-muted-foreground px-4 first:pl-4 last:pr-4"
                       >
                         {header.isPlaceholder
                           ? null
@@ -243,7 +243,7 @@ export function DataTable<TData, TValue>({
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="pl-4">
+                      <TableCell key={cell.id} className="px-4 first:pl-4 last:pr-4">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
@@ -253,7 +253,7 @@ export function DataTable<TData, TValue>({
                 <>
                   {isLoading ? (
                     <TableRow>
-                      <TableCell colSpan={table.getAllColumns().length} className="h-60">
+                      <TableCell colSpan={table.getAllColumns().length} className="h-44">
                         <LoadingCircleIcon />
                       </TableCell>
                     </TableRow>
@@ -261,13 +261,13 @@ export function DataTable<TData, TValue>({
                     <TableRow>
                       <TableCell
                         colSpan={table.getAllColumns().length}
-                        className="text-muted-foreground/85 h-60 text-center hover:bg-transparent"
+                        className="text-muted-foreground/85 h-44 text-center hover:bg-transparent"
                       >
-                        <div className="flex flex-col items-center justify-center py-16">
-                          <div className="bg-muted mb-4 rounded-full p-3">
-                            <GridIcon className="h-6 w-6" />
+                        <div className="flex flex-col items-center justify-center py-8">
+                          <div className="border-primary/10 bg-primary/10 text-primary mb-3 rounded-lg border p-3 shadow-[inset_0_1px_0_hsl(0_0%_100%/0.5)]">
+                            <GridIcon className="size-5" />
                           </div>
-                          <p className="select-none">
+                          <p className="text-sm font-semibold select-none">
                             {withI18n ? t('dataTable.noData') : '暂无数据'}
                           </p>
                         </div>

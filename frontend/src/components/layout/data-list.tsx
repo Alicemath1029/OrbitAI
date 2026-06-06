@@ -43,7 +43,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 import TipBadge from '@/components/badge/tip-badge'
@@ -174,15 +173,15 @@ export default function DataList({
     )
 
   return (
-    <div>
+    <div className="space-y-4">
       <PageTitle
         title={title}
         description={`我们为您准备了一些常见${title}，也欢迎您上传并分享更多${title}。`}
       >
         {actionArea}
       </PageTitle>
-      <div className="my-4 flex flex-col gap-3 sm:my-0 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex w-full min-w-0 flex-col gap-3 sm:my-4 sm:w-auto sm:flex-row sm:flex-nowrap sm:items-center">
+      <div className="border-border/70 bg-card/95 flex flex-col gap-2 rounded-lg border px-3 py-2 shadow-[0_0_2px_0_hsl(211_31%_9%/0.05),0_10px_20px_-16px_hsl(211_31%_9%/0.16)] sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex w-full min-w-0 flex-col gap-2 sm:w-auto sm:flex-row sm:flex-nowrap sm:items-center">
           <div className="relative h-9 w-full min-w-0 sm:ml-auto sm:w-auto sm:flex-none">
             <SearchIcon className="text-muted-foreground absolute top-2.5 left-2.5 size-4" />
             <Input
@@ -265,21 +264,20 @@ export default function DataList({
           </Select>
         </div>
       </div>
-      <Separator />
       {filteredItems.length === 0 ? (
         <Nothing />
       ) : (
-        <ul className="faded-bottom no-scrollbar grid min-w-0 gap-4 overflow-auto pt-4 pb-16 md:grid-cols-2 lg:grid-cols-3">
+        <ul className="faded-bottom no-scrollbar grid min-w-0 gap-3 overflow-auto pb-10 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {filteredItems.map((item, index) => (
             <motion.li
               key={item.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: (index / 3) * 0.1 }}
-              whileHover={{ y: -5 }}
-              className="bg-card flex min-w-0 flex-col justify-between gap-3 rounded-lg border hover:shadow-md"
+              whileHover={{ y: -2 }}
+              className="group border-border/70 bg-card hover:border-primary/30 flex min-w-0 flex-col justify-between overflow-hidden rounded-lg border shadow-[0_0_2px_0_hsl(211_31%_9%/0.05),0_10px_20px_-16px_hsl(211_31%_9%/0.14)] transition-[border-color,box-shadow] hover:shadow-[0_0_2px_0_hsl(211_31%_9%/0.08),0_16px_32px_-22px_hsl(211_31%_9%/0.18)]"
             >
-              <div className="flex min-w-0 flex-row items-center justify-between gap-2 p-4 pb-0">
+              <div className="flex min-w-0 flex-row items-start justify-between gap-2 p-4 pb-0">
                 {mainArea ? <>{mainArea(item)}</> : <></>}
                 {user?.name === item.owner.username && (
                   <AlertDialog>
@@ -331,20 +329,20 @@ export default function DataList({
               {item.tag.length > 0 && (
                 <div className="flex flex-row flex-wrap gap-1 px-4 pb-1">
                   {item.tag.map((tag) => (
-                    <Badge variant="secondary" key={tag} className="rounded-full">
+                    <Badge variant="secondary" key={tag} className="rounded-full px-2.5">
                       {tag}
                     </Badge>
                   ))}
                 </div>
               )}
               <p
-                className="text-muted-foreground line-clamp-3 px-4 text-sm text-balance"
+                className="text-muted-foreground line-clamp-2 px-4 text-sm leading-6 text-balance"
                 title={item.desc}
               >
                 {item.desc}
               </p>
               <div>
-                <div className="flex items-end justify-between gap-2 p-4 pt-0">
+                <div className="border-border/70 bg-muted/35 mt-2 flex items-end justify-between gap-2 border-t px-4 py-3">
                   <div className="flex flex-row flex-wrap gap-1">
                     <TipBadge
                       title={

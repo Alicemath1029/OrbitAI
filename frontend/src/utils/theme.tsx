@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createContext, useContext, useEffect, useState } from 'react'
+import '@fontsource-variable/public-sans'
+import '@fontsource/barlow/400.css'
+import '@fontsource/barlow/500.css'
+import '@fontsource/barlow/600.css'
+import '@fontsource/barlow/700.css'
+import '@fontsource/barlow/800.css'
+import CssBaseline from '@mui/material/CssBaseline'
+import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
+import { createPaletteChannel, varAlpha } from 'minimal-shared/utils'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 type Theme = 'dark' | 'light' | 'system'
 
@@ -29,20 +38,112 @@ type ThemeProviderState = {
 }
 
 const initialState: ThemeProviderState = {
-  theme: 'system',
+  theme: 'light',
   setTheme: () => null,
 }
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
+const minimalGrey = createPaletteChannel({
+  50: '#FCFDFD',
+  100: '#F9FAFB',
+  200: '#F4F6F8',
+  300: '#DFE3E8',
+  400: '#C4CDD5',
+  500: '#919EAB',
+  600: '#637381',
+  700: '#454F5B',
+  800: '#1C252E',
+  900: '#141A21',
+})
+const minimalGrey500Channel = '145 158 171'
+
+const minimalPrimary = createPaletteChannel({
+  lighter: '#C8FAD6',
+  light: '#5BE49B',
+  main: '#00A76F',
+  dark: '#007867',
+  darker: '#004B50',
+  contrastText: '#FFFFFF',
+})
+
+const minimalPalette = {
+  primary: minimalPrimary,
+  grey: minimalGrey,
+  common: createPaletteChannel({
+    black: '#000000',
+    white: '#FFFFFF',
+  }),
+  text: createPaletteChannel({
+    primary: minimalGrey[800],
+    secondary: minimalGrey[600],
+    disabled: minimalGrey[500],
+  }),
+  background: createPaletteChannel({
+    paper: '#FFFFFF',
+    default: '#FFFFFF',
+    neutral: minimalGrey[200],
+  }),
+  divider: varAlpha(minimalGrey500Channel, 0.2),
+  action: {
+    active: minimalGrey[600],
+    hover: varAlpha(minimalGrey500Channel, 0.08),
+    selected: varAlpha(minimalGrey500Channel, 0.16),
+    focus: varAlpha(minimalGrey500Channel, 0.24),
+    disabled: varAlpha(minimalGrey500Channel, 0.8),
+    disabledBackground: varAlpha(minimalGrey500Channel, 0.24),
+    hoverOpacity: 0.08,
+    selectedOpacity: 0.08,
+    focusOpacity: 0.12,
+    activatedOpacity: 0.12,
+    disabledOpacity: 0.48,
+  },
+}
+
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
-  storageKey = 'vite-ui-theme',
+  defaultTheme = 'light',
+  storageKey = 'vite_ui_theme_minimals',
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
+  )
+  const muiTheme = useMemo(
+    () =>
+      createTheme({
+        cssVariables: {
+          cssVarPrefix: '',
+          colorSchemeSelector: 'class',
+        },
+        colorSchemes: {
+          light: {
+            palette: minimalPalette,
+          },
+          dark: {
+            palette: minimalPalette,
+          },
+        },
+        shape: { borderRadius: 8 },
+        typography: {
+          fontFamily:
+            '"Public Sans Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+          fontWeightRegular: 400,
+          fontWeightMedium: 500,
+          fontWeightBold: 700,
+          button: { textTransform: 'none' },
+        },
+        components: {
+          MuiCssBaseline: {
+            styleOverrides: {
+              body: {
+                backgroundColor: '#F4F6F8',
+              },
+            },
+          },
+        },
+      }),
+    []
   )
 
   useEffect(() => {
@@ -71,7 +172,10 @@ export function ThemeProvider({
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>
-      {children}
+      <MuiThemeProvider theme={muiTheme} defaultMode="light" modeStorageKey={`${storageKey}_mui`}>
+        <CssBaseline />
+        {children}
+      </MuiThemeProvider>
     </ThemeProviderContext.Provider>
   )
 }

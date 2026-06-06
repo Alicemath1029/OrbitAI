@@ -95,9 +95,9 @@ export function TeamSwitcher() {
           <DropdownMenuTrigger disabled={isAdminView} asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="border-sidebar-border/70 bg-sidebar-accent/45 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground shadow-[0_12px_30px_-24px_hsl(211_31%_9%/0.32)]"
             >
-              <Avatar className="grid h-8 w-8 place-items-center overflow-hidden rounded-md bg-white/8 ring-1 ring-white/10">
+              <Avatar className="bg-primary/10 ring-primary/15 grid h-9 w-9 place-items-center overflow-hidden rounded-xl ring-1">
                 {currentQueue?.name && (
                   <Identicon
                     value={stringToSS58(currentQueue?.name)}
@@ -143,7 +143,7 @@ export function TeamSwitcher() {
                   </span>
                 )}
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDown className="text-sidebar-foreground/45 ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -161,9 +161,9 @@ export function TeamSwitcher() {
                     switchQueue(queue)
                   }
                 }}
-                className="gap-2 p-2"
+                className="gap-2 rounded-lg p-2"
               >
-                <div className="size-6 overflow-hidden">
+                <div className="bg-primary/10 ring-primary/10 size-7 overflow-hidden rounded-lg ring-1">
                   <Identicon
                     value={stringToSS58(queue.name)}
                     size={24}

@@ -90,14 +90,14 @@ export function NavUser() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="border-sidebar-border/70 bg-sidebar-accent/35 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground shadow-[0_12px_30px_-24px_hsl(211_31%_9%/0.32)]"
             >
-              <UserAvatar user={user} className="rounded-md bg-white/8 ring-1 ring-white/10" />
+              <UserAvatar user={user} className="bg-primary/10 ring-primary/15 rounded-xl ring-1" />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{displayName}</span>
                 <span className="text-sidebar-foreground/50 truncate text-xs">{user?.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDown className="text-sidebar-foreground/45 ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -107,11 +107,11 @@ export function NavUser() {
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <UserAvatar user={user} className="rounded-md" />
+              <div className="bg-muted/60 m-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm">
+                <UserAvatar user={user} className="rounded-xl" />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{displayName}</span>
-                  <span className="truncate text-xs">{user?.email}</span>
+                  <span className="text-muted-foreground truncate text-xs">{user?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>

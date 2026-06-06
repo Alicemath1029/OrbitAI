@@ -161,7 +161,7 @@ export default function FolderNavigation({
         <DocsButton title="阅读文档" url="file/file/" />
       </PageTitle>
       <div
-        className={cn('mt-6 grid gap-6', {
+        className={cn('mt-4 grid gap-3', {
           'grid-cols-1 md:grid-cols-2': data.length === 2,
           'grid-cols-1 md:grid-cols-3': data.length === 3,
         })}
@@ -186,43 +186,33 @@ export default function FolderNavigation({
             >
               <div
                 className={cn(
-                  'group bg-card relative flex flex-col overflow-hidden rounded-3xl border p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl'
+                  'group bg-card border-border/70 hover:border-primary/30 relative flex flex-col overflow-hidden rounded-lg border p-4 shadow-[0_0_2px_0_hsl(211_31%_9%/0.05),0_10px_20px_-16px_hsl(211_31%_9%/0.14)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_2px_0_hsl(211_31%_9%/0.08),0_16px_32px_-22px_hsl(211_31%_9%/0.18)]'
                 )}
               >
-                {/* Large background number watermark */}
-                <div className="pointer-events-none absolute -top-8 -right-6 font-sans text-[120px] font-bold opacity-[0.03] select-none">
-                  {index + 1}
-                </div>
-
                 {/* Header Section */}
-                <div className="relative z-10 mb-6 flex items-start justify-between">
-                  <div className={cn('rounded-xl p-2 shadow-sm', theme.iconBg)}>
-                    <Icon className="size-6" />
+                <div className="relative z-10 mb-4 flex items-start justify-between">
+                  <div className={cn('rounded-lg p-2 shadow-sm', theme.iconBg)}>
+                    <Icon className="size-5" />
                   </div>
-                  <span
-                    className={cn(
-                      'rounded-full px-3 py-1 text-xs font-semibold shadow-sm',
-                      theme.badge
-                    )}
-                  >
+                  <span className={cn('rounded-md px-2 py-0.5 text-xs font-semibold', theme.badge)}>
                     {badgeText}
                   </span>
                 </div>
 
                 {/* Title & Desc */}
-                <div className="relative z-10 mb-8 flex-1">
-                  <h3 className="mb-3 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+                <div className="relative z-10 mb-4 flex-1">
+                  <h3 className="mb-1.5 text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                     {getFolderTitle(t, r.name)}
                   </h3>
-                  <p className="text-highlight-slate line-clamp-2 h-10 text-sm leading-relaxed">
+                  <p className="text-highlight-slate line-clamp-2 min-h-10 text-sm leading-5">
                     {getFolderDescription(r.name, t)}
                   </p>
                 </div>
                 {/* Usage Metrics */}
-                <div className={`rounded-2xl p-4 ${theme.bg} relative z-10 mb-6 border`}>
-                  <div className="mb-2 flex items-baseline justify-between">
+                <div className={`rounded-lg px-3 py-2.5 ${theme.bg} relative z-10 mb-4 border`}>
+                  <div className="mb-1.5 flex items-baseline justify-between">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-foreground text-lg font-bold">???</span>
+                      <span className="text-foreground text-base font-semibold">???</span>
                       <span className="text-highlight-slate text-sm font-medium">GB</span>
                     </div>
                     <span className="text-highlight-slate text-xs">总 ??? GB</span>
@@ -245,7 +235,7 @@ export default function FolderNavigation({
                 {/* Action Button */}
                 <button
                   className={cn(
-                    'group/btn relative flex h-10 w-full items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm transition-all duration-200 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300',
+                    'group/btn relative flex h-9 w-full items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 shadow-sm transition-all duration-200 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300',
                     theme.button
                   )}
                   onClick={() => handleTitleNavigation(r.name)}
@@ -260,9 +250,9 @@ export default function FolderNavigation({
       </div>
 
       {rowData != undefined && data.length === 0 && (
-        <div className="py-12 text-center">
-          <Folder className="text-muted-foreground/50 mx-auto mb-4 size-12" />
-          <h3 className="mb-2 text-xl font-medium">{t('folderNavigation.noFolders.title')}</h3>
+        <div className="py-8 text-center">
+          <Folder className="text-muted-foreground/50 mx-auto mb-3 size-10" />
+          <h3 className="mb-1.5 text-lg font-medium">{t('folderNavigation.noFolders.title')}</h3>
           <p className="text-muted-foreground">{t('folderNavigation.noFolders.description')}</p>
         </div>
       )}

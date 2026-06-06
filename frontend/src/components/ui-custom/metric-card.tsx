@@ -40,17 +40,17 @@ export function MetricCard({ title, value, unit, description }: MetricCardProps)
   }, [value, unit])
 
   return (
-    <Card className="border">
+    <Card className="overflow-hidden border-border/70">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {description && <p className="text-xs text-muted-foreground">{description}</p>}
+        <CardTitle className="text-muted-foreground text-sm font-bold">{title}</CardTitle>
+        {description && <p className="text-muted-foreground text-xs">{description}</p>}
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">
-          {valueStr}<span className="text-xl ml-0.5">{unit}</span>
+        <div className="text-2xl font-semibold tracking-tight">
+          {valueStr}
+          <span className="text-muted-foreground ml-1 text-sm font-medium">{unit}</span>
         </div>
       </CardContent>
     </Card>
   )
 }
-

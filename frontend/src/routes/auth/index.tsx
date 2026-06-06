@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { HelpCircle, TerminalSquare } from 'lucide-react'
+import { Cpu, Gauge, HelpCircle, Server, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -30,7 +30,6 @@ import {
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-import DocsButton from '@/components/button/docs-button'
 import OrbitIcon from '@/components/icon/orbit-icon'
 import OrbitText from '@/components/icon/orbit-text'
 import NotFound from '@/components/placeholder/not-found'
@@ -103,7 +102,7 @@ function LoginPage() {
   // Calculate if we should show mode switcher
   const showSwitcher = enableLdap && enableNormalLogin
   const loginCardClass =
-    'tech-login-card border-border/75 mx-auto w-full max-w-[380px] space-y-6 rounded-md border p-6 shadow-[0_24px_80px_-48px_var(--primary-glow)] backdrop-blur-xl sm:p-7'
+    'mx-auto w-full max-w-[420px] space-y-6 rounded-2xl border border-border/75 bg-card p-6 shadow-[0_0_2px_0_hsl(211_31%_9%/0.08),0_24px_48px_-24px_hsl(211_31%_9%/0.18)] sm:p-8'
 
   // Handle mode switching
   const handleModeChange = (newMode: string) => {
@@ -146,84 +145,85 @@ function LoginPage() {
   }
 
   return (
-    <div className="bg-background min-h-[100dvh] w-full lg:grid lg:grid-cols-[1.08fr_0.92fr]">
+    <div className="bg-background min-h-[100dvh] w-full lg:grid lg:grid-cols-[1.05fr_0.95fr]">
       {/* 左侧部分 */}
-      <div className="bg-sidebar text-sidebar-foreground hidden lg:block">
+      <div className="bg-muted/40 text-foreground hidden lg:block">
         <div className="tech-login-visual relative h-full w-full overflow-hidden">
-          <div className="from-sidebar-primary/70 via-sidebar-primary/18 absolute top-0 right-0 h-px w-3/4 bg-gradient-to-l to-transparent" />
-          <div className="orbit-halo orbit-halo-slow border-sidebar-primary/20 absolute top-1/2 left-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full border shadow-[0_0_100px_-64px_var(--sidebar-primary)]" />
-          <div className="orbit-halo orbit-halo-fast border-sidebar-primary/12 absolute top-1/2 left-1/2 h-[18rem] w-[18rem] -translate-x-1/2 -translate-y-1/2 rounded-full border" />
-          <div className="orbit-core-pulse bg-sidebar-primary/70 absolute top-1/2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-[0_0_38px_10px_var(--sidebar-primary)]" />
-          <div className="orbit-signal orbit-signal-a" aria-hidden="true" />
-          <div className="orbit-signal orbit-signal-b" aria-hidden="true" />
-          <div className="orbit-signal orbit-signal-c" aria-hidden="true" />
-          <div className="orbit-data-rain" aria-hidden="true">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <span
-                key={index}
-                style={{
-                  animationDelay: `${index * -0.32}s`,
-                  height: `${36 + (index % 4) * 12}%`,
-                }}
-              />
-            ))}
-          </div>
           {/* 顶部Logo */}
           <div
             className="absolute top-10 left-10 z-20 flex items-center text-lg font-medium"
             title="Switch signup and login"
           >
             <button
-              className="border-sidebar-primary/16 hover:border-sidebar-primary/35 flex h-12 w-full flex-row items-center justify-center rounded-md border bg-white/[0.025] px-3 text-white/92 transition-colors hover:bg-white/[0.045]"
+              className="flex h-12 w-full flex-row items-center justify-center rounded-xl border border-white/22 bg-white/16 px-3 text-white shadow-[0_12px_24px_-18px_hsl(211_31%_9%/0.45)] backdrop-blur-md transition-colors hover:bg-white/22"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
-              <OrbitIcon className="text-sidebar-primary mr-1.5 h-7 w-7" />
+              <OrbitIcon className="mr-1.5 h-7 w-7 text-white" />
               <OrbitText className="h-4" />
             </button>
           </div>
           {/* 底部版权信息 */}
           <div className="absolute bottom-10 left-10 z-20">
             <blockquote className="space-y-2">
-              <footer className="font-mono text-[11px] tracking-[0.16em] text-white/38 uppercase">
-                Copyright @ RAIDS Lab
-              </footer>
+              <footer className="text-xs font-semibold text-white/64">Copyright @ RAIDS Lab</footer>
             </blockquote>
           </div>
           {/* 中间文字内容 */}
           <div className="relative flex h-full items-center">
-            <div className="z-10 max-w-3xl px-6 py-8 text-left text-white lg:px-16 lg:py-12">
-              <div className="border-sidebar-primary/22 text-sidebar-primary mb-6 inline-flex items-center gap-2 rounded-md border bg-white/[0.025] px-3 py-1.5 font-mono text-[11px] tracking-[0.18em] uppercase shadow-[inset_0_1px_0_hsla(0,0%,100%,0.06)]">
-                <TerminalSquare className="size-3.5" />
-                Orchestration Fabric
+            <div className="z-10 w-full max-w-3xl px-6 py-8 text-left text-white lg:px-16 lg:py-12">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/14 px-3 py-1.5 text-xs font-bold text-white shadow-[inset_0_1px_0_hsl(0_0%_100%/0.16)] backdrop-blur-md">
+                <Sparkles className="size-3.5" />
+                Resource orchestration
               </div>
-              <h1 className="mb-7 text-5xl leading-[1.04] font-semibold tracking-tight text-white xl:text-6xl">
-                <span className="text-sidebar-primary">Orbit</span>
-                <br />
+              <h1 className="mb-5 text-5xl leading-[1.04] font-bold tracking-tight text-white xl:text-6xl">
                 异构云资源
                 <br />
                 混合调度系统
               </h1>
-              <DocsButton
-                variant="ghost"
-                className="border-sidebar-primary/35 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 hover:text-sidebar-primary-foreground shadow-[0_0_0_1px_var(--primary-glow-soft),0_18px_38px_-24px_var(--sidebar-primary)]"
-                title="平台文档"
-                url=""
-              />
-              <div className="mt-10 grid max-w-xl grid-cols-3 gap-3">
-                {['GPU', 'QUEUE', 'OPS'].map((label, index) => (
-                  <div
-                    key={label}
-                    className="border-sidebar-primary/14 bg-white/[0.025] px-3 py-2 shadow-[inset_0_1px_0_hsla(0,0%,100%,0.05)] [clip-path:polygon(0_8px,8px_0,100%_0,100%_100%,0_100%)]"
-                  >
-                    <div className="font-mono text-[10px] tracking-[0.18em] text-white/42 uppercase">
-                      {label}
-                    </div>
-                    <div
-                      className="orbit-meter bg-sidebar-primary/75 mt-1 h-1 shadow-[0_0_18px_-6px_var(--sidebar-primary)]"
-                      style={{ width: `${72 - index * 11}%` }}
-                    />
+              <p className="max-w-xl text-base leading-7 text-white/72">
+                管理 GPU 作业、队列配额、镜像与共享数据，用统一控制台承载科研计算工作流。
+              </p>
+              <div className="mt-10 w-full max-w-xl rounded-2xl border border-white/18 bg-white/14 p-4 shadow-[0_24px_48px_-24px_hsl(211_31%_9%/0.45)] backdrop-blur-md">
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-bold text-white">Cluster overview</div>
+                    <div className="text-xs text-white/60">Live resource snapshot</div>
                   </div>
-                ))}
+                  <div className="text-primary rounded-full bg-white px-3 py-1 text-xs font-bold">
+                    Healthy
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { label: 'GPU', value: '72%', icon: Cpu },
+                    { label: 'Jobs', value: '128', icon: Gauge },
+                    { label: 'Nodes', value: '24', icon: Server },
+                  ].map((item) => (
+                    <div key={item.label} className="text-foreground rounded-xl bg-white p-3">
+                      <item.icon className="text-primary mb-3 size-5" />
+                      <div className="text-xl font-bold">{item.value}</div>
+                      <div className="text-muted-foreground text-xs">{item.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 space-y-2 rounded-xl bg-white/92 p-3">
+                  {['Queue utilization', 'Storage throughput', 'Image pulls'].map(
+                    (label, index) => (
+                      <div key={label} className="space-y-1.5">
+                        <div className="text-muted-foreground flex justify-between text-xs">
+                          <span>{label}</span>
+                          <span>{64 + index * 9}%</span>
+                        </div>
+                        <div className="bg-muted h-1.5 rounded-full">
+                          <div
+                            className="bg-primary h-full rounded-full"
+                            style={{ width: `${64 + index * 9}%` }}
+                          />
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
               </div>
             </div>
           </div>

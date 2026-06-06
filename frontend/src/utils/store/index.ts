@@ -28,7 +28,7 @@ const PRIVACY_ACCEPTED_KEY = 'privacy_accepted' // 新增：隐私政策同意�
 
 export const ACCESS_TOKEN_KEY = 'access_token'
 export const REFRESH_TOKEN_KEY = 'refresh_token'
-export const VITE_UI_THEME_KEY = 'vite_ui_theme'
+export const VITE_UI_THEME_KEY = 'vite_ui_theme_minimals'
 
 /**
  * Navigation BreadCrumb

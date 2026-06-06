@@ -61,7 +61,7 @@ export function DataTableToolbar<TData>({
     (globalSearch?.enabled && Boolean(table.getState().globalFilter))
 
   return (
-    <div className="tech-panel border-border/65 bg-card/58 flex flex-col gap-3 rounded-md border p-3 shadow-xs backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
+    <div className="border-border/70 bg-card flex flex-col gap-2 rounded-lg border px-3 py-2 shadow-[0_0_2px_0_hsl(211_31%_9%/0.06),0_10px_20px_-16px_hsl(211_31%_9%/0.14)] sm:flex-row sm:items-center sm:justify-between">
       <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
         {children}
         {(globalSearch?.enabled || filterInput) && (
@@ -74,7 +74,7 @@ export function DataTableToolbar<TData>({
                 }
                 value={table.getState().globalFilter || ''}
                 onChange={(event) => table.setGlobalFilter(event.target.value)}
-                className="bg-background h-9 w-full min-w-0 pl-8 sm:w-[150px] lg:w-[250px]"
+                className="h-9 w-full min-w-0 pl-8 sm:w-[150px] lg:w-[250px]"
               />
             )}
             {filterInput && (
@@ -84,7 +84,7 @@ export function DataTableToolbar<TData>({
                 onChange={(event) =>
                   table.getColumn(filterInput.key)?.setFilterValue(event.target.value)
                 }
-                className="bg-background h-9 w-full min-w-0 pl-8 sm:w-[150px] lg:w-[250px]"
+                className="h-9 w-full min-w-0 pl-8 sm:w-[150px] lg:w-[250px]"
               />
             )}
           </div>

@@ -43,23 +43,28 @@ export function ProgressCard({
   }
 
   return (
-    <Card className="border">
+    <Card className="overflow-hidden border-border/70">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {description && <p className="text-xs text-muted-foreground">{description}</p>}
+        <CardTitle className="text-muted-foreground text-sm font-bold">{title}</CardTitle>
+        {description && <p className="text-muted-foreground text-xs">{description}</p>}
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex justify-between">
-          {!showPercentage && 
-            (<span className="text-2xl font-bold">
+          {!showPercentage && (
+            <span className="text-2xl font-semibold tracking-tight">
               {value.toFixed(2)}
-              <span className="text-xl ml-0.5">{unit}</span>
-            </span>)}
-          {showPercentage && <span className="text-2xl font-bold">{percentage.toFixed(1)}<span className="text-xl ml-0.5">%</span></span>}
+              <span className="text-muted-foreground ml-1 text-sm font-medium">{unit}</span>
+            </span>
+          )}
+          {showPercentage && (
+            <span className="text-2xl font-semibold tracking-tight">
+              {percentage.toFixed(1)}
+              <span className="text-muted-foreground ml-1 text-sm font-medium">%</span>
+            </span>
+          )}
         </div>
         {percentage > 0.1 && <ProgressBar percent={percentage} />}
       </CardContent>
     </Card>
   )
 }
-

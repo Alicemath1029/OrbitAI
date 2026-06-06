@@ -26,21 +26,37 @@ interface DetailTitleProps extends React.HTMLAttributes<HTMLDivElement> {
   icon?: LucideIcon
 }
 
-const DetailTitle = ({ title, description, children, className, ...props }: DetailTitleProps) => {
+const DetailTitle = ({
+  title,
+  description,
+  children,
+  className,
+  icon: Icon,
+  ...props
+}: DetailTitleProps) => {
   return (
-    <div className={cn('flex flex-row items-center justify-between gap-3', className)}>
-      <div className="flex items-center space-x-4">
-        {props.icon && (
-          <div className="bg-muted flex h-20 w-20 items-center justify-center rounded-md border">
-            <props.icon className="text-muted-foreground size-10" />
+    <div
+      className={cn(
+        'border-border/70 bg-card/95 rounded-lg border px-4 py-3 shadow-[0_0_2px_0_hsl(211_31%_9%/0.06),0_12px_24px_-18px_hsl(211_31%_9%/0.18)]',
+        'flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between',
+        className
+      )}
+      {...props}
+    >
+      <div className="flex min-w-0 items-center gap-3">
+        {Icon && (
+          <div className="border-primary/10 bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-lg border shadow-[inset_0_1px_0_hsl(0_0%_100%/0.5)]">
+            <Icon className="size-5" />
           </div>
         )}
-        <div>
-          <h1 className="flex items-center gap-2 text-3xl font-bold">{title}</h1>
-          <p className="text-muted-foreground">{description}</p>
+        <div className="min-w-0">
+          <h1 className="truncate text-xl font-bold tracking-tight md:text-2xl">{title}</h1>
+          {description && (
+            <p className="text-muted-foreground mt-0.5 text-sm leading-6">{description}</p>
+          )}
         </div>
       </div>
-      {children}
+      {children && <div className="flex shrink-0 items-center gap-2">{children}</div>}
     </div>
   )
 }

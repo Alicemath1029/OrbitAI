@@ -31,14 +31,13 @@ export function MetricGroup({ title, children }: MetricGroupProps) {
   if (childCount === 0) return null
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-5 overflow-hidden border-border/70">
       <CardHeader className="pb-2">
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{children}</div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">{children}</div>
       </CardContent>
     </Card>
   )
 }
-

@@ -42,7 +42,7 @@ export function DataTableColumnHeader<TData, TValue>({
   const { t } = useTranslation()
 
   if (!column.getCanSort()) {
-    return <div className={cn('text-xs', className)}>{title}</div>
+    return <div className={cn('text-xs font-bold', className)}>{title}</div>
   }
 
   return (
@@ -52,15 +52,15 @@ export function DataTableColumnHeader<TData, TValue>({
           <Button
             variant="ghost"
             size="sm"
-            className="data-[state=open]:bg-accent -ml-3 h-8 min-w-fit whitespace-nowrap"
+            className="data-[state=open]:bg-accent data-[state=open]:text-accent-foreground -ml-2 h-8 min-w-fit rounded-lg px-2 whitespace-nowrap"
           >
-            <span className="text-xs">{title}</span>
+            <span className="text-xs font-bold">{title}</span>
             {column.getIsSorted() === 'desc' ? (
-              <ArrowDownIcon className="size-3.5" />
+              <ArrowDownIcon className="text-primary size-3.5" />
             ) : column.getIsSorted() === 'asc' ? (
-              <ArrowUpIcon className="size-3.5" />
+              <ArrowUpIcon className="text-primary size-3.5" />
             ) : (
-              <ArrowUpDownIcon className="size-3.5" />
+              <ArrowUpDownIcon className="text-muted-foreground/60 size-3.5" />
             )}
           </Button>
         </DropdownMenuTrigger>

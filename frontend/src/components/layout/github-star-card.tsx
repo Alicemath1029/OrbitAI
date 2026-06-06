@@ -53,10 +53,10 @@ export function GitHubStarCard() {
   if (isDismissed) return null
 
   return (
-    <div className="group border-sidebar-border/80 text-sidebar-foreground hover:border-sidebar-primary/35 relative rounded-lg border bg-white/[0.04] p-3 shadow-[inset_0_1px_0_hsla(0,0%,100%,0.06)] transition-colors hover:bg-white/[0.06]">
+    <div className="group border-sidebar-border/70 bg-sidebar-accent/35 text-sidebar-foreground hover:border-sidebar-primary/25 hover:bg-sidebar-accent/55 relative rounded-lg border p-3 shadow-[0_10px_24px_-20px_hsl(211_31%_9%/0.28)] transition-[background-color,border-color,box-shadow]">
       <button
         onClick={handleDismiss}
-        className="focus:ring-ring absolute top-1.5 right-1.5 rounded-sm opacity-0 transition-opacity group-hover:opacity-70 hover:opacity-100 focus:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none"
+        className="focus:ring-ring hover:bg-background/70 absolute top-2 right-2 rounded-lg p-1 opacity-0 transition-[background-color,opacity] group-hover:opacity-70 hover:opacity-100 focus:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none"
         aria-label="关闭"
       >
         <XIcon className="h-3.5 w-3.5" />
@@ -64,7 +64,7 @@ export function GitHubStarCard() {
 
       <div className="flex flex-col gap-2.5">
         <div className="flex items-start gap-2 pr-5">
-          <div className="bg-sidebar-primary/16 flex h-8 w-8 shrink-0 items-center justify-center rounded-md">
+          <div className="bg-sidebar-primary/12 ring-sidebar-primary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ring-1">
             <GithubIcon className="text-sidebar-primary h-4 w-4" />
           </div>
           <div className="flex-1 overflow-hidden">
@@ -79,12 +79,12 @@ export function GitHubStarCard() {
           href={GITHUB_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="focus:ring-ring border-sidebar-border/80 bg-sidebar-accent/80 text-sidebar-accent-foreground hover:bg-sidebar-accent flex w-full items-center justify-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-semibold shadow transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
+          className="focus:ring-ring border-sidebar-border/80 bg-background/70 text-sidebar-accent-foreground hover:bg-background flex w-full items-center justify-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-bold shadow-xs transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
         >
           <StarIcon className="h-3.5 w-3.5" />
           <span>Star on GitHub</span>
           {starCount !== null && starCount !== undefined && (
-            <span className="bg-background/20 ml-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold">
+            <span className="bg-primary/10 text-primary ml-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold">
               {starCount}
             </span>
           )}

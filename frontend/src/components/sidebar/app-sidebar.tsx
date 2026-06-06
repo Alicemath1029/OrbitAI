@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useLocation } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'
 import { UsersRoundIcon } from 'lucide-react'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import {
   Sidebar,
@@ -27,7 +28,7 @@ import {
 } from '@/components/ui/sidebar'
 
 import { GitHubStarCard } from '@/components/layout/github-star-card'
-import { NavGroup } from '@/components/sidebar/nav-main'
+import { NavGroup, findActiveNavItemKey } from '@/components/sidebar/nav-main'
 import { NavUser } from '@/components/sidebar/nav-user'
 import { TeamSwitcher } from '@/components/sidebar/team-switcher'
 
@@ -60,6 +61,7 @@ export function AppSidebar({
 }) {
   const isAdminView = useIsAdmin()
   const accountInfo = useAtomValue(atomUserContext)
+  const location = useLocation()
 
   // Special rule: when current account is not default account and in user view, add account management menu
   const filteredGroups = useMemo(() => {
@@ -100,6 +102,17 @@ export function AppSidebar({
     }
     return groups
   }, [isAdminView, accountInfo, groups])
+  const routeActiveItemKey = useMemo(
+    () => findActiveNavItemKey(filteredGroups, location.pathname),
+    [filteredGroups, location.pathname]
+  )
+  const [activeItemKey, setActiveItemKey] = useState(routeActiveItemKey)
+
+  useEffect(() => {
+    if (routeActiveItemKey) {
+      setActiveItemKey(routeActiveItemKey)
+    }
+  }, [routeActiveItemKey])
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -108,7 +121,12 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent className="gap-0">
         {filteredGroups.map((group) => (
-          <NavGroup key={group.title} {...group} />
+          <NavGroup
+            key={group.title}
+            {...group}
+            activeItemKey={activeItemKey}
+            onActiveItemChange={setActiveItemKey}
+          />
         ))}
       </SidebarContent>
       <SidebarFooter>

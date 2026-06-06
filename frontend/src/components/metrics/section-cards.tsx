@@ -19,28 +19,31 @@ interface SectionCardsProps {
 export function SectionCards({ items, className }: SectionCardsProps) {
   return (
     <div
-      className={cn(
-        'dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4',
-        className
-      )}
+      className={cn('grid grid-cols-1 gap-3 @xl/main:grid-cols-2 @5xl/main:grid-cols-4', className)}
     >
       {items.map((item) => (
-        <Card key={item.title} className="@container/card">
-          <CardHeader>
-            <CardDescription className="flex flex-row items-center gap-1">
-              {item.icon && <item.icon className="size-4" />}
-              {item.title}
-            </CardDescription>
-            <CardAction>
-              <CardTitle
-                className={cn(
-                  'text-2xl font-semibold tabular-nums @[250px]/card:text-3xl',
-                  item.className
+        <Card key={item.title} className="border-border/70 @container/card overflow-hidden">
+          <CardHeader className="gap-2">
+            <div className="flex items-center justify-between gap-3">
+              <CardDescription className="flex flex-row items-center gap-2 font-semibold">
+                {item.icon && (
+                  <span className="bg-primary/10 text-primary flex size-7 items-center justify-center rounded-md">
+                    <item.icon className="size-4" />
+                  </span>
                 )}
-              >
-                {item.value}
-              </CardTitle>
-            </CardAction>
+                {item.title}
+              </CardDescription>
+              <CardAction>
+                <CardTitle
+                  className={cn(
+                    'text-xl font-semibold tracking-tight tabular-nums @[250px]/card:text-2xl',
+                    item.className
+                  )}
+                >
+                  {item.value}
+                </CardTitle>
+              </CardAction>
+            </div>
           </CardHeader>
         </Card>
       ))}

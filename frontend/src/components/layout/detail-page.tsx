@@ -122,15 +122,25 @@ export default function DetailPage({
   }
 
   return (
-    <div className="flex h-full w-full flex-col gap-6 overflow-hidden">
-      <div className="shrink-0 space-y-6">
+    <div className="flex h-full w-full flex-col gap-4 overflow-hidden">
+      <div className="shrink-0 space-y-3">
         {header}
-        <div className="text-muted-foreground grid grid-cols-1 gap-3 text-sm sm:grid-cols-2 md:grid-cols-4">
+        <div className="border-border/70 bg-card/85 grid grid-cols-1 gap-2 rounded-lg border p-2 text-sm shadow-[0_0_2px_0_hsl(211_31%_9%/0.06),0_10px_20px_-16px_hsl(211_31%_9%/0.18)] sm:grid-cols-2 md:grid-cols-4">
           {info.map((data, index) => (
-            <div key={index} className={cn('flex min-w-0 items-center', data.className)}>
-              <data.icon className="text-muted-foreground mr-1.5 size-4 shrink-0" />
-              <span className="text-muted-foreground mr-1.5 truncate text-sm">{data.title}:</span>
-              <span className="min-w-0 truncate">{data.value}</span>
+            <div
+              key={index}
+              className={cn(
+                'bg-muted/45 flex min-w-0 items-center gap-2 rounded-md px-3 py-2',
+                data.className
+              )}
+            >
+              <span className="bg-background text-primary flex size-7 shrink-0 items-center justify-center rounded-md shadow-xs">
+                <data.icon className="size-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-muted-foreground truncate text-xs font-semibold">{data.title}</p>
+                <div className="text-foreground truncate text-sm font-semibold">{data.value}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -151,7 +161,7 @@ export default function DetailPage({
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="tabs-trigger-underline data-[state=active]:border-primary flex items-center gap-1 data-[state=active]:border-b-2"
+                      className="tabs-trigger-underline flex items-center gap-1"
                       data-state={tab === tabItem.key ? 'active' : 'inactive'}
                       onClick={() => setCurrentTab?.(tabItem.key)}
                     >

@@ -147,7 +147,7 @@ export function DataTablePagination<TData>({
   }
 
   return (
-    <div className="tech-panel border-border/65 bg-card/50 flex w-full flex-col gap-3 rounded-md border px-3 py-2.5 shadow-xs backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
+    <div className="border-border/70 bg-card flex w-full flex-col gap-2 rounded-lg border px-3 py-2 shadow-[0_0_2px_0_hsl(211_31%_9%/0.06),0_10px_20px_-16px_hsl(211_31%_9%/0.14)] sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-wrap items-center gap-1.5 text-xs">
         {table.getFilteredSelectedRowModel().rows.length > 0 &&
           multipleHandlers &&
@@ -206,7 +206,7 @@ export function DataTablePagination<TData>({
             table.setPageSize(Number(value))
           }}
         >
-          <SelectTrigger className="bg-background h-9 w-[100px] pr-2 pl-3 text-xs">
+          <SelectTrigger className="h-9 w-[100px] pr-2 pl-3 text-xs">
             <SelectValue placeholder={table.getState().pagination.pageSize} />
           </SelectTrigger>
           <SelectContent side="top">
