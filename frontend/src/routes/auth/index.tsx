@@ -13,9 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Link from '@mui/material/Link'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { Cpu, Gauge, HelpCircle, Server, Sparkles } from 'lucide-react'
-import { useState } from 'react'
+import {
+  Activity,
+  ArchiveRestoreIcon,
+  BarChart3,
+  BoxIcon,
+  CpuIcon,
+  Database,
+  FlaskConicalIcon,
+  GaugeIcon,
+  GitBranch,
+  HardDriveIcon,
+  HelpCircle,
+  Network,
+  ShieldCheck,
+  Zap,
+} from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { type ReactNode, useState } from 'react'
 import { toast } from 'sonner'
 
 import {
@@ -27,8 +50,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import OrbitIcon from '@/components/icon/orbit-icon'
 import OrbitText from '@/components/icon/orbit-text'
@@ -36,8 +57,6 @@ import NotFound from '@/components/placeholder/not-found'
 
 import { AuthMode } from '@/services/api/auth'
 import { queryAuthMode } from '@/services/query/auth'
-
-import { useTheme } from '@/utils/theme'
 
 import { ForgotPasswordForm } from './-components/forgot-password-form'
 import { LoginForm } from './-components/login-form'
@@ -89,7 +108,6 @@ function LoginPage() {
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [showRegisterDialog, setShowRegisterDialog] = useState(false)
   const [registerDialogType, setRegisterDialogType] = useState<'ldap' | 'normal_disabled'>('ldap')
-  const { theme, setTheme } = useTheme()
   const { enableLdap, ldapAlias, ldapHelp, enableNormalLogin, enableNormalRegister } =
     Route.useLoaderData()
 
@@ -99,12 +117,13 @@ function LoginPage() {
     return AuthMode.NORMAL
   })
 
-  // Calculate if we should show mode switcher
   const showSwitcher = enableLdap && enableNormalLogin
-  const loginCardClass =
-    'mx-auto w-full max-w-[420px] space-y-6 rounded-2xl border border-border/75 bg-card p-6 shadow-[0_0_2px_0_hsl(211_31%_9%/0.08),0_24px_48px_-24px_hsl(211_31%_9%/0.18)] sm:p-8'
+  const authPanelKey = showSignup
+    ? 'signup'
+    : showForgotPassword
+      ? 'forgot-password'
+      : `login-${selectedMode}`
 
-  // Handle mode switching
   const handleModeChange = (newMode: string) => {
     const mode = newMode as AuthMode
     setSelectedMode(mode)
@@ -112,226 +131,229 @@ function LoginPage() {
     setShowForgotPassword(false)
   }
 
-  // Handle registration button click
   const handleRegisterClick = () => {
     if (selectedMode === AuthMode.LDAP) {
       setRegisterDialogType('ldap')
       setShowRegisterDialog(true)
-    } else {
-      if (enableNormalRegister) {
-        setShowSignup(true)
-        setShowForgotPassword(false)
-      } else {
-        setRegisterDialogType('normal_disabled')
-        setShowRegisterDialog(true)
-      }
+      return
     }
+
+    if (enableNormalRegister) {
+      setShowSignup(true)
+      setShowForgotPassword(false)
+      return
+    }
+
+    setRegisterDialogType('normal_disabled')
+    setShowRegisterDialog(true)
   }
 
-  // Handle forgot password button click
   const handleForgotPasswordClick = () => {
     if (selectedMode === AuthMode.LDAP) {
       toast.info('请联系平台管理员协助重置密码')
-    } else {
-      setShowForgotPassword(true)
-      setShowSignup(false)
+      return
     }
+
+    setShowForgotPassword(true)
+    setShowSignup(false)
   }
 
-  // 返回登录表单
   const handleBackToLogin = () => {
     setShowSignup(false)
     setShowForgotPassword(false)
   }
 
   return (
-    <div className="bg-background min-h-[100dvh] w-full lg:grid lg:grid-cols-[1.05fr_0.95fr]">
-      {/* 左侧部分 */}
-      <div className="bg-muted/40 text-foreground hidden lg:block">
-        <div className="tech-login-visual relative h-full w-full overflow-hidden">
-          {/* 顶部Logo */}
-          <div
-            className="absolute top-10 left-10 z-20 flex items-center text-lg font-medium"
-            title="Switch signup and login"
-          >
-            <button
-              className="flex h-12 w-full flex-row items-center justify-center rounded-xl border border-white/22 bg-white/16 px-3 text-white shadow-[0_12px_24px_-18px_hsl(211_31%_9%/0.45)] backdrop-blur-md transition-colors hover:bg-white/22"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+    <Box className="orbit-auth-hero-page">
+      <HeroBackdrop />
+
+      <Box component="header" className="orbit-auth-hero-header">
+        <Box className="orbit-auth-hero-logo">
+          <OrbitIcon className="h-9 w-9 text-[#00A76F]" />
+          <OrbitText className="h-5 w-[90px] text-[#1C252E]" />
+        </Box>
+
+        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+          Orbit workspace
+        </Typography>
+      </Box>
+
+      <Box component="main" className="orbit-auth-hero-main">
+        <Box component="section" className="orbit-auth-statement-section">
+          <HeroDynamics />
+
+          <Box className="orbit-auth-statement-layout">
+            <motion.div
+              className="orbit-auth-statement-copy"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
             >
-              <OrbitIcon className="mr-1.5 h-7 w-7 text-white" />
-              <OrbitText className="h-4" />
-            </button>
-          </div>
-          {/* 底部版权信息 */}
-          <div className="absolute bottom-10 left-10 z-20">
-            <blockquote className="space-y-2">
-              <footer className="text-xs font-semibold text-white/64">Copyright @ RAIDS Lab</footer>
-            </blockquote>
-          </div>
-          {/* 中间文字内容 */}
-          <div className="relative flex h-full items-center">
-            <div className="z-10 w-full max-w-3xl px-6 py-8 text-left text-white lg:px-16 lg:py-12">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/14 px-3 py-1.5 text-xs font-bold text-white shadow-[inset_0_1px_0_hsl(0_0%_100%/0.16)] backdrop-blur-md">
-                <Sparkles className="size-3.5" />
-                Resource orchestration
-              </div>
-              <h1 className="mb-5 text-5xl leading-[1.04] font-bold tracking-tight text-white xl:text-6xl">
-                异构云资源
-                <br />
-                混合调度系统
-              </h1>
-              <p className="max-w-xl text-base leading-7 text-white/72">
-                管理 GPU 作业、队列配额、镜像与共享数据，用统一控制台承载科研计算工作流。
-              </p>
-              <div className="mt-10 w-full max-w-xl rounded-2xl border border-white/18 bg-white/14 p-4 shadow-[0_24px_48px_-24px_hsl(211_31%_9%/0.45)] backdrop-blur-md">
-                <div className="mb-4 flex items-center justify-between">
-                  <div>
-                    <div className="text-sm font-bold text-white">Cluster overview</div>
-                    <div className="text-xs text-white/60">Live resource snapshot</div>
-                  </div>
-                  <div className="text-primary rounded-full bg-white px-3 py-1 text-xs font-bold">
-                    Healthy
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { label: 'GPU', value: '72%', icon: Cpu },
-                    { label: 'Jobs', value: '128', icon: Gauge },
-                    { label: 'Nodes', value: '24', icon: Server },
-                  ].map((item) => (
-                    <div key={item.label} className="text-foreground rounded-xl bg-white p-3">
-                      <item.icon className="text-primary mb-3 size-5" />
-                      <div className="text-xl font-bold">{item.value}</div>
-                      <div className="text-muted-foreground text-xs">{item.label}</div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 space-y-2 rounded-xl bg-white/92 p-3">
-                  {['Queue utilization', 'Storage throughput', 'Image pulls'].map(
-                    (label, index) => (
-                      <div key={label} className="space-y-1.5">
-                        <div className="text-muted-foreground flex justify-between text-xs">
-                          <span>{label}</span>
-                          <span>{64 + index * 9}%</span>
-                        </div>
-                        <div className="bg-muted h-1.5 rounded-full">
-                          <div
-                            className="bg-primary h-full rounded-full"
-                            style={{ width: `${64 + index * 9}%` }}
-                          />
-                        </div>
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* 右侧表单部分 */}
-      <div className="app-shell-surface flex items-center justify-center px-4 py-12">
-        {showSignup && selectedMode === AuthMode.NORMAL ? (
-          <div className={loginCardClass}>
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-semibold tracking-tight">用户注册</h1>
-              <p className="text-muted-foreground text-sm">注册您在 Orbit 平台的账号</p>
-            </div>
-            <SignupForm />
-            <div className="text-muted-foreground text-center text-sm">
-              已有账号？
-              <button
-                onClick={handleBackToLogin}
-                className="text-primary underline-offset-4 hover:underline"
+              <Box className="orbit-auth-copy-kicker">
+                <Activity className="size-3.5" />
+                Orbit workspace
+              </Box>
+
+              <Typography
+                component="h1"
+                className="orbit-auth-hero-title"
+                aria-label="Orbit is all you need"
               >
-                立即登录
-              </button>
-            </div>
-          </div>
-        ) : showForgotPassword && selectedMode === AuthMode.NORMAL ? (
-          <div className={loginCardClass}>
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-semibold tracking-tight">重置密码</h1>
-              <p className="text-muted-foreground text-sm">我们将向您的邮箱发送密码重置链接</p>
-            </div>
-            <ForgotPasswordForm />
-            <div className="text-muted-foreground text-center text-sm">
-              想起密码了？
-              <button
-                onClick={handleBackToLogin}
-                className="text-primary underline-offset-4 hover:underline"
-              >
-                返回登录
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className={loginCardClass}>
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-semibold tracking-tight">用户登录</h1>
-              <p className="text-muted-foreground flex items-center justify-center gap-1.5 text-sm">
-                {selectedMode === AuthMode.LDAP ? (
-                  <>
-                    已接入 {ldapAlias || 'LDAP'} 统一身份认证
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <HelpCircle className="text-muted-foreground/60 h-3.5 w-3.5 cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent side="top" align="center" className="max-w-64">
-                          <p>{ldapHelp || '通过管理员配置的 LDAP 服务器进行身份认证'}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </>
+                <motion.span
+                  className="is-brand"
+                  aria-hidden="true"
+                  initial={{ opacity: 0, y: 26, filter: 'blur(8px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  transition={{
+                    delay: 0.12,
+                    duration: 0.62,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  Orbit
+                </motion.span>
+                <motion.span
+                  className="is-slogan-row"
+                  aria-hidden="true"
+                  initial={{ opacity: 0, y: 18, filter: 'blur(8px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  transition={{
+                    delay: 0.22,
+                    duration: 0.58,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  <span className="orbit-auth-title-rule" />
+                  <span className="is-slogan">is all you need</span>
+                </motion.span>
+              </Typography>
+
+              <Box className="orbit-auth-title-signal" aria-hidden="true">
+                <Box />
+                <Box />
+                <Box />
+              </Box>
+            </motion.div>
+
+            <Box className="orbit-auth-hero-login" aria-label="登录表单">
+              <AnimatePresence mode="wait" initial={false}>
+                {showSignup && selectedMode === AuthMode.NORMAL ? (
+                  <motion.div
+                    key={authPanelKey}
+                    className="orbit-auth-hero-panel"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <AuthCardHeader
+                      icon={<ShieldCheck className="size-4" />}
+                      title="创建账号"
+                      description="创建普通登录账号。"
+                    />
+                    <SignupForm />
+                    <FormSwitch
+                      text="已有账号？"
+                      actionText="立即登录"
+                      onClick={handleBackToLogin}
+                    />
+                  </motion.div>
+                ) : showForgotPassword && selectedMode === AuthMode.NORMAL ? (
+                  <motion.div
+                    key={authPanelKey}
+                    className="orbit-auth-hero-panel"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <AuthCardHeader
+                      icon={<Zap className="size-4" />}
+                      title="找回密码"
+                      description="重置普通账号密码。"
+                    />
+                    <ForgotPasswordForm />
+                    <FormSwitch
+                      text="想起密码了？"
+                      actionText="返回登录"
+                      onClick={handleBackToLogin}
+                    />
+                  </motion.div>
                 ) : (
-                  '请输入您的账号和密码'
+                  <motion.div
+                    key={authPanelKey}
+                    className="orbit-auth-hero-panel"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <AuthCardHeader
+                      icon={
+                        selectedMode === AuthMode.LDAP ? (
+                          <Network className="size-4" />
+                        ) : (
+                          <Database className="size-4" />
+                        )
+                      }
+                      title="进入工作台"
+                      description={
+                        selectedMode === AuthMode.LDAP
+                          ? `${ldapAlias || 'LDAP'} 统一身份认证`
+                          : '使用平台账号继续访问'
+                      }
+                      helpText={
+                        selectedMode === AuthMode.LDAP
+                          ? ldapHelp || '通过管理员配置的 LDAP 服务器进行身份认证'
+                          : undefined
+                      }
+                    />
+
+                    {showSwitcher && (
+                      <Tabs
+                        value={selectedMode}
+                        onChange={(_, value) => handleModeChange(value)}
+                        variant="fullWidth"
+                        className="orbit-auth-template-tabs"
+                      >
+                        <Tab value={AuthMode.LDAP} label={`${ldapAlias || 'LDAP'} 登录`} />
+                        <Tab value={AuthMode.NORMAL} label="普通登录" />
+                      </Tabs>
+                    )}
+
+                    <LoginForm
+                      searchParams={searchParams}
+                      login={auth.login}
+                      authMode={selectedMode}
+                      ldapAlias={ldapAlias}
+                      onForgotPasswordClick={handleForgotPasswordClick}
+                    />
+                    <FormSwitch
+                      text="还没有账号？"
+                      actionText="立即注册"
+                      onClick={handleRegisterClick}
+                    />
+                  </motion.div>
                 )}
-              </p>
-            </div>
+              </AnimatePresence>
+            </Box>
+          </Box>
 
-            {showSwitcher && (
-              <Tabs value={selectedMode} onValueChange={handleModeChange} className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value={AuthMode.LDAP} className="flex items-center gap-1.5">
-                    {ldapAlias || 'LDAP'} 登录
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex shrink-0 cursor-help">
-                          <HelpCircle className="text-muted-foreground/60 h-3.5 w-3.5" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" align="center" className="max-w-64">
-                        <p>{ldapHelp || '通过管理员配置的 LDAP 服务器进行身份认证'}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TabsTrigger>
-                  <TabsTrigger value={AuthMode.NORMAL}>普通登录</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            )}
+          <Box className="orbit-auth-scroll-cue" aria-hidden="true" />
+        </Box>
 
-            <LoginForm
-              searchParams={searchParams}
-              login={auth.login}
-              authMode={selectedMode}
-              ldapAlias={ldapAlias}
-              onForgotPasswordClick={handleForgotPasswordClick}
-            />
-            <div className="text-muted-foreground text-center text-sm">
-              还没有账号？
-              <button
-                onClick={handleRegisterClick}
-                className="text-primary underline-offset-4 hover:underline"
-              >
-                立即注册
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+        <Box component="section" className="orbit-auth-showcase-section">
+          <Box className="orbit-auth-showcase-head">
+            <Typography className="orbit-auth-access-kicker">What Orbit connects</Typography>
+            <Typography component="h2" className="orbit-auth-showcase-title">
+              计算、实验、数据与可观测能力在这里汇合
+            </Typography>
+          </Box>
 
-      {/* Registration guide dialog */}
+          <PlatformShowcase />
+        </Box>
+      </Box>
+
       <AlertDialog open={showRegisterDialog} onOpenChange={setShowRegisterDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -353,6 +375,196 @@ function LoginPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </Box>
+  )
+}
+
+function HeroBackdrop() {
+  return (
+    <Box className="orbit-auth-hero-backdrop" aria-hidden="true">
+      <Box className="orbit-auth-hero-bg-image" />
+      <Box className="orbit-auth-hero-dots" />
+      <svg className="orbit-auth-hero-svg" viewBox="0 0 1440 1080" fill="none">
+        <defs>
+          <radialGradient
+            id="orbit-auth-mask-gradient"
+            cx="0"
+            cy="0"
+            r="1"
+            gradientTransform="matrix(720 0 0 380 720 530)"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stopColor="white" />
+            <stop offset="1" stopColor="white" stopOpacity="0.05" />
+          </radialGradient>
+          <mask id="orbit-auth-mask">
+            <ellipse cx="720" cy="530" rx="720" ry="380" fill="url(#orbit-auth-mask-gradient)" />
+          </mask>
+        </defs>
+        <g mask="url(#orbit-auth-mask)">
+          {Array.from({ length: 9 }).map((_, index) => (
+            <circle
+              key={`circle-${index}`}
+              cx="720"
+              cy="530"
+              r={90 + index * 82}
+              className="orbit-auth-hero-circle"
+            />
+          ))}
+          {Array.from({ length: 17 }).map((_, index) => (
+            <line
+              key={`v-${index}`}
+              x1={80 + index * 80}
+              y1="0"
+              x2={80 + index * 80}
+              y2="1080"
+              className="orbit-auth-hero-line"
+            />
+          ))}
+          {Array.from({ length: 12 }).map((_, index) => (
+            <line
+              key={`h-${index}`}
+              x1="0"
+              y1={80 + index * 80}
+              x2="1440"
+              y2={80 + index * 80}
+              className="orbit-auth-hero-line"
+            />
+          ))}
+        </g>
+      </svg>
+    </Box>
+  )
+}
+
+function HeroDynamics() {
+  return (
+    <Box className="orbit-auth-dynamics" aria-hidden="true">
+      <Box className="orbit-auth-flow-field">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <Box key={`flow-${index}`} className="orbit-auth-flow-line" />
+        ))}
+      </Box>
+
+      <Box className="orbit-auth-orbit-field">
+        <Box className="orbit-auth-orbit-ring is-outer" />
+        <Box className="orbit-auth-orbit-ring is-middle" />
+        <Box className="orbit-auth-orbit-ring is-inner" />
+        <Box className="orbit-auth-orbit-core">
+          <Database className="size-5" />
+        </Box>
+      </Box>
+    </Box>
+  )
+}
+
+function PlatformShowcase() {
+  const rows = [
+    [
+      { icon: <CpuIcon className="size-4" />, title: 'Compute Queue', meta: 'PyTorch DDP' },
+      { icon: <FlaskConicalIcon className="size-4" />, title: 'Run Timeline', meta: 'tracking' },
+      { icon: <BarChart3 className="size-4" />, title: 'Metrics', meta: 'loss / accuracy' },
+      { icon: <HardDriveIcon className="size-4" />, title: 'Datasets', meta: 'shared mounts' },
+    ],
+    [
+      {
+        icon: <ArchiveRestoreIcon className="size-4" />,
+        title: 'Restore Points',
+        meta: 'latest restore',
+      },
+      { icon: <BoxIcon className="size-4" />, title: 'Artifacts', meta: 'model / report' },
+      { icon: <GitBranch className="size-4" />, title: 'Snapshots', meta: 'code / image' },
+      { icon: <GaugeIcon className="size-4" />, title: 'Grafana', meta: 'GPU monitor' },
+    ],
+    [
+      { icon: <Database className="size-4" />, title: 'PostgreSQL', meta: 'metadata' },
+      { icon: <Network className="size-4" />, title: 'Volcano', meta: 'queue scheduling' },
+      { icon: <Activity className="size-4" />, title: 'Prometheus', meta: 'observability' },
+      { icon: <ShieldCheck className="size-4" />, title: 'Accounts', meta: 'quota / auth' },
+    ],
+  ]
+
+  return (
+    <Box className="orbit-auth-showcase" aria-hidden="true">
+      {rows.map((row, rowIndex) => (
+        <Box
+          key={`row-${rowIndex}`}
+          className={`orbit-auth-card-row ${rowIndex % 2 === 1 ? 'is-reverse' : ''}`}
+        >
+          <Box className="orbit-auth-card-track">
+            {[...row, ...row, ...row].map((item, index) => (
+              <Box key={`${item.title}-${index}`} className="orbit-auth-floating-card">
+                <Box className="orbit-auth-floating-icon">{item.icon}</Box>
+                <Box className="orbit-auth-floating-copy">
+                  <Typography className="orbit-auth-floating-title">{item.title}</Typography>
+                  <Typography className="orbit-auth-floating-meta">{item.meta}</Typography>
+                </Box>
+                <Box className="orbit-auth-floating-bars">
+                  <Box />
+                  <Box />
+                  <Box />
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      ))}
+    </Box>
+  )
+}
+
+function AuthCardHeader({
+  description,
+  helpText,
+  icon,
+  title,
+}: {
+  description: string
+  helpText?: string
+  icon: ReactNode
+  title: string
+}) {
+  return (
+    <Box className="orbit-auth-template-head">
+      <Box className="orbit-auth-template-kicker">
+        {icon}
+        Workspace sign in
+      </Box>
+
+      <Box className="orbit-auth-template-title-row">
+        <Typography variant="h5">{title}</Typography>
+
+        {helpText && (
+          <Tooltip title={helpText} placement="top">
+            <IconButton size="small" color="default">
+              <HelpCircle className="size-4" />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Box>
+
+      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+        {description}
+      </Typography>
+    </Box>
+  )
+}
+
+function FormSwitch({
+  actionText,
+  onClick,
+  text,
+}: {
+  actionText: string
+  onClick: () => void
+  text: string
+}) {
+  return (
+    <Typography variant="body2" sx={{ mt: 2.5, color: 'text.secondary', textAlign: 'center' }}>
+      {text}{' '}
+      <Link component="button" type="button" variant="subtitle2" onClick={onClick}>
+        {actionText}
+      </Link>
+    </Typography>
   )
 }
