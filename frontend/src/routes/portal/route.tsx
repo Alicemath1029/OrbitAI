@@ -71,14 +71,25 @@ const useUserSidebarGroups = (): NavGroupProps[] => {
 
   return [
     {
-      title: t('sidebar.resourceAndMonitoring'),
-      icon: BarChartBigIcon,
+      title: t('sidebar.workspace'),
+      icon: LayoutDashboard,
       items: [
         {
           title: t('navigation.platformOverview'),
           url: '/portal/overview',
           icon: SquareChartGanttIcon,
         },
+        {
+          title: t('navigation.personalDashboard'),
+          url: '/portal/users/' + user?.name,
+          icon: LayoutDashboard,
+        },
+      ],
+    },
+    {
+      title: t('sidebar.resourceAndMonitoring'),
+      icon: BarChartBigIcon,
+      items: [
         {
           title: t('navigation.clusterMonitoring'),
           icon: BarChartBigIcon,
@@ -96,11 +107,6 @@ const useUserSidebarGroups = (): NavGroupProps[] => {
               url: '/portal/monitor/network',
             },
           ],
-        },
-        {
-          title: t('navigation.personalDashboard'),
-          url: '/portal/users/' + user?.name,
-          icon: LayoutDashboard,
         },
       ],
     },
