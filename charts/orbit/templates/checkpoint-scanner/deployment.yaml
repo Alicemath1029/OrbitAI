@@ -57,10 +57,10 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: /orbit
-              readOnly: true
+              readOnly: {{ .Values.checkpointScanner.readOnly }}
       volumes:
         - name: storage
           persistentVolumeClaim:
             claimName: {{ .Values.storage.pvcName }}
-            readOnly: true
+            readOnly: {{ .Values.checkpointScanner.readOnly }}
 {{- end }}

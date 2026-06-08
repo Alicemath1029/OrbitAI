@@ -1,8 +1,14 @@
 package checkpoint
 
 import (
+	"context"
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
+	"io"
+	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"gorm.io/datatypes"
@@ -29,12 +35,128 @@ type checkpointManifest struct {
 	Metadata      datatypes.JSONMap `json:"metadata"`
 }
 
+type manifestValidationTarget struct {
+	ActualSize int64
+	FilePath   string
+	JobName    string
+	RunID      *uint
+}
+
 func parseCheckpointManifest(data []byte) (*checkpointManifest, error) {
 	var manifest checkpointManifest
 	if err := json.Unmarshal(data, &manifest); err != nil {
 		return nil, err
 	}
 	return &manifest, nil
+}
+
+func validateCheckpointManifest(
+	ctx context.Context,
+	manifest *checkpointManifest,
+	target manifestValidationTarget,
+) []string {
+	if manifest == nil {
+		return nil
+	}
+	issues := make([]string, 0)
+	if schema := strings.TrimSpace(manifest.SchemaVersion); schema != "" && schema != "orbit.checkpoint.manifest.v1" {
+		issues = append(issues, fmt.Sprintf("unsupported schemaVersion %q", schema))
+	}
+	if manifest.Step != nil && *manifest.Step < 0 {
+		issues = append(issues, "step must be non-negative")
+	}
+	if schemaIssue := validateFrameworkCheckpointSchema(manifest); schemaIssue != "" {
+		issues = append(issues, schemaIssue)
+	}
+	if manifest.SizeBytes != nil && target.ActualSize >= 0 && *manifest.SizeBytes != target.ActualSize {
+		issues = append(issues, fmt.Sprintf("sizeBytes mismatch: manifest=%d actual=%d", *manifest.SizeBytes, target.ActualSize))
+	}
+	if jobName := strings.TrimSpace(manifest.JobName); jobName != "" && target.JobName != "" && jobName != target.JobName {
+		issues = append(issues, fmt.Sprintf("jobName mismatch: manifest=%q job=%q", jobName, target.JobName))
+	}
+	if runID := strings.TrimSpace(manifest.RunID); runID != "" && target.RunID != nil {
+		parsed, err := strconv.ParseUint(runID, 10, 64)
+		if err != nil || parsed == 0 {
+			issues = append(issues, fmt.Sprintf("runID %q is invalid", runID))
+		} else if uint(parsed) != *target.RunID {
+			issues = append(issues, fmt.Sprintf("runID mismatch: manifest=%d run=%d", parsed, *target.RunID))
+		}
+	}
+	if sha := strings.TrimSpace(manifest.SHA256); sha != "" && target.FilePath != "" {
+		actual, err := sha256File(ctx, target.FilePath)
+		if err != nil {
+			issues = append(issues, fmt.Sprintf("sha256 verification failed: %v", err))
+		} else if actual != "" && !strings.EqualFold(sha, actual) {
+			issues = append(issues, "sha256 mismatch")
+		}
+	}
+	return issues
+}
+
+func validateFrameworkCheckpointSchema(manifest *checkpointManifest) string {
+	if manifest == nil || manifest.Metadata == nil {
+		return ""
+	}
+	raw, ok := manifest.Metadata["checkpointSchemaVersion"]
+	if !ok {
+		return ""
+	}
+	schema, ok := raw.(string)
+	if !ok {
+		return "checkpointSchemaVersion must be a string"
+	}
+	schema = strings.TrimSpace(schema)
+	if schema == "" {
+		return ""
+	}
+	switch strings.ToLower(strings.TrimSpace(manifest.Framework)) {
+	case FrameworkPytorch:
+		if schema != "orbit.pytorch.checkpoint.v1" {
+			return fmt.Sprintf("unsupported pytorch checkpoint schema %q", schema)
+		}
+	case FrameworkFSDP:
+		if schema != "orbit.fsdp.checkpoint.v1" {
+			return fmt.Sprintf("unsupported fsdp checkpoint schema %q", schema)
+		}
+	}
+	return ""
+}
+
+func sha256File(ctx context.Context, path string) (string, error) {
+	info, err := os.Stat(path)
+	if err != nil {
+		return "", err
+	}
+	if info.IsDir() {
+		return "", nil
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	digest := sha256.New()
+	buf := make([]byte, 1024*1024)
+	for {
+		if err := ctx.Err(); err != nil {
+			return "", err
+		}
+		n, err := file.Read(buf)
+		if n > 0 {
+			if _, writeErr := digest.Write(buf[:n]); writeErr != nil {
+				return "", writeErr
+			}
+		}
+		if err == nil {
+			continue
+		}
+		if err == io.EOF {
+			break
+		}
+		return "", err
+	}
+	return fmt.Sprintf("%x", digest.Sum(nil)), nil
 }
 
 func manifestPathForCheckpoint(path string) string {
@@ -61,6 +183,35 @@ func applyManifestToCheckpoint(checkpoint *model.JobCheckpoint, manifest *checkp
 		checkpoint.SizeBytes = *manifest.SizeBytes
 	}
 	checkpoint.Metadata = mergeManifestMetadata(checkpoint.Metadata, manifest, manifestStoragePath)
+}
+
+func applyManifestValidationToCheckpoint(checkpoint *model.JobCheckpoint, issues []string) {
+	if checkpoint == nil || len(issues) == 0 {
+		return
+	}
+	if checkpoint.Metadata == nil {
+		checkpoint.Metadata = datatypes.JSONMap{}
+	}
+	checkpoint.Status = model.JobCheckpointStatusInvalid
+	checkpoint.Latest = false
+	checkpoint.Metadata["validationStatus"] = "invalid"
+	checkpoint.Metadata["validationErrors"] = issues
+}
+
+func applyManifestParseErrorToCheckpoint(checkpoint *model.JobCheckpoint, manifestStoragePath string, err error) {
+	if checkpoint == nil || err == nil {
+		return
+	}
+	if checkpoint.Metadata == nil {
+		checkpoint.Metadata = datatypes.JSONMap{}
+	}
+	checkpoint.Status = model.JobCheckpointStatusInvalid
+	checkpoint.Latest = false
+	checkpoint.Metadata["validationStatus"] = "invalid"
+	checkpoint.Metadata["validationErrors"] = []string{fmt.Sprintf("manifest parse failed: %v", err)}
+	if manifestStoragePath != "" {
+		checkpoint.Metadata["manifestStoragePath"] = filepath.ToSlash(filepath.Clean(manifestStoragePath))
+	}
 }
 
 func mergeManifestMetadata(

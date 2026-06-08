@@ -21,6 +21,10 @@ checkpointScanner:
   endpoint: http://checkpoint-scanner-service.orbit-workspace.svc.cluster.local:7330
   # Backend-to-scanner request timeout in seconds
   timeoutSeconds: 30
+  # Optional backend background scan interval in seconds. 0 disables periodic scans.
+  intervalSeconds: 0
+  # Max checkpoint-enabled jobs scanned in one background tick.
+  batchSize: 100
 
 # Endpoint URL for Prometheus API used for metrics and monitoring
 # Optional: If not specified, Prometheus integration will be disabled

@@ -172,8 +172,15 @@ func discoverCheckpoints(
 			return nil, err
 		}
 		item := newCheckpointRecord(record, info, filepath.Base(storagePath), info.CheckpointDir, storagePath, size, modTime)
-		if manifest, manifestStoragePath := loadStorageCheckpointManifest(ctx, storagePath); manifest != nil {
+		if manifest, manifestStoragePath, manifestErr := loadStorageCheckpointManifest(ctx, storagePath); manifestErr != nil {
+			applyManifestParseErrorToCheckpoint(&item, manifestStoragePath, manifestErr)
+		} else if manifest != nil {
 			applyManifestToCheckpoint(&item, manifest, manifestStoragePath)
+			applyManifestValidationToCheckpoint(&item, validateCheckpointManifest(ctx, manifest, manifestValidationTarget{
+				ActualSize: size,
+				JobName:    record.JobName,
+				RunID:      item.RunID,
+			}))
 		}
 		return []model.JobCheckpoint{item}, nil
 	}
@@ -243,8 +250,15 @@ func checkpointFromStoragePath(
 		modTime = stat.ModifyTime
 	}
 	item := newCheckpointRecord(record, info, name, childContainerPath, childStoragePath, size, modTime)
-	if manifest, manifestStoragePath := loadStorageCheckpointManifest(ctx, childStoragePath); manifest != nil {
+	if manifest, manifestStoragePath, manifestErr := loadStorageCheckpointManifest(ctx, childStoragePath); manifestErr != nil {
+		applyManifestParseErrorToCheckpoint(&item, manifestStoragePath, manifestErr)
+	} else if manifest != nil {
 		applyManifestToCheckpoint(&item, manifest, manifestStoragePath)
+		applyManifestValidationToCheckpoint(&item, validateCheckpointManifest(ctx, manifest, manifestValidationTarget{
+			ActualSize: size,
+			JobName:    record.JobName,
+			RunID:      item.RunID,
+		}))
 	}
 	return item, nil
 }
@@ -262,8 +276,10 @@ func looksLikeCheckpoint(framework string, file storage.Files) bool {
 		return true
 	}
 	switch strings.ToLower(framework) {
-	case FrameworkPytorch, FrameworkLightning:
+	case FrameworkPytorch, FrameworkLightning, FrameworkFSDP:
 		return !file.IsDir && hasCheckpointFileExt(file.Name)
+	case FrameworkTensorFlow, FrameworkJAX:
+		return file.IsDir || hasCheckpointFileExt(file.Name) || strings.HasSuffix(file.Name, ".pkl")
 	case FrameworkCustom:
 		return file.IsDir || hasCheckpointFileExt(file.Name)
 	default:
@@ -306,17 +322,17 @@ func scanTree(ctx context.Context, root string) (int64, time.Time, error) {
 	return size, modTime, nil
 }
 
-func loadStorageCheckpointManifest(ctx context.Context, storagePath string) (*checkpointManifest, string) {
+func loadStorageCheckpointManifest(ctx context.Context, storagePath string) (*checkpointManifest, string, error) {
 	manifestStoragePath := manifestPathForCheckpoint(storagePath)
 	data, err := storage.ReadRelativePath(ctx, manifestStoragePath, checkpointManifestReadLimit)
 	if err != nil {
-		return nil, ""
+		return nil, "", nil
 	}
 	manifest, err := parseCheckpointManifest(data)
 	if err != nil {
-		return nil, ""
+		return nil, manifestStoragePath, err
 	}
-	return manifest, manifestStoragePath
+	return manifest, manifestStoragePath, nil
 }
 
 func newCheckpointRecord(
@@ -384,7 +400,15 @@ func latestCheckpoint(items []model.JobCheckpoint) *model.JobCheckpoint {
 	if len(items) == 0 {
 		return nil
 	}
-	sorted := append([]model.JobCheckpoint(nil), items...)
+	sorted := make([]model.JobCheckpoint, 0, len(items))
+	for i := range items {
+		if items[i].Status == model.JobCheckpointStatusReady {
+			sorted = append(sorted, items[i])
+		}
+	}
+	if len(sorted) == 0 {
+		return nil
+	}
 	sort.SliceStable(sorted, func(i, j int) bool {
 		iTracked := isTrackerLatest(&sorted[i])
 		jTracked := isTrackerLatest(&sorted[j])
@@ -423,6 +447,9 @@ func markLatestFromTracker(ctx context.Context, storagePath string, items []mode
 	}
 	markerStep := latestMarkerStep(marker)
 	for i := range items {
+		if items[i].Status != model.JobCheckpointStatusReady {
+			continue
+		}
 		if checkpointMatchesTracker(&items[i], marker, markerStep) {
 			if items[i].Metadata == nil {
 				items[i].Metadata = datatypes.JSONMap{}

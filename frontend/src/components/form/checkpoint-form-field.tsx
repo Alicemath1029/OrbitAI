@@ -93,6 +93,9 @@ export function CheckpointFormCard<T extends FieldValues>({
                       <SelectItem value="deepspeed">DeepSpeed</SelectItem>
                       <SelectItem value="verl">VERL</SelectItem>
                       <SelectItem value="lightning">Lightning</SelectItem>
+                      <SelectItem value="fsdp">FSDP</SelectItem>
+                      <SelectItem value="tensorflow">TensorFlow</SelectItem>
+                      <SelectItem value="jax">JAX</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

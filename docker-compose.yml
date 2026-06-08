@@ -85,7 +85,7 @@ services:
       ORBIT_CHECKPOINT_SCANNER_PORT: "7330"
       ORBIT_CHECKPOINT_SCANNER_ROOT: /app/storage-data
     volumes:
-      - orbit-storage-data:/app/storage-data:ro
+      - orbit-storage-data:/app/storage-data
     ports:
       - "17330:7330"
     restart: unless-stopped

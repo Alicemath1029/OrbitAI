@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -25,7 +24,6 @@ import (
 	"github.com/raids-lab/orbit/internal/service"
 	vcjobservice "github.com/raids-lab/orbit/internal/service/vcjob"
 	checkpointsvc "github.com/raids-lab/orbit/internal/service/vcjob/checkpoint"
-	"github.com/raids-lab/orbit/internal/storage"
 	"github.com/raids-lab/orbit/internal/util"
 	"github.com/raids-lab/orbit/pkg/config"
 	"github.com/raids-lab/orbit/pkg/constants"
@@ -429,7 +427,7 @@ func deleteCheckpoint(c *gin.Context, checkpoint *model.JobCheckpoint) error {
 	if checkpoint.StoragePath == "" {
 		return fmt.Errorf("checkpoint has no storage path")
 	}
-	if err := storage.RemoveRelativePath(c.Request.Context(), checkpoint.StoragePath); err != nil && !errors.Is(err, os.ErrNotExist) {
+	if err := checkpointsvc.DeleteCheckpointStorageWithControl(c.Request.Context(), checkpoint); err != nil {
 		return err
 	}
 	return query.GetDB().WithContext(c).Model(&model.JobCheckpoint{}).

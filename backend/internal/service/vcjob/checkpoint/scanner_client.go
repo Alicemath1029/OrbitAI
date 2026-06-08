@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -37,6 +38,7 @@ func ScanJobWithService(ctx context.Context, record *model.Job, opts ServiceScan
 
 	resp, err := requestServiceScan(ctx, opts, ServiceScanRequest{
 		JobName:       record.JobName,
+		RunID:         experimentRunIDFromRecord(record),
 		Framework:     info.Framework,
 		CheckpointDir: info.CheckpointDir,
 		StoragePath:   storagePath,
@@ -66,6 +68,9 @@ func ScanJobWithService(ctx context.Context, record *model.Job, opts ServiceScan
 		if framework := strings.TrimSpace(item.Framework); framework != "" {
 			checkpoint.Framework = strings.ToLower(framework)
 		}
+		if status := strings.TrimSpace(item.Status); status != "" {
+			checkpoint.Status = model.JobCheckpointStatus(status)
+		}
 		if checkpoint.Metadata == nil {
 			checkpoint.Metadata = datatypes.JSONMap{}
 		}
@@ -76,13 +81,34 @@ func ScanJobWithService(ctx context.Context, record *model.Job, opts ServiceScan
 			checkpoint.Metadata["manifestStoragePath"] = item.ManifestStoragePath
 		}
 		checkpoint.Metadata["scanBackend"] = scannerBackendService
-		if checkpointMatchesTracker(&checkpoint, resp.LatestMarker, latestMarkerStep(resp.LatestMarker)) {
+		if checkpoint.Status == model.JobCheckpointStatusReady &&
+			checkpointMatchesTracker(&checkpoint, resp.LatestMarker, latestMarkerStep(resp.LatestMarker)) {
 			checkpoint.Metadata["trackedLatest"] = true
 			checkpoint.Metadata["latestTracker"] = latestCheckpointTracker
 		}
 		candidates = append(candidates, checkpoint)
 	}
 	return finishScan(ctx, record, info, storagePath, candidates)
+}
+
+func DeleteCheckpointStorage(ctx context.Context, checkpoint *model.JobCheckpoint, opts ServiceScannerOptions) error {
+	if checkpoint == nil {
+		return errors.New("checkpoint is required")
+	}
+	if strings.TrimSpace(checkpoint.StoragePath) == "" {
+		return errors.New("checkpoint has no storage path")
+	}
+	opts = normalizeServiceScannerOptions(opts)
+	if opts.Endpoint == "" {
+		return errServiceScannerDisabled
+	}
+	_, err := requestServiceDelete(ctx, opts, ServiceDeleteRequest{
+		StoragePath: checkpoint.StoragePath,
+		Name:        checkpoint.Name,
+		Path:        checkpoint.Path,
+		Step:        &checkpoint.Step,
+	})
+	return err
 }
 
 var errServiceScannerDisabled = fmt.Errorf("checkpoint scanner service endpoint is not configured")
@@ -165,4 +191,48 @@ func requestServiceScan(ctx context.Context, opts ServiceScannerOptions, body Se
 		scanResp.Items = []ServiceScanItem{}
 	}
 	return scanResp, nil
+}
+
+func requestServiceDelete(ctx context.Context, opts ServiceScannerOptions, body ServiceDeleteRequest) (ServiceDeleteResponse, error) {
+	reqCtx, cancel := context.WithTimeout(ctx, opts.Timeout)
+	defer cancel()
+
+	payload, err := json.Marshal(body)
+	if err != nil {
+		return ServiceDeleteResponse{}, err
+	}
+	req, err := http.NewRequestWithContext(reqCtx, http.MethodPost, opts.Endpoint+"/delete", bytes.NewReader(payload))
+	if err != nil {
+		return ServiceDeleteResponse{}, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return ServiceDeleteResponse{}, fmt.Errorf("call checkpoint scanner service delete: %w", err)
+	}
+	defer resp.Body.Close()
+
+	var deleteResp ServiceDeleteResponse
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		var errResp struct {
+			Error string `json:"error"`
+		}
+		_ = json.NewDecoder(resp.Body).Decode(&errResp)
+		if errResp.Error != "" {
+			return ServiceDeleteResponse{}, fmt.Errorf(
+				"checkpoint scanner service delete returned %d: %s",
+				resp.StatusCode,
+				errResp.Error,
+			)
+		}
+		return ServiceDeleteResponse{}, fmt.Errorf("checkpoint scanner service delete returned %d", resp.StatusCode)
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&deleteResp); err != nil {
+		return ServiceDeleteResponse{}, fmt.Errorf("decode checkpoint scanner service delete response: %w", err)
+	}
+	if deleteResp.Deleted == nil {
+		deleteResp.Deleted = []string{}
+	}
+	return deleteResp, nil
 }

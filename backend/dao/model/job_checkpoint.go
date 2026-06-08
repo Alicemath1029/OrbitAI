@@ -13,6 +13,7 @@ const (
 	JobCheckpointStatusReady   JobCheckpointStatus = "ready"
 	JobCheckpointStatusMissing JobCheckpointStatus = "missing"
 	JobCheckpointStatusDeleted JobCheckpointStatus = "deleted"
+	JobCheckpointStatusInvalid JobCheckpointStatus = "invalid"
 )
 
 type JobCheckpoint struct {

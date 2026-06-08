@@ -291,6 +291,9 @@ export type CheckpointFramework =
   | 'deepspeed'
   | 'verl'
   | 'lightning'
+  | 'fsdp'
+  | 'tensorflow'
+  | 'jax'
   | 'custom'
 
 export type CheckpointResumeMode = 'none' | 'manual' | 'latest' | 'auto'

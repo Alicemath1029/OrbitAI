@@ -142,6 +142,10 @@ type Config struct {
 		Endpoint string `json:"endpoint"`
 		// TimeoutSeconds controls the backend-to-scanner request timeout.
 		TimeoutSeconds int `json:"timeoutSeconds"`
+		// IntervalSeconds controls the optional backend background scan interval. 0 disables it.
+		IntervalSeconds int `json:"intervalSeconds"`
+		// BatchSize limits how many checkpoint-enabled jobs one background scan tick processes.
+		BatchSize int `json:"batchSize"`
 	} `json:"checkpointScanner"`
 
 	// Registry contains container registry configuration for image storage and building.

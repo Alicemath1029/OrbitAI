@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"gorm.io/datatypes"
+
+	"github.com/raids-lab/orbit/dao/model"
 )
 
 const (
@@ -23,6 +25,7 @@ const (
 
 type ServiceScanRequest struct {
 	JobName       string `json:"jobName"`
+	RunID         *uint  `json:"runID,omitempty"`
 	Framework     string `json:"framework"`
 	CheckpointDir string `json:"checkpointDir"`
 	StoragePath   string `json:"storagePath"`
@@ -33,6 +36,17 @@ type ServiceScanResponse struct {
 	LatestMarker string            `json:"latestMarker,omitempty"`
 }
 
+type ServiceDeleteRequest struct {
+	StoragePath string `json:"storagePath"`
+	Name        string `json:"name,omitempty"`
+	Path        string `json:"path,omitempty"`
+	Step        *int64 `json:"step,omitempty"`
+}
+
+type ServiceDeleteResponse struct {
+	Deleted []string `json:"deleted"`
+}
+
 type ServiceScanItem struct {
 	Name                string            `json:"name"`
 	Path                string            `json:"path"`
@@ -41,6 +55,7 @@ type ServiceScanItem struct {
 	Step                int64             `json:"step"`
 	SizeBytes           int64             `json:"sizeBytes"`
 	ModTime             time.Time         `json:"modTime"`
+	Status              string            `json:"status,omitempty"`
 	Metadata            datatypes.JSONMap `json:"metadata,omitempty"`
 	ManifestStoragePath string            `json:"manifestStoragePath,omitempty"`
 }
@@ -51,6 +66,13 @@ func ValidateServiceScanRequest(req ServiceScanRequest) error {
 	}
 	if strings.TrimSpace(req.CheckpointDir) == "" {
 		return errors.New("checkpointDir is required")
+	}
+	return nil
+}
+
+func ValidateServiceDeleteRequest(req ServiceDeleteRequest) error {
+	if strings.TrimSpace(req.StoragePath) == "" {
+		return errors.New("storagePath is required")
 	}
 	return nil
 }
@@ -78,7 +100,7 @@ func (s FileSystemScanner) Scan(ctx context.Context, req ServiceScanRequest) (Se
 	}
 
 	if !info.IsDir() {
-		item, err := scanLocalCheckpoint(ctx, scanBase.checkpointDir, scanBase.storagePath, scanBase.basePath)
+		item, err := scanLocalCheckpoint(ctx, scanBase)
 		if err != nil {
 			return ServiceScanResponse{}, err
 		}
@@ -88,10 +110,42 @@ func (s FileSystemScanner) Scan(ctx context.Context, req ServiceScanRequest) (Se
 	return scanLocalCheckpointDir(ctx, req.Framework, scanBase)
 }
 
+func (s FileSystemScanner) Delete(ctx context.Context, req ServiceDeleteRequest) (ServiceDeleteResponse, error) {
+	targetPath, storagePath, err := s.resolveStoragePath(req.StoragePath)
+	if err != nil {
+		return ServiceDeleteResponse{}, err
+	}
+	markerItem := deleteMarkerItem(req, storagePath)
+	applyManifestToDeleteMarkerItem(&markerItem, targetPath)
+
+	deleted := make([]string, 0, 3)
+	if err := removeLocalPath(targetPath); err != nil {
+		return ServiceDeleteResponse{}, err
+	}
+	deleted = append(deleted, storagePath)
+
+	manifestStoragePath := manifestPathForCheckpoint(storagePath)
+	manifestPath, _, err := s.resolveStoragePath(manifestStoragePath)
+	if err != nil {
+		return ServiceDeleteResponse{}, err
+	}
+	if err := removeLocalPath(manifestPath); err != nil {
+		return ServiceDeleteResponse{}, err
+	}
+	deleted = append(deleted, manifestStoragePath)
+
+	if err := s.removeMatchingLatestMarker(storagePath, markerItem); err != nil {
+		return ServiceDeleteResponse{}, err
+	}
+	return ServiceDeleteResponse{Deleted: deleted}, ctx.Err()
+}
+
 type localScanBase struct {
 	basePath      string
 	storagePath   string
 	checkpointDir string
+	jobName       string
+	runID         *uint
 }
 
 func (s FileSystemScanner) resolveBase(req ServiceScanRequest) (localScanBase, error) {
@@ -112,24 +166,112 @@ func (s FileSystemScanner) resolveBase(req ServiceScanRequest) (localScanBase, e
 	if !isPathUnderOrEqual(base, root) {
 		return localScanBase{}, fmt.Errorf("storagePath %q escapes scanner root", req.StoragePath)
 	}
-	return localScanBase{basePath: base, storagePath: storagePath, checkpointDir: checkpointDir}, nil
+	return localScanBase{
+		basePath:      base,
+		storagePath:   storagePath,
+		checkpointDir: checkpointDir,
+		jobName:       strings.TrimSpace(req.JobName),
+		runID:         req.RunID,
+	}, nil
 }
 
-func scanLocalCheckpoint(ctx context.Context, checkpointDir, storagePath, base string) (ServiceScanItem, error) {
-	size, modTime, err := scanLocalTree(ctx, base)
+func (s FileSystemScanner) resolveStoragePath(raw string) (absolutePath string, storagePath string, err error) {
+	root := filepath.Clean(strings.TrimSpace(s.Root))
+	if root == "" || !filepath.IsAbs(root) {
+		return "", "", fmt.Errorf("scanner root %q must be absolute", s.Root)
+	}
+	storagePath = cleanStoragePath(raw)
+	if storagePath == "" {
+		return "", "", errors.New("storagePath is required")
+	}
+	absolutePath = filepath.Join(root, filepath.FromSlash(storagePath))
+	if !isPathUnderOrEqual(absolutePath, root) {
+		return "", "", fmt.Errorf("storagePath %q escapes scanner root", raw)
+	}
+	return absolutePath, storagePath, nil
+}
+
+func (s FileSystemScanner) removeMatchingLatestMarker(storagePath string, item model.JobCheckpoint) error {
+	root := filepath.Clean(strings.TrimSpace(s.Root))
+	markerPath := filepath.Join(root, filepath.Dir(filepath.FromSlash(storagePath)), latestCheckpointTracker)
+	marker, err := os.ReadFile(markerPath)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return err
+	}
+	if checkpointMatchesTracker(&item, strings.TrimSpace(string(marker)), latestMarkerStep(string(marker))) {
+		if err := removeLocalPath(markerPath); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func deleteMarkerItem(req ServiceDeleteRequest, storagePath string) model.JobCheckpoint {
+	step := stepFromName(filepath.Base(storagePath))
+	if req.Step != nil {
+		step = *req.Step
+	}
+	name := strings.TrimSpace(req.Name)
+	if name == "" {
+		name = filepath.Base(storagePath)
+	}
+	path := strings.TrimSpace(req.Path)
+	if path == "" {
+		path = storagePath
+	}
+	return model.JobCheckpoint{
+		Name:        name,
+		Path:        filepath.ToSlash(filepath.Clean(path)),
+		StoragePath: storagePath,
+		Step:        step,
+	}
+}
+
+func applyManifestToDeleteMarkerItem(item *model.JobCheckpoint, checkpointPath string) {
+	data, err := os.ReadFile(manifestPathForCheckpoint(checkpointPath))
+	if err != nil {
+		return
+	}
+	manifest, err := parseCheckpointManifest(data)
+	if err != nil {
+		return
+	}
+	applyManifestToCheckpoint(item, manifest, "")
+}
+
+func removeLocalPath(path string) error {
+	if err := os.RemoveAll(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return err
+	}
+	return nil
+}
+
+func scanLocalCheckpoint(ctx context.Context, scanBase localScanBase) (ServiceScanItem, error) {
+	size, modTime, err := scanLocalTree(ctx, scanBase.basePath)
 	if err != nil {
 		return ServiceScanItem{}, err
 	}
-	name := filepath.Base(base)
+	name := filepath.Base(scanBase.basePath)
 	item := ServiceScanItem{
 		Name:        name,
-		Path:        checkpointPath(checkpointDir, name, false),
-		StoragePath: storagePath,
+		Path:        checkpointPath(scanBase.checkpointDir, name, false),
+		StoragePath: scanBase.storagePath,
 		Step:        stepFromName(name),
 		SizeBytes:   size,
 		ModTime:     modTime,
 	}
-	applyLocalManifestToScanItem(&item, base, manifestPathForCheckpoint(storagePath))
+	applyLocalManifestToScanItem(ctx, &item, scanBase.basePath, manifestPathForCheckpoint(scanBase.storagePath), manifestValidationTarget{
+		ActualSize: size,
+		FilePath:   scanBase.basePath,
+		JobName:    scanBase.jobName,
+		RunID:      scanBase.runID,
+	})
 	return item, nil
 }
 
@@ -220,14 +362,27 @@ func scanLocalCheckpointChild(ctx context.Context, scanBase localScanBase, name 
 		ModTime:     modTime,
 	}
 	applyLocalManifestToScanItem(
+		ctx,
 		&item,
 		childPath,
 		manifestPathForCheckpoint(filepath.ToSlash(filepath.Join(scanBase.storagePath, name))),
+		manifestValidationTarget{
+			ActualSize: size,
+			FilePath:   childPath,
+			JobName:    scanBase.jobName,
+			RunID:      scanBase.runID,
+		},
 	)
 	return item, nil
 }
 
-func applyLocalManifestToScanItem(item *ServiceScanItem, checkpointPath string, manifestStoragePath string) {
+func applyLocalManifestToScanItem(
+	ctx context.Context,
+	item *ServiceScanItem,
+	checkpointPath string,
+	manifestStoragePath string,
+	target manifestValidationTarget,
+) {
 	manifestPath := manifestPathForCheckpoint(checkpointPath)
 	data, err := os.ReadFile(manifestPath)
 	if err != nil {
@@ -235,6 +390,7 @@ func applyLocalManifestToScanItem(item *ServiceScanItem, checkpointPath string, 
 	}
 	manifest, err := parseCheckpointManifest(data)
 	if err != nil {
+		markScanItemInvalid(item, manifestStoragePath, fmt.Sprintf("manifest parse failed: %v", err))
 		return
 	}
 	if name := strings.TrimSpace(manifest.Name); name != "" {
@@ -254,6 +410,26 @@ func applyLocalManifestToScanItem(item *ServiceScanItem, checkpointPath string, 
 	}
 	item.Metadata = mergeManifestMetadata(item.Metadata, manifest, manifestStoragePath)
 	item.ManifestStoragePath = manifestStoragePath
+	if issues := validateCheckpointManifest(ctx, manifest, target); len(issues) > 0 {
+		markScanItemInvalid(item, manifestStoragePath, issues...)
+	} else if item.Metadata != nil {
+		item.Metadata["validationStatus"] = "valid"
+	}
+}
+
+func markScanItemInvalid(item *ServiceScanItem, manifestStoragePath string, issues ...string) {
+	if item == nil {
+		return
+	}
+	if item.Metadata == nil {
+		item.Metadata = datatypes.JSONMap{}
+	}
+	item.Status = string(model.JobCheckpointStatusInvalid)
+	item.Metadata["validationStatus"] = "invalid"
+	item.Metadata["validationErrors"] = issues
+	if manifestStoragePath != "" {
+		item.Metadata["manifestStoragePath"] = filepath.ToSlash(filepath.Clean(manifestStoragePath))
+	}
 }
 
 func readLatestCheckpointMarker(base string) string {
@@ -296,8 +472,10 @@ func looksLikeCheckpointEntry(framework, name string, isDir bool) bool {
 		return true
 	}
 	switch strings.ToLower(framework) {
-	case FrameworkPytorch, FrameworkLightning:
+	case FrameworkPytorch, FrameworkLightning, FrameworkFSDP:
 		return !isDir && hasCheckpointFileExt(name)
+	case FrameworkTensorFlow, FrameworkJAX:
+		return isDir || hasCheckpointFileExt(name) || strings.HasSuffix(name, ".pkl")
 	case FrameworkCustom:
 		return isDir || hasCheckpointFileExt(name)
 	default:

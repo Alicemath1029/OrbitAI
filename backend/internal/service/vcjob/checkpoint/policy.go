@@ -43,6 +43,9 @@ func DefaultFrameworkPolicyRegistry() FrameworkPolicyRegistry {
 		defaultPolicy.named(FrameworkDeepSpeed),
 		defaultPolicy.named(FrameworkVerl),
 		defaultPolicy.named(FrameworkLightning),
+		defaultPolicy.named(FrameworkFSDP),
+		defaultPolicy.named(FrameworkTensorFlow),
+		defaultPolicy.named(FrameworkJAX),
 		defaultPolicy.named(FrameworkCustom),
 	)
 }

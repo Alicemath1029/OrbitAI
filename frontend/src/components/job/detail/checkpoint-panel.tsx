@@ -407,6 +407,21 @@ function buildResumeCommand(checkpoint?: CheckpointConfig, latestPath?: string) 
       return `python train.py \\
   --default_root_dir "${outputDir}" \\
   --ckpt_path "${resumeFrom}"`
+    case 'fsdp':
+      return `torchrun train.py \\
+  --output_dir "${outputDir}" \\
+  --checkpoint_dir "${checkpointDir}" \\
+  --resume_from "${resumeFrom}"`
+    case 'tensorflow':
+      return `ORBIT_OUTPUT_DIR="${outputDir}" \\
+ORBIT_CHECKPOINT_DIR="${checkpointDir}" \\
+ORBIT_RESUME_FROM="${resumeFrom}" \\
+python train_tensorflow.py`
+    case 'jax':
+      return `ORBIT_OUTPUT_DIR="${outputDir}" \\
+ORBIT_CHECKPOINT_DIR="${checkpointDir}" \\
+ORBIT_RESUME_FROM="${resumeFrom}" \\
+python train_jax.py`
     default:
       return `ORBIT_OUTPUT_DIR="${outputDir}" \\
 ORBIT_CHECKPOINT_DIR="${checkpointDir}" \\

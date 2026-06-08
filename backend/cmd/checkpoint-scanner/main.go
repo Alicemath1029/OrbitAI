@@ -63,6 +63,7 @@ func main() {
 	mux.HandleFunc("/healthz", checkpointsvc.ScannerHealthHandler)
 	mux.HandleFunc("/readyz", checkpointsvc.ScannerHealthHandler)
 	mux.HandleFunc("/scan", server.scan)
+	mux.HandleFunc("/delete", server.delete)
 
 	addr := normalizePort(port)
 	klog.Infof("checkpoint-scanner starting on %s root=%s concurrency=%d version=%s commit=%s buildType=%s buildTime=%s",
@@ -104,6 +105,40 @@ func (s *scanServer) scan(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp, err := s.scanner.Scan(r.Context(), req)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	writeJSON(w, http.StatusOK, resp)
+}
+
+func (s *scanServer) delete(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		writeError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	select {
+	case s.sem <- struct{}{}:
+		defer func() { <-s.sem }()
+	default:
+		writeError(w, http.StatusTooManyRequests, "checkpoint scanner is busy")
+		return
+	}
+
+	defer r.Body.Close()
+	r.Body = http.MaxBytesReader(w, r.Body, maxScanRequestBodyBytes)
+	var req checkpointsvc.ServiceDeleteRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, fmt.Sprintf("invalid request body: %v", err))
+		return
+	}
+	if err := checkpointsvc.ValidateServiceDeleteRequest(req); err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp, err := s.scanner.Delete(r.Context(), req)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, err.Error())
 		return

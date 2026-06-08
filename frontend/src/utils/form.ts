@@ -217,7 +217,7 @@ export const checkpointSchema = z
   .object({
     enabled: z.boolean().default(false),
     framework: z
-      .enum(['pytorch', 'hf-trainer', 'deepspeed', 'verl', 'lightning', 'custom'])
+      .enum(['pytorch', 'hf-trainer', 'deepspeed', 'verl', 'lightning', 'fsdp', 'tensorflow', 'jax', 'custom'])
       .default('custom'),
     projectName: z.string().optional(),
     experimentName: z.string().optional(),

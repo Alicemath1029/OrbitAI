@@ -310,6 +310,84 @@ func TestFileSystemScannerReadsSDKManifest(t *testing.T) {
 	}
 }
 
+func TestFileSystemScannerMarksInvalidManifest(t *testing.T) {
+	t.Parallel()
+
+	root := t.TempDir()
+	base := filepath.Join(root, "users", "u-admin", "exp", "checkpoints")
+	mustWriteFile(t, filepath.Join(base, "custom-final.bin"), "checkpoint")
+	mustWriteFile(t, filepath.Join(base, "custom-final.bin.orbit.json"), `{
+		"schemaVersion": "orbit.checkpoint.manifest.v1",
+		"framework": "custom",
+		"name": "custom-final.bin",
+		"path": "/workspace/checkpoints/custom-final.bin",
+		"step": 42,
+		"sizeBytes": 999,
+		"sha256": "bad",
+		"runID": "7",
+		"jobName": "job-a"
+	}`)
+
+	runID := uint(7)
+	scanner := NewFileSystemScanner(root)
+	resp, err := scanner.Scan(context.Background(), ServiceScanRequest{
+		JobName:       "job-a",
+		RunID:         &runID,
+		Framework:     FrameworkCustom,
+		CheckpointDir: "/workspace/checkpoints",
+		StoragePath:   "users/u-admin/exp/checkpoints",
+	})
+	if err != nil {
+		t.Fatalf("Scan() error = %v", err)
+	}
+	if len(resp.Items) != 1 {
+		t.Fatalf("Scan() items = %#v, want one checkpoint", resp.Items)
+	}
+	item := resp.Items[0]
+	if item.Status != string(model.JobCheckpointStatusInvalid) {
+		t.Fatalf("Status = %q, want invalid; item=%#v", item.Status, item)
+	}
+	if item.Metadata["validationStatus"] != "invalid" {
+		t.Fatalf("validation metadata = %#v", item.Metadata)
+	}
+	if _, ok := item.Metadata["validationErrors"]; !ok {
+		t.Fatalf("validationErrors missing: %#v", item.Metadata)
+	}
+}
+
+func TestFileSystemScannerDeleteRemovesCheckpointManifestAndLatestMarker(t *testing.T) {
+	t.Parallel()
+
+	root := t.TempDir()
+	base := filepath.Join(root, "users", "u-admin", "exp", "checkpoints")
+	checkpointPath := filepath.Join(base, "custom-final.bin")
+	manifestPath := checkpointPath + checkpointManifestSuffix
+	markerPath := filepath.Join(base, latestCheckpointTracker)
+	mustWriteFile(t, checkpointPath, "checkpoint")
+	mustWriteFile(t, manifestPath, `{"schemaVersion":"orbit.checkpoint.manifest.v1","step":42}`)
+	mustWriteFile(t, markerPath, "custom-final.bin")
+
+	scanner := NewFileSystemScanner(root)
+	step := int64(42)
+	resp, err := scanner.Delete(context.Background(), ServiceDeleteRequest{
+		StoragePath: "users/u-admin/exp/checkpoints/custom-final.bin",
+		Name:        "custom-final.bin",
+		Path:        "/workspace/checkpoints/custom-final.bin",
+		Step:        &step,
+	})
+	if err != nil {
+		t.Fatalf("Delete() error = %v", err)
+	}
+	if len(resp.Deleted) != 2 {
+		t.Fatalf("Delete() deleted = %#v, want checkpoint and manifest", resp.Deleted)
+	}
+	for _, path := range []string{checkpointPath, manifestPath, markerPath} {
+		if _, err := os.Stat(path); !os.IsNotExist(err) {
+			t.Fatalf("%s still exists or stat failed with non-not-exist error: %v", path, err)
+		}
+	}
+}
+
 func TestLatestCheckpointPrefersFrameworkTracker(t *testing.T) {
 	t.Parallel()
 
@@ -319,12 +397,14 @@ func TestLatestCheckpointPrefersFrameworkTracker(t *testing.T) {
 			Path:    "/home/admin/exp/checkpoints/global_step0010",
 			Step:    10,
 			ModTime: mustParseTime(t, "2026-01-01T00:00:00Z"),
+			Status:  model.JobCheckpointStatusReady,
 		},
 		{
 			Name:    "global_step0008",
 			Path:    "/home/admin/exp/checkpoints/global_step0008",
 			Step:    8,
 			ModTime: mustParseTime(t, "2026-01-02T00:00:00Z"),
+			Status:  model.JobCheckpointStatusReady,
 			Metadata: datatypes.JSONMap{
 				"trackedLatest": true,
 			},
@@ -334,6 +414,33 @@ func TestLatestCheckpointPrefersFrameworkTracker(t *testing.T) {
 	latest := latestCheckpoint(items)
 	if latest == nil || latest.Name != "global_step0008" {
 		t.Fatalf("latestCheckpoint() = %#v, want tracker-marked global_step0008", latest)
+	}
+}
+
+func TestLatestCheckpointSkipsInvalidItems(t *testing.T) {
+	t.Parallel()
+
+	items := []model.JobCheckpoint{
+		{
+			Name:   "checkpoint-10.pt",
+			Path:   "/workspace/checkpoints/checkpoint-10.pt",
+			Step:   10,
+			Status: model.JobCheckpointStatusInvalid,
+			Metadata: datatypes.JSONMap{
+				"trackedLatest": true,
+			},
+		},
+		{
+			Name:   "checkpoint-8.pt",
+			Path:   "/workspace/checkpoints/checkpoint-8.pt",
+			Step:   8,
+			Status: model.JobCheckpointStatusReady,
+		},
+	}
+
+	latest := latestCheckpoint(items)
+	if latest == nil || latest.Name != "checkpoint-8.pt" {
+		t.Fatalf("latestCheckpoint() = %#v, want ready checkpoint-8.pt", latest)
 	}
 }
 
@@ -370,6 +477,19 @@ func TestNormalizeServiceScannerOptionsReadsLegacyCraterEnv(t *testing.T) {
 	}
 	if opts.Timeout != 7*time.Second {
 		t.Fatalf("Timeout = %v, want 7s", opts.Timeout)
+	}
+}
+
+func TestBackgroundScanOptionsReadsEnv(t *testing.T) {
+	t.Setenv("ORBIT_CHECKPOINT_SCANNER_INTERVAL_SECONDS", "11")
+	t.Setenv("ORBIT_CHECKPOINT_SCANNER_BATCH_SIZE", "7")
+
+	opts := BackgroundScanOptionsFromConfig()
+	if opts.Interval != 11*time.Second {
+		t.Fatalf("Interval = %v, want 11s", opts.Interval)
+	}
+	if opts.BatchSize != 7 {
+		t.Fatalf("BatchSize = %d, want 7", opts.BatchSize)
 	}
 }
 

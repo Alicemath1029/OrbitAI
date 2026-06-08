@@ -7,12 +7,15 @@ import (
 )
 
 const (
-	FrameworkPytorch   = "pytorch"
-	FrameworkHFTrainer = "hf-trainer"
-	FrameworkDeepSpeed = "deepspeed"
-	FrameworkVerl      = "verl"
-	FrameworkLightning = "lightning"
-	FrameworkCustom    = "custom"
+	FrameworkPytorch    = "pytorch"
+	FrameworkHFTrainer  = "hf-trainer"
+	FrameworkDeepSpeed  = "deepspeed"
+	FrameworkVerl       = "verl"
+	FrameworkLightning  = "lightning"
+	FrameworkFSDP       = "fsdp"
+	FrameworkTensorFlow = "tensorflow"
+	FrameworkJAX        = "jax"
+	FrameworkCustom     = "custom"
 
 	ResumeModeNone   = "none"
 	ResumeModeManual = "manual"

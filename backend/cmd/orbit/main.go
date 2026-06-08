@@ -24,7 +24,9 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	"github.com/raids-lab/orbit/cmd/orbit/helper"
+	"github.com/raids-lab/orbit/dao/query"
 	"github.com/raids-lab/orbit/internal/handler"
+	checkpointsvc "github.com/raids-lab/orbit/internal/service/vcjob/checkpoint"
 	"github.com/raids-lab/orbit/internal/storage"
 )
 
@@ -106,6 +108,13 @@ func main() {
 
 	// Start manager
 	serverRunner.StartManager(ctx, mgr)
+
+	checkpointsvc.StartBackgroundScanner(
+		ctx,
+		query.GetDB(),
+		registerConfig.KubeClient,
+		checkpointsvc.BackgroundScanOptionsFromConfig(),
+	)
 
 	// Start HTTP server
 	serverRunner.StartServer(registerConfig)

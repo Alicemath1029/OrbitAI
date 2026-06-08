@@ -90,6 +90,8 @@ checkpointScanner:
   port: 7330
   # -- Max concurrent scan requests handled by one scanner pod
   concurrency: 4
+  # -- Whether the scanner mounts shared storage as read-only. Must be false if checkpoint delete/cleanup is enabled.
+  readOnly: false
   resources:
     limits:
       cpu: 500m
@@ -204,6 +206,10 @@ backendConfig:
     endpoint: ""
     # -- Backend-to-scanner request timeout in seconds
     timeoutSeconds: 30
+    # -- Optional backend background scan interval in seconds. 0 disables periodic scans.
+    intervalSeconds: 0
+    # -- Max checkpoint-enabled jobs scanned in one background tick
+    batchSize: 100
 
   # -- Endpoint URL for Prometheus API used for metrics and monitoring
   # If not specified, Prometheus integration will be disabled
