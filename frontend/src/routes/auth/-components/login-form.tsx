@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 import { zodResolver } from '@hookform/resolvers/zod'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormHelperText from '@mui/material/FormHelperText'
+import Link from '@mui/material/Link'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { HTTPError } from 'ky'
 import { useEffect, useState } from 'react'
-import { type FieldErrors, useForm } from 'react-hook-form'
+import { Controller, type FieldErrors, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -33,7 +41,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -41,19 +48,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { Form } from '@/components/ui/form'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 import DocsButton from '@/components/button/docs-button'
-import LoadableButton from '@/components/button/loadable-button'
 
 import { AuthMode, IAuthResponse, ILogin, Role } from '@/services/api/auth'
 import {
@@ -229,87 +227,106 @@ export function LoginForm({
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)} className="space-y-4">
-          <FormField
+        <form
+          onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)}
+          className="orbit-auth-template-form"
+        >
+          <Controller
             control={form.control}
             name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>账号</FormLabel>
-                <FormControl>
-                  <Input autoComplete="username" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center justify-between">
-                  <FormLabel>密码</FormLabel>
-                  <button
-                    className="text-muted-foreground hover:text-primary p-0 text-sm underline-offset-4 transition-colors hover:underline"
-                    type="button"
-                    tabIndex={-1}
-                    onClick={onForgotPasswordClick}
-                  >
-                    忘记密码？
-                  </button>
-                </div>
-                <FormControl>
-                  <Input type="password" autoComplete="current-password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+            render={({ field, fieldState }) => (
+              <TextField
+                {...field}
+                fullWidth
+                label="账号"
+                autoComplete="username"
+                placeholder="输入平台账号"
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+                slotProps={{ inputLabel: { shrink: true } }}
+              />
             )}
           />
 
-          {/* 必须同意隐私政策 */}
-          <FormField
+          <Box sx={{ gap: 1.5, display: 'flex', flexDirection: 'column' }}>
+            <Link
+              component="button"
+              type="button"
+              variant="body2"
+              color="inherit"
+              underline="hover"
+              sx={{ alignSelf: 'flex-end' }}
+              tabIndex={-1}
+              onClick={onForgotPasswordClick}
+            >
+              忘记密码？
+            </Link>
+
+            <Controller
+              control={form.control}
+              name="password"
+              render={({ field, fieldState }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label="密码"
+                  type="password"
+                  autoComplete="current-password"
+                  placeholder="输入登录密码"
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                  slotProps={{ inputLabel: { shrink: true } }}
+                />
+              )}
+            />
+          </Box>
+
+          <Controller
             control={form.control}
             name="acceptPrivacy"
-            render={({ field }) => (
-              <FormItem>
-                <div className="hover:border-primary/35 border-border/60 bg-card/35 hover:bg-card/55 flex items-start gap-3 rounded-md border p-3 transition-[background-color,border-color]">
-                  <FormControl>
+            render={({ field, fieldState }) => (
+              <Box>
+                <FormControlLabel
+                  className="orbit-auth-template-terms"
+                  control={
                     <Checkbox
-                      id="acceptPrivacy"
-                      className="mt-0.5"
                       checked={field.value}
-                      onCheckedChange={(checked) => {
-                        const value = checked === true
+                      onChange={(event) => {
+                        const value = event.target.checked
                         field.onChange(value)
                         setPrivacyAccepted(value)
                       }}
                     />
-                  </FormControl>
-                  <div className="text-muted-foreground text-xs leading-snug">
-                    <label htmlFor="acceptPrivacy" className="cursor-pointer">
-                      我已阅读并同意
-                    </label>{' '}
-                    <PrivacyPolicyDialog />
-                  </div>
-                </div>
-                <FormMessage />
-              </FormItem>
+                  }
+                  label={
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      我已阅读并同意 <PrivacyPolicyDialog />
+                    </Typography>
+                  }
+                />
+                {fieldState.error && (
+                  <FormHelperText error>{fieldState.error.message}</FormHelperText>
+                )}
+              </Box>
             )}
           />
 
-          <LoadableButton
-            isLoadingText="登录中"
+          <Button
+            fullWidth
+            size="large"
             type="submit"
-            className="w-full"
-            isLoading={status === 'pending'}
+            color="inherit"
+            variant="contained"
+            disabled={status === 'pending'}
           >
-            {authMode === AuthMode.LDAP
-              ? ldapAlias
-                ? `${ldapAlias} 登录`
-                : 'LDAP 认证登录'
-              : '登录'}
-          </LoadableButton>
+            {status === 'pending'
+              ? '登录中...'
+              : authMode === AuthMode.LDAP
+                ? ldapAlias
+                  ? `${ldapAlias} 登录`
+                  : 'LDAP 认证登录'
+                : '登录'}
+          </Button>
         </form>
       </Form>
 
@@ -340,13 +357,15 @@ function PrivacyPolicyDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button
+        <Link
+          component="button"
           type="button"
-          className="text-primary underline underline-offset-4"
+          variant="caption"
+          underline="always"
           onClick={(e) => e.stopPropagation()}
         >
           《隐私政策》
-        </button>
+        </Link>
       </DialogTrigger>
 
       <DialogContent className="h-[70vh] max-w-[520px] sm:max-w-[640px]">

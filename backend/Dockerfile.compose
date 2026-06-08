@@ -1,0 +1,18 @@
+FROM postgres:16
+
+WORKDIR /app
+
+ENV GIN_MODE=release
+
+COPY bin/compose/orbit /app/orbit
+COPY bin/compose/storage-server /app/storage-server
+COPY bin/compose/checkpoint-scanner /app/checkpoint-scanner
+COPY bin/compose/migrate /app/migrate
+COPY hack/compose/backend-entrypoint.sh /app/backend-entrypoint.sh
+
+RUN chmod +x /app/orbit /app/storage-server /app/checkpoint-scanner /app/migrate /app/backend-entrypoint.sh
+
+EXPOSE 8088 7320 7330
+
+ENTRYPOINT ["/app/backend-entrypoint.sh"]
+CMD ["/app/orbit"]

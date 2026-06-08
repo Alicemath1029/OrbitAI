@@ -36,6 +36,7 @@ var (
 			"--disable-network-policy=false",
 		},
 	}
+	newExperimentService = service.NewExperimentService
 )
 
 const experimentEnvCapacity = 4
@@ -600,7 +601,7 @@ func prepareExperimentRun(
 	if req == nil || req.Experiment == nil || req.Experiment.ExperimentID == 0 {
 		return nil, nil
 	}
-	experimentSvc := service.NewExperimentService()
+	experimentSvc := newExperimentService()
 	result, err := experimentSvc.CreateRun(ctx, &service.CreateRunInput{
 		ExperimentID:       req.Experiment.ExperimentID,
 		JobName:            jobName,
@@ -625,7 +626,7 @@ func markExperimentRunSubmitFailed(ctx context.Context, runtime *experimentRunRu
 	if runtime == nil || runtime.RunID == 0 || err == nil {
 		return
 	}
-	if markErr := service.NewExperimentService().MarkRunFailedByID(ctx, runtime.RunID, err.Error()); markErr != nil {
+	if markErr := newExperimentService().MarkRunFailedByID(ctx, runtime.RunID, err.Error()); markErr != nil {
 		// Do not fail job submission cleanup on experiment status bookkeeping.
 		return
 	}

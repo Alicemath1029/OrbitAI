@@ -171,9 +171,11 @@ func discoverCheckpoints(
 		if err != nil {
 			return nil, err
 		}
-		return []model.JobCheckpoint{
-			newCheckpointRecord(record, info, filepath.Base(storagePath), info.CheckpointDir, storagePath, size, modTime),
-		}, nil
+		item := newCheckpointRecord(record, info, filepath.Base(storagePath), info.CheckpointDir, storagePath, size, modTime)
+		if manifest, manifestStoragePath := loadStorageCheckpointManifest(ctx, storagePath); manifest != nil {
+			applyManifestToCheckpoint(&item, manifest, manifestStoragePath)
+		}
+		return []model.JobCheckpoint{item}, nil
 	}
 
 	children, err := storage.ListRelativePath(ctx, storagePath)
@@ -182,33 +184,77 @@ func discoverCheckpoints(
 	}
 
 	items := make([]model.JobCheckpoint, 0, len(children))
+	seen := make(map[string]struct{}, len(children))
 	for _, child := range children {
+		if strings.HasSuffix(child.Name, checkpointManifestSuffix) {
+			targetName := strings.TrimSuffix(child.Name, checkpointManifestSuffix)
+			if targetName == "" {
+				continue
+			}
+			if _, ok := seen[targetName]; ok {
+				continue
+			}
+			item, err := checkpointFromStoragePath(ctx, record, info, storagePath, targetName)
+			if err != nil {
+				continue
+			}
+			items = append(items, item)
+			seen[targetName] = struct{}{}
+			continue
+		}
 		if shouldSkipCheckpointChild(child.Name) {
 			continue
 		}
 		if !looksLikeCheckpoint(info.Framework, child) {
 			continue
 		}
-		childStoragePath := filepath.ToSlash(filepath.Join(storagePath, child.Name))
-		childContainerPath := filepath.ToSlash(filepath.Join(info.CheckpointDir, child.Name))
-		size, modTime, err := scanTree(ctx, childStoragePath)
+		if _, ok := seen[child.Name]; ok {
+			continue
+		}
+		item, err := checkpointFromStoragePath(ctx, record, info, storagePath, child.Name)
 		if err != nil {
 			return nil, err
 		}
-		if modTime.IsZero() {
-			modTime = child.ModifyTime
-		}
-		items = append(items, newCheckpointRecord(record, info, child.Name, childContainerPath, childStoragePath, size, modTime))
+		items = append(items, item)
+		seen[child.Name] = struct{}{}
 	}
 	markLatestFromTracker(ctx, storagePath, items)
 	return items, nil
+}
+
+func checkpointFromStoragePath(
+	ctx context.Context,
+	record *model.Job,
+	info *model.CheckpointInfo,
+	storagePath string,
+	name string,
+) (model.JobCheckpoint, error) {
+	childStoragePath := filepath.ToSlash(filepath.Join(storagePath, name))
+	childContainerPath := filepath.ToSlash(filepath.Join(info.CheckpointDir, name))
+	stat, err := storage.StatRelativePath(ctx, childStoragePath)
+	if err != nil {
+		return model.JobCheckpoint{}, err
+	}
+	size, modTime, err := scanTree(ctx, childStoragePath)
+	if err != nil {
+		return model.JobCheckpoint{}, err
+	}
+	if modTime.IsZero() {
+		modTime = stat.ModifyTime
+	}
+	item := newCheckpointRecord(record, info, name, childContainerPath, childStoragePath, size, modTime)
+	if manifest, manifestStoragePath := loadStorageCheckpointManifest(ctx, childStoragePath); manifest != nil {
+		applyManifestToCheckpoint(&item, manifest, manifestStoragePath)
+	}
+	return item, nil
 }
 
 func shouldSkipCheckpointChild(name string) bool {
 	return name == "" ||
 		strings.HasPrefix(name, ".") ||
 		strings.HasPrefix(name, "_tmp") ||
-		strings.HasSuffix(name, ".tmp")
+		strings.HasSuffix(name, ".tmp") ||
+		strings.HasSuffix(name, checkpointManifestSuffix)
 }
 
 func looksLikeCheckpoint(framework string, file storage.Files) bool {
@@ -258,6 +304,19 @@ func scanTree(ctx context.Context, root string) (int64, time.Time, error) {
 		}
 	}
 	return size, modTime, nil
+}
+
+func loadStorageCheckpointManifest(ctx context.Context, storagePath string) (*checkpointManifest, string) {
+	manifestStoragePath := manifestPathForCheckpoint(storagePath)
+	data, err := storage.ReadRelativePath(ctx, manifestStoragePath, checkpointManifestReadLimit)
+	if err != nil {
+		return nil, ""
+	}
+	manifest, err := parseCheckpointManifest(data)
+	if err != nil {
+		return nil, ""
+	}
+	return manifest, manifestStoragePath
 }
 
 func newCheckpointRecord(
@@ -479,21 +538,39 @@ func persistScan(
 	if err := db.Model(&model.Job{}).Where("id = ?", record.ID).Update("checkpoint", datatypes.NewJSONType(info)).Error; err != nil {
 		return err
 	}
-	return syncCheckpointArtifacts(ctx, db, record.ID)
+	return SyncCheckpointArtifacts(ctx, db, record.ID)
 }
 
-func syncCheckpointArtifacts(ctx context.Context, db *gorm.DB, jobID uint) error {
+func SyncCheckpointArtifacts(ctx context.Context, db *gorm.DB, jobID uint) error {
 	if jobID == 0 {
 		return nil
 	}
 	var items []model.JobCheckpoint
 	if err := db.WithContext(ctx).
-		Where("job_id = ? AND status = ? AND run_id IS NOT NULL", jobID, model.JobCheckpointStatusReady).
+		Where("job_id = ?", jobID).
 		Find(&items).Error; err != nil {
 		return err
 	}
+
+	staleSourceIDs := make([]uint, 0)
 	for i := range items {
-		if err := upsertCheckpointArtifact(ctx, db, &items[i]); err != nil {
+		item := &items[i]
+		if item.ID == 0 {
+			continue
+		}
+		if item.Status == model.JobCheckpointStatusReady && item.RunID != nil && *item.RunID != 0 {
+			if err := upsertCheckpointArtifact(ctx, db, item); err != nil {
+				return err
+			}
+			continue
+		}
+		staleSourceIDs = append(staleSourceIDs, item.ID)
+	}
+	if len(staleSourceIDs) > 0 {
+		if err := db.WithContext(ctx).
+			Unscoped().
+			Where("source_type = ? AND source_id IN ?", "checkpoint", staleSourceIDs).
+			Delete(&model.RunArtifact{}).Error; err != nil {
 			return err
 		}
 	}

@@ -57,7 +57,7 @@ import { showErrorToast } from '@/utils/toast'
 
 import { MinimalNavSection } from './nav-section'
 
-const NAV_WIDTH = 296
+const NAV_WIDTH = 304
 const NAV_MINI_WIDTH = 92
 const HEADER_HEIGHT = 72
 
@@ -158,7 +158,7 @@ function NavContent({
       }}
     >
       <NavHeader mini={mini} onCloseMobile={onCloseMobile} onToggleMini={onToggleMini} />
-      <QueueSwitcher mini={mini} />
+      {mini && <QueueSwitcher mini={mini} />}
       <MinimalNavSection groups={groups} mini={mini} onNavigate={onCloseMobile} />
       <Box sx={{ flexGrow: 1 }} />
       <NavFooter mini={mini} />
@@ -179,40 +179,91 @@ function NavHeader({
     <Box
       sx={{
         px: mini ? 1.25 : 3,
-        pt: 2.75,
-        pb: 1.75,
+        pt: mini ? 3 : 3.1,
+        pb: mini ? 2 : 2.1,
         gap: 1.25,
-        minHeight: 78,
+        minHeight: mini ? 92 : 100,
         display: 'flex',
         position: 'relative',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: mini ? 'center' : 'flex-start',
       }}
     >
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
-          gap: 1.25,
+          gap: 1,
           minWidth: 0,
-          transform: mini ? 'none' : 'translateX(-10px)',
+          width: mini ? 'auto' : 1,
+          pr: mini ? 0 : 3.75,
+          transform: mini ? 'none' : 'translateX(-8px)',
         }}
       >
-        <Box component={OrbitIcon} sx={{ width: 36, height: 36, color: 'primary.main' }} />
-        {!mini && (
-          <Box
-            component={OrbitTextIcon}
-            sx={{ width: 98, height: 32, color: 'text.primary', display: { xs: 'block' } }}
-          />
-        )}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.15,
+            minWidth: 0,
+            flex: '1 1 auto',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.85, flexShrink: 0 }}>
+            <Box component={OrbitIcon} sx={{ width: 42, height: 42, color: 'primary.main' }} />
+            {!mini && (
+              <Box
+                component={OrbitTextIcon}
+                sx={{ width: 92, height: 30, color: 'text.primary', display: { xs: 'block' } }}
+              />
+            )}
+          </Box>
+
+          {!mini && <QueueSwitcher compact />}
+        </Box>
       </Box>
 
       {!mini && onToggleMini && (
         <Tooltip title="折叠侧边栏">
-          <IconButton size="small" onClick={onToggleMini} sx={{ position: 'absolute', right: 16 }}>
-            <ChevronsLeft size={18} />
+          <IconButton
+            size="small"
+            onClick={onToggleMini}
+            sx={{
+              top: '50%',
+              right: 13,
+              width: 30,
+              height: 30,
+              position: 'absolute',
+              color: 'text.secondary',
+              borderRadius: 1.5,
+              transform: 'translateY(-50%)',
+              bgcolor: 'background.paper',
+              boxShadow: (theme) => `inset 0 0 0 1px ${alpha(theme.palette.grey[500], 0.12)}`,
+              '&:hover': {
+                color: 'text.primary',
+                bgcolor: 'action.hover',
+              },
+            }}
+          >
+            <ChevronsLeft size={17} />
           </IconButton>
         </Tooltip>
+      )}
+
+      {!mini && onCloseMobile && (
+        <IconButton
+          size="small"
+          onClick={onCloseMobile}
+          sx={{
+            top: '50%',
+            right: 13,
+            position: 'absolute',
+            transform: 'translateY(-50%)',
+            display: { xl: 'none' },
+          }}
+        >
+          <XIcon size={18} />
+        </IconButton>
       )}
 
       {mini && onToggleMini && (
@@ -222,21 +273,11 @@ function NavHeader({
           </IconButton>
         </Tooltip>
       )}
-
-      {onCloseMobile && (
-        <IconButton
-          size="small"
-          onClick={onCloseMobile}
-          sx={{ position: 'absolute', right: 16, display: { xl: 'none' } }}
-        >
-          <XIcon size={18} />
-        </IconButton>
-      )}
     </Box>
   )
 }
 
-function QueueSwitcher({ mini }: { mini?: boolean }) {
+function QueueSwitcher({ compact, mini }: { compact?: boolean; mini?: boolean }) {
   const [account, setAccount] = useAtom(atomUserContext)
   const queryClient = useQueryClient()
   const location = useLocation()
@@ -278,22 +319,58 @@ function QueueSwitcher({ mini }: { mini?: boolean }) {
   const disabled = isAdminView || !queues?.length
 
   return (
-    <Box sx={{ px: mini ? 1 : 2, pb: 1 }}>
-      <Tooltip title={mini ? (currentQueue?.nickname ?? '账户') : ''} placement="right">
+    <Box
+      sx={{
+        flex: compact ? '0 1 auto' : undefined,
+        minWidth: 0,
+        px: compact ? 0 : mini ? 1 : 2,
+        pb: compact ? 0 : 1,
+      }}
+    >
+      <Tooltip title={mini || compact ? (currentQueue?.nickname ?? '账户') : ''} placement="right">
         <AccountButton
+          compact={compact}
           disabled={disabled}
           mini={mini}
           onClick={(event) => setAnchorEl(event.currentTarget)}
         >
-          <QueueAvatar queueName={currentQueue?.name} size={38} />
+          {compact ? (
+            <Box
+              sx={{
+                width: 6,
+                height: 6,
+                flexShrink: 0,
+                borderRadius: '50%',
+                bgcolor: 'primary.main',
+                boxShadow: (theme) => `0 0 0 3px ${alpha(theme.palette.primary.main, 0.12)}`,
+              }}
+            />
+          ) : (
+            <QueueAvatar queueName={currentQueue?.name} size={38} />
+          )}
 
           {!mini && (
             <>
-              <Box sx={{ minWidth: 0, maxWidth: 148, flex: '0 1 auto', textAlign: 'center' }}>
-                <Typography variant="subtitle2" noWrap>
+              <Box
+                sx={{
+                  minWidth: 0,
+                  maxWidth: compact ? 58 : 148,
+                  flex: '0 1 auto',
+                  textAlign: compact ? 'left' : 'center',
+                }}
+              >
+                <Typography
+                  variant={compact ? 'caption' : 'subtitle2'}
+                  noWrap
+                  sx={
+                    compact
+                      ? { fontSize: 11, fontWeight: 700, lineHeight: 1.1, color: 'text.secondary' }
+                      : undefined
+                  }
+                >
                   {currentQueue?.nickname ?? '账户'}
                 </Typography>
-                {currentExpiredAt && (
+                {!compact && currentExpiredAt && (
                   <Typography variant="caption" color="text.disabled" noWrap>
                     {currentExpiredDiff < 0
                       ? '已过期'
@@ -304,7 +381,7 @@ function QueueSwitcher({ mini }: { mini?: boolean }) {
                   </Typography>
                 )}
               </Box>
-              <ChevronsUpDown size={17} />
+              <ChevronsUpDown size={compact ? 12 : 17} />
             </>
           )}
         </AccountButton>
@@ -314,9 +391,26 @@ function QueueSwitcher({ mini }: { mini?: boolean }) {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
-        anchorOrigin={{ horizontal: 'right', vertical: 'center' }}
-        transformOrigin={{ horizontal: 'left', vertical: 'center' }}
-        slotProps={{ paper: { sx: { width: 240, ml: 1, borderRadius: 2 } } }}
+        anchorOrigin={
+          compact
+            ? { horizontal: 'center', vertical: 'bottom' }
+            : { horizontal: 'right', vertical: 'center' }
+        }
+        transformOrigin={
+          compact
+            ? { horizontal: 'center', vertical: 'top' }
+            : { horizontal: 'left', vertical: 'center' }
+        }
+        slotProps={{
+          paper: {
+            sx: {
+              width: compact ? 220 : 240,
+              mt: compact ? 1 : 0,
+              ml: compact ? 0 : 1,
+              borderRadius: 2,
+            },
+          },
+        }}
       >
         <MenuItem disabled>
           <Typography variant="caption" color="text.disabled">
@@ -616,31 +710,43 @@ const ContentRoot = styled(Box, {
 }))
 
 const AccountButton = styled(ButtonBase, {
-  shouldForwardProp: (prop: string) => prop !== 'mini',
-})<{ mini?: boolean }>(({ mini, theme }) => ({
-  width: '100%',
+  shouldForwardProp: (prop: string) => !['compact', 'mini'].includes(prop),
+})<{ compact?: boolean; mini?: boolean }>(({ compact, mini, theme }) => ({
+  width: compact ? 'auto' : '100%',
   minWidth: 0,
-  gap: theme.spacing(1.5),
+  maxWidth: compact ? 104 : 'none',
+  gap: compact ? theme.spacing(0.65) : theme.spacing(1.5),
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
-  minHeight: mini ? 52 : 64,
-  padding: mini ? theme.spacing(0.75) : theme.spacing(1.1, 1.75),
-  borderRadius: Number(theme.shape.borderRadius) * 1.5,
+  justifyContent: compact ? 'flex-start' : 'center',
+  minHeight: compact ? 28 : mini ? 52 : 64,
+  padding: compact
+    ? theme.spacing(0.25, 0.65)
+    : mini
+      ? theme.spacing(0.75)
+      : theme.spacing(1.1, 1.75),
+  borderRadius: compact ? 999 : Number(theme.shape.borderRadius) * 1.5,
   color: theme.vars?.palette.text.primary ?? theme.palette.text.primary,
   textAlign: 'left',
-  transition: theme.transitions.create(['background-color', 'box-shadow'], {
+  backgroundColor: compact ? alpha(theme.palette.grey[500], 0.06) : 'transparent',
+  boxShadow: compact ? `inset 0 0 0 1px ${alpha(theme.palette.grey[500], 0.11)}` : 'none',
+  transition: theme.transitions.create(['background-color', 'box-shadow', 'color'], {
     duration: theme.transitions.duration.shorter,
   }),
   '&:hover': {
-    backgroundColor: theme.vars?.palette.action.hover ?? theme.palette.action.hover,
+    color: compact ? theme.palette.primary.dark : theme.palette.text.primary,
+    backgroundColor: compact
+      ? alpha(theme.palette.primary.main, 0.075)
+      : (theme.vars?.palette.action.hover ?? theme.palette.action.hover),
+    boxShadow: compact ? `inset 0 0 0 1px ${alpha(theme.palette.primary.main, 0.2)}` : 'none',
   },
   '&.Mui-disabled': {
     opacity: 0.58,
   },
-  ...(!mini && {
-    '& > *': {
-      transform: 'translateX(-10px)',
-    },
-  }),
+  ...(!mini &&
+    !compact && {
+      '& > *': {
+        transform: 'translateX(-10px)',
+      },
+    }),
 }))

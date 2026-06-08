@@ -26,11 +26,14 @@ var (
 	CronJobRecord     *cronJobRecord
 	CudaBaseImage     *cudaBaseImage
 	Dataset           *dataset
+	Experiment        *experiment
+	ExperimentRun     *experimentRun
 	GpuAnalysis       *gpuAnalysis
 	Image             *image
 	ImageAccount      *imageAccount
 	ImageUser         *imageUser
 	Job               *job
+	JobCheckpoint     *jobCheckpoint
 	Jobtemplate       *jobtemplate
 	Kaniko            *kaniko
 	ModelDownload     *modelDownload
@@ -39,6 +42,8 @@ var (
 	Resource          *resource
 	ResourceNetwork   *resourceNetwork
 	ResourceVGPU      *resourceVGPU
+	RunArtifact       *runArtifact
+	RunMetric         *runMetric
 	SystemConfig      *systemConfig
 	User              *user
 	UserAccount       *userAccount
@@ -57,11 +62,14 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	CronJobRecord = &Q.CronJobRecord
 	CudaBaseImage = &Q.CudaBaseImage
 	Dataset = &Q.Dataset
+	Experiment = &Q.Experiment
+	ExperimentRun = &Q.ExperimentRun
 	GpuAnalysis = &Q.GpuAnalysis
 	Image = &Q.Image
 	ImageAccount = &Q.ImageAccount
 	ImageUser = &Q.ImageUser
 	Job = &Q.Job
+	JobCheckpoint = &Q.JobCheckpoint
 	Jobtemplate = &Q.Jobtemplate
 	Kaniko = &Q.Kaniko
 	ModelDownload = &Q.ModelDownload
@@ -70,6 +78,8 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	Resource = &Q.Resource
 	ResourceNetwork = &Q.ResourceNetwork
 	ResourceVGPU = &Q.ResourceVGPU
+	RunArtifact = &Q.RunArtifact
+	RunMetric = &Q.RunMetric
 	SystemConfig = &Q.SystemConfig
 	User = &Q.User
 	UserAccount = &Q.UserAccount
@@ -89,11 +99,14 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		CronJobRecord:     newCronJobRecord(db, opts...),
 		CudaBaseImage:     newCudaBaseImage(db, opts...),
 		Dataset:           newDataset(db, opts...),
+		Experiment:        newExperiment(db, opts...),
+		ExperimentRun:     newExperimentRun(db, opts...),
 		GpuAnalysis:       newGpuAnalysis(db, opts...),
 		Image:             newImage(db, opts...),
 		ImageAccount:      newImageAccount(db, opts...),
 		ImageUser:         newImageUser(db, opts...),
 		Job:               newJob(db, opts...),
+		JobCheckpoint:     newJobCheckpoint(db, opts...),
 		Jobtemplate:       newJobtemplate(db, opts...),
 		Kaniko:            newKaniko(db, opts...),
 		ModelDownload:     newModelDownload(db, opts...),
@@ -102,6 +115,8 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		Resource:          newResource(db, opts...),
 		ResourceNetwork:   newResourceNetwork(db, opts...),
 		ResourceVGPU:      newResourceVGPU(db, opts...),
+		RunArtifact:       newRunArtifact(db, opts...),
+		RunMetric:         newRunMetric(db, opts...),
 		SystemConfig:      newSystemConfig(db, opts...),
 		User:              newUser(db, opts...),
 		UserAccount:       newUserAccount(db, opts...),
@@ -122,11 +137,14 @@ type Query struct {
 	CronJobRecord     cronJobRecord
 	CudaBaseImage     cudaBaseImage
 	Dataset           dataset
+	Experiment        experiment
+	ExperimentRun     experimentRun
 	GpuAnalysis       gpuAnalysis
 	Image             image
 	ImageAccount      imageAccount
 	ImageUser         imageUser
 	Job               job
+	JobCheckpoint     jobCheckpoint
 	Jobtemplate       jobtemplate
 	Kaniko            kaniko
 	ModelDownload     modelDownload
@@ -135,6 +153,8 @@ type Query struct {
 	Resource          resource
 	ResourceNetwork   resourceNetwork
 	ResourceVGPU      resourceVGPU
+	RunArtifact       runArtifact
+	RunMetric         runMetric
 	SystemConfig      systemConfig
 	User              user
 	UserAccount       userAccount
@@ -156,11 +176,14 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		CronJobRecord:     q.CronJobRecord.clone(db),
 		CudaBaseImage:     q.CudaBaseImage.clone(db),
 		Dataset:           q.Dataset.clone(db),
+		Experiment:        q.Experiment.clone(db),
+		ExperimentRun:     q.ExperimentRun.clone(db),
 		GpuAnalysis:       q.GpuAnalysis.clone(db),
 		Image:             q.Image.clone(db),
 		ImageAccount:      q.ImageAccount.clone(db),
 		ImageUser:         q.ImageUser.clone(db),
 		Job:               q.Job.clone(db),
+		JobCheckpoint:     q.JobCheckpoint.clone(db),
 		Jobtemplate:       q.Jobtemplate.clone(db),
 		Kaniko:            q.Kaniko.clone(db),
 		ModelDownload:     q.ModelDownload.clone(db),
@@ -169,6 +192,8 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		Resource:          q.Resource.clone(db),
 		ResourceNetwork:   q.ResourceNetwork.clone(db),
 		ResourceVGPU:      q.ResourceVGPU.clone(db),
+		RunArtifact:       q.RunArtifact.clone(db),
+		RunMetric:         q.RunMetric.clone(db),
 		SystemConfig:      q.SystemConfig.clone(db),
 		User:              q.User.clone(db),
 		UserAccount:       q.UserAccount.clone(db),
@@ -197,11 +222,14 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		CronJobRecord:     q.CronJobRecord.replaceDB(db),
 		CudaBaseImage:     q.CudaBaseImage.replaceDB(db),
 		Dataset:           q.Dataset.replaceDB(db),
+		Experiment:        q.Experiment.replaceDB(db),
+		ExperimentRun:     q.ExperimentRun.replaceDB(db),
 		GpuAnalysis:       q.GpuAnalysis.replaceDB(db),
 		Image:             q.Image.replaceDB(db),
 		ImageAccount:      q.ImageAccount.replaceDB(db),
 		ImageUser:         q.ImageUser.replaceDB(db),
 		Job:               q.Job.replaceDB(db),
+		JobCheckpoint:     q.JobCheckpoint.replaceDB(db),
 		Jobtemplate:       q.Jobtemplate.replaceDB(db),
 		Kaniko:            q.Kaniko.replaceDB(db),
 		ModelDownload:     q.ModelDownload.replaceDB(db),
@@ -210,6 +238,8 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		Resource:          q.Resource.replaceDB(db),
 		ResourceNetwork:   q.ResourceNetwork.replaceDB(db),
 		ResourceVGPU:      q.ResourceVGPU.replaceDB(db),
+		RunArtifact:       q.RunArtifact.replaceDB(db),
+		RunMetric:         q.RunMetric.replaceDB(db),
 		SystemConfig:      q.SystemConfig.replaceDB(db),
 		User:              q.User.replaceDB(db),
 		UserAccount:       q.UserAccount.replaceDB(db),
@@ -228,11 +258,14 @@ type queryCtx struct {
 	CronJobRecord     ICronJobRecordDo
 	CudaBaseImage     ICudaBaseImageDo
 	Dataset           IDatasetDo
+	Experiment        IExperimentDo
+	ExperimentRun     IExperimentRunDo
 	GpuAnalysis       IGpuAnalysisDo
 	Image             IImageDo
 	ImageAccount      IImageAccountDo
 	ImageUser         IImageUserDo
 	Job               IJobDo
+	JobCheckpoint     IJobCheckpointDo
 	Jobtemplate       IJobtemplateDo
 	Kaniko            IKanikoDo
 	ModelDownload     IModelDownloadDo
@@ -241,6 +274,8 @@ type queryCtx struct {
 	Resource          IResourceDo
 	ResourceNetwork   IResourceNetworkDo
 	ResourceVGPU      IResourceVGPUDo
+	RunArtifact       IRunArtifactDo
+	RunMetric         IRunMetricDo
 	SystemConfig      ISystemConfigDo
 	User              IUserDo
 	UserAccount       IUserAccountDo
@@ -259,11 +294,14 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		CronJobRecord:     q.CronJobRecord.WithContext(ctx),
 		CudaBaseImage:     q.CudaBaseImage.WithContext(ctx),
 		Dataset:           q.Dataset.WithContext(ctx),
+		Experiment:        q.Experiment.WithContext(ctx),
+		ExperimentRun:     q.ExperimentRun.WithContext(ctx),
 		GpuAnalysis:       q.GpuAnalysis.WithContext(ctx),
 		Image:             q.Image.WithContext(ctx),
 		ImageAccount:      q.ImageAccount.WithContext(ctx),
 		ImageUser:         q.ImageUser.WithContext(ctx),
 		Job:               q.Job.WithContext(ctx),
+		JobCheckpoint:     q.JobCheckpoint.WithContext(ctx),
 		Jobtemplate:       q.Jobtemplate.WithContext(ctx),
 		Kaniko:            q.Kaniko.WithContext(ctx),
 		ModelDownload:     q.ModelDownload.WithContext(ctx),
@@ -272,6 +310,8 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		Resource:          q.Resource.WithContext(ctx),
 		ResourceNetwork:   q.ResourceNetwork.WithContext(ctx),
 		ResourceVGPU:      q.ResourceVGPU.WithContext(ctx),
+		RunArtifact:       q.RunArtifact.WithContext(ctx),
+		RunMetric:         q.RunMetric.WithContext(ctx),
 		SystemConfig:      q.SystemConfig.WithContext(ctx),
 		User:              q.User.WithContext(ctx),
 		UserAccount:       q.UserAccount.WithContext(ctx),

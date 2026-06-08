@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 import { zodResolver } from '@hookform/resolvers/zod'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
 import { useMutation } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-
-import LoadableButton from '@/components/button/loadable-button'
+import { Form } from '@/components/ui/form'
 
 import { logger } from '@/utils/loglevel'
 
@@ -78,28 +70,27 @@ export function ForgotPasswordForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
+      <form onSubmit={form.handleSubmit(onSubmit)} className="orbit-auth-template-form">
+        <Controller
           control={form.control}
           name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>邮箱地址</FormLabel>
-              <FormControl>
-                <Input type="email" autoComplete="email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              fullWidth
+              label="邮箱地址"
+              type="email"
+              autoComplete="email"
+              placeholder="输入绑定邮箱"
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
           )}
         />
-        <LoadableButton
-          isLoadingText="发送中"
-          type="submit"
-          className="w-full"
-          isLoading={isPending}
-        >
-          发送重置链接
-        </LoadableButton>
+        <Button fullWidth size="large" type="submit" variant="contained" disabled={isPending}>
+          {isPending ? '发送中...' : '发送重置链接'}
+        </Button>
       </form>
     </Form>
   )

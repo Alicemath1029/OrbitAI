@@ -1,15 +1,24 @@
 package vcjob
 
 import (
+	"context"
+	"strconv"
+	"strings"
 	"testing"
 	"time"
 
+	"gorm.io/datatypes"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
 	"github.com/raids-lab/orbit/dao/model"
 	"github.com/raids-lab/orbit/internal/service"
+	checkpointsvc "github.com/raids-lab/orbit/internal/service/vcjob/checkpoint"
+	"github.com/raids-lab/orbit/internal/util"
+	"github.com/raids-lab/orbit/pkg/crclient"
 )
 
 func TestResolveDeleteSettlementTime(t *testing.T) {
@@ -111,10 +120,206 @@ func TestAppendExperimentEnvsFallsBackToTmpWhenNoWritableMount(t *testing.T) {
 	}
 }
 
+func TestBuildCheckpointRestoreJobCreatesRestoreRunAndCleansRuntime(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("open sqlite: %v", err)
+	}
+	if err := db.AutoMigrate(&model.Experiment{}, &model.ExperimentRun{}); err != nil {
+		t.Fatalf("migrate: %v", err)
+	}
+	experiment := model.Experiment{
+		Model:      gorm.Model{ID: 1},
+		Name:       "exp-a",
+		UserID:     1,
+		AccountID:  2,
+		Visibility: model.ExperimentVisibilityPrivate,
+	}
+	if err := db.Create(&experiment).Error; err != nil {
+		t.Fatalf("create experiment: %v", err)
+	}
+	parentRunID := uint(9)
+
+	oldFactory := newExperimentService
+	newExperimentService = func() *service.ExperimentService {
+		return service.NewExperimentServiceWithDB(db)
+	}
+	t.Cleanup(func() {
+		newExperimentService = oldFactory
+	})
+	t.Setenv("ORBIT_API_BASE", "http://orbit.test/api/v1")
+
+	checkpointInfo := &model.CheckpointInfo{
+		Enabled:        true,
+		Framework:      checkpointsvc.FrameworkPytorch,
+		ProjectName:    "proj",
+		ExperimentName: "exp-a",
+		OutputDir:      "/workspace/checkpoints",
+		CheckpointDir:  "/workspace/checkpoints",
+		ResumeMode:     checkpointsvc.ResumeModeNone,
+		SaveSteps:      100,
+		MaxToKeep:      3,
+	}
+	jobTemplate := restoreSourceJobTemplate(parentRunID)
+	record := &model.Job{
+		Model:        gorm.Model{ID: 10},
+		Name:         "train",
+		JobName:      "sg-old",
+		UserID:       1,
+		AccountID:    2,
+		JobType:      model.JobTypeCustom,
+		Attributes:   datatypes.NewJSONType(jobTemplate),
+		Checkpoint:   ptrCheckpointInfo(checkpointInfo),
+		AlertEnabled: true,
+	}
+	checkpoint := &model.JobCheckpoint{
+		Model:       gorm.Model{ID: 55},
+		JobID:       record.ID,
+		RunID:       &parentRunID,
+		JobName:     record.JobName,
+		UserID:      1,
+		AccountID:   2,
+		Framework:   checkpointsvc.FrameworkPytorch,
+		Name:        "checkpoint-9.pt",
+		Path:        "/workspace/checkpoints/checkpoint-9.pt",
+		StoragePath: "users/u/checkpoint-9.pt",
+		Step:        9,
+		Status:      model.JobCheckpointStatusReady,
+		Latest:      true,
+	}
+	token := util.JWTMessage{
+		UserID:      1,
+		AccountID:   2,
+		Username:    "alice",
+		AccountName: "team",
+	}
+
+	restored, displayName, runtime, err := buildCheckpointRestoreJob(
+		context.Background(),
+		record,
+		checkpoint,
+		token,
+		"",
+	)
+	if err != nil {
+		t.Fatalf("buildCheckpointRestoreJob() error = %v", err)
+	}
+	if displayName != "train-resume" {
+		t.Fatalf("displayName = %q", displayName)
+	}
+	if !strings.HasPrefix(restored.Name, "sg-alice-") {
+		t.Fatalf("restored name = %q, want sg-alice-*", restored.Name)
+	}
+	if runtime == nil || runtime.RunID == 0 || runtime.Token == "" {
+		t.Fatalf("runtime = %#v, want new experiment runtime", runtime)
+	}
+	if restored.Annotations[AnnotationKeyTaskName] != displayName ||
+		restored.Annotations[AnnotationKeyAlertEnabled] != "true" {
+		t.Fatalf("restored annotations = %#v", restored.Annotations)
+	}
+	if restored.Annotations[service.ExperimentAnnotationRunID] != strconv.FormatUint(uint64(runtime.RunID), 10) {
+		t.Fatalf("experiment run annotation = %q, want %d", restored.Annotations[service.ExperimentAnnotationRunID], runtime.RunID)
+	}
+	parsedInfo, err := checkpointsvc.ParseAnnotations(restored.Annotations)
+	if err != nil {
+		t.Fatalf("ParseAnnotations() error = %v", err)
+	}
+	if parsedInfo.ResumeMode != checkpointsvc.ResumeModeManual ||
+		parsedInfo.ResumeFrom != checkpoint.Path ||
+		parsedInfo.LatestCheckpoint != checkpoint.Path {
+		t.Fatalf("checkpoint restore annotations = %#v", parsedInfo)
+	}
+
+	values := envValues(restored.Spec.Tasks[0].Template.Spec.Containers[0].Env)
+	if values["USER_ENV"] != "kept" {
+		t.Fatalf("USER_ENV was not preserved: %#v", values)
+	}
+	if values["ORBIT_RESUME_FROM"] != checkpoint.Path ||
+		values["ORBIT_RESUME_MODE"] != checkpointsvc.ResumeModeManual {
+		t.Fatalf("checkpoint envs = %#v", values)
+	}
+	if values[service.EnvOrbitRunID] != strconv.FormatUint(uint64(runtime.RunID), 10) ||
+		values[service.EnvOrbitAPIBase] != "http://orbit.test/api/v1" ||
+		values[service.EnvOrbitRunToken] == "old-token" {
+		t.Fatalf("experiment envs = %#v", values)
+	}
+
+	var run model.ExperimentRun
+	if err := db.First(&run, runtime.RunID).Error; err != nil {
+		t.Fatalf("find restore run: %v", err)
+	}
+	if run.ParentRunID == nil || *run.ParentRunID != parentRunID {
+		t.Fatalf("ParentRunID = %#v, want %d", run.ParentRunID, parentRunID)
+	}
+	if run.SourceCheckpointID == nil || *run.SourceCheckpointID != checkpoint.ID {
+		t.Fatalf("SourceCheckpointID = %#v, want %d", run.SourceCheckpointID, checkpoint.ID)
+	}
+	if run.CheckpointSnapshot["checkpointPath"] != checkpoint.Path ||
+		run.CheckpointSnapshot["resumeMode"] != checkpointsvc.ResumeModeManual {
+		t.Fatalf("CheckpointSnapshot = %#v", run.CheckpointSnapshot)
+	}
+}
+
 func envValues(envs []v1.EnvVar) map[string]string {
 	values := make(map[string]string, len(envs))
 	for _, env := range envs {
 		values[env.Name] = env.Value
 	}
 	return values
+}
+
+func restoreSourceJobTemplate(parentRunID uint) *batch.Job {
+	return &batch.Job{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "sg-old",
+			Namespace: "orbit-workspace",
+			Labels: map[string]string{
+				crclient.LabelKeyTaskType:    string(model.JobTypeCustom),
+				crclient.LabelKeyTaskUser:    "old-user",
+				crclient.LalbeKeyTaskAccount: "old-account",
+				crclient.LabelKeyBaseURL:     "old-base",
+			},
+			Annotations: map[string]string{
+				AnnotationKeyTaskName:          "old-name",
+				service.ExperimentAnnotationID: "1",
+				service.ExperimentAnnotationRunID: strconv.FormatUint(
+					uint64(parentRunID),
+					10,
+				),
+				checkpointsvc.AnnotationKeyConfig: `{"enabled":true,"resumeMode":"auto"}`,
+			},
+		},
+		Spec: batch.JobSpec{Tasks: []batch.TaskSpec{{
+			Template: v1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{
+						crclient.LabelKeyTaskType: string(model.JobTypeCustom),
+					},
+					Annotations: map[string]string{
+						AnnotationKeyTaskName: "old-name",
+					},
+				},
+				Spec: v1.PodSpec{Containers: []v1.Container{{
+					Name: "custom",
+					Env: []v1.EnvVar{
+						{Name: "ORBIT_RUN_ID", Value: "old-run"},
+						{Name: "ORBIT_RUN_TOKEN", Value: "old-token"},
+						{Name: "ORBIT_API_BASE", Value: "http://old"},
+						{Name: "ORBIT_RESUME_FROM", Value: "/old/checkpoint"},
+						{Name: "USER_ENV", Value: "kept"},
+					},
+					VolumeMounts: []v1.VolumeMount{{
+						Name:      "storage",
+						MountPath: "/workspace",
+						SubPath:   "users/u",
+					}},
+				}}},
+			},
+		}}},
+	}
+}
+
+func ptrCheckpointInfo(info *model.CheckpointInfo) *datatypes.JSONType[*model.CheckpointInfo] {
+	value := datatypes.NewJSONType(info)
+	return &value
 }

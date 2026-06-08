@@ -1,0 +1,26 @@
+{
+  "version": "compose-local",
+  "url": {
+    "apiBase": "",
+    "document": ""
+  },
+  "grafana": {
+    "overview": {
+      "main": "",
+      "schedule": "",
+      "network": ""
+    },
+    "node": {
+      "basic": "",
+      "nvidia": ""
+    },
+    "job": {
+      "basic": "",
+      "nvidia": "",
+      "pod": ""
+    },
+    "user": {
+      "nvidia": ""
+    }
+  }
+}

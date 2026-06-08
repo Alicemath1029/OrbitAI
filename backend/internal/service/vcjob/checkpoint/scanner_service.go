@@ -10,6 +10,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"gorm.io/datatypes"
 )
 
 const (
@@ -32,12 +34,15 @@ type ServiceScanResponse struct {
 }
 
 type ServiceScanItem struct {
-	Name        string    `json:"name"`
-	Path        string    `json:"path"`
-	StoragePath string    `json:"storagePath"`
-	Step        int64     `json:"step"`
-	SizeBytes   int64     `json:"sizeBytes"`
-	ModTime     time.Time `json:"modTime"`
+	Name                string            `json:"name"`
+	Path                string            `json:"path"`
+	StoragePath         string            `json:"storagePath"`
+	Framework           string            `json:"framework,omitempty"`
+	Step                int64             `json:"step"`
+	SizeBytes           int64             `json:"sizeBytes"`
+	ModTime             time.Time         `json:"modTime"`
+	Metadata            datatypes.JSONMap `json:"metadata,omitempty"`
+	ManifestStoragePath string            `json:"manifestStoragePath,omitempty"`
 }
 
 func ValidateServiceScanRequest(req ServiceScanRequest) error {
@@ -116,14 +121,16 @@ func scanLocalCheckpoint(ctx context.Context, checkpointDir, storagePath, base s
 		return ServiceScanItem{}, err
 	}
 	name := filepath.Base(base)
-	return ServiceScanItem{
+	item := ServiceScanItem{
 		Name:        name,
 		Path:        checkpointPath(checkpointDir, name, false),
 		StoragePath: storagePath,
 		Step:        stepFromName(name),
 		SizeBytes:   size,
 		ModTime:     modTime,
-	}, nil
+	}
+	applyLocalManifestToScanItem(&item, base, manifestPathForCheckpoint(storagePath))
+	return item, nil
 }
 
 func scanLocalCheckpointDir(ctx context.Context, framework string, scanBase localScanBase) (ServiceScanResponse, error) {
@@ -137,11 +144,31 @@ func scanLocalCheckpointDir(ctx context.Context, framework string, scanBase loca
 	})
 
 	items := make([]ServiceScanItem, 0, len(entries))
+	seen := make(map[string]struct{}, len(entries))
 	for _, entry := range entries {
 		if err := ctx.Err(); err != nil {
 			return ServiceScanResponse{}, err
 		}
 		name := entry.Name()
+		if strings.HasSuffix(name, checkpointManifestSuffix) {
+			targetName := strings.TrimSuffix(name, checkpointManifestSuffix)
+			if targetName == "" {
+				continue
+			}
+			if _, ok := seen[targetName]; ok {
+				continue
+			}
+			item, err := scanLocalCheckpointChild(ctx, scanBase, targetName)
+			if err != nil {
+				if errors.Is(err, os.ErrNotExist) {
+					continue
+				}
+				return ServiceScanResponse{}, err
+			}
+			items = append(items, item)
+			seen[targetName] = struct{}{}
+			continue
+		}
 		if shouldSkipCheckpointChild(name) {
 			continue
 		}
@@ -155,27 +182,78 @@ func scanLocalCheckpointDir(ctx context.Context, framework string, scanBase loca
 		if !looksLikeCheckpointEntry(framework, name, childInfo.IsDir()) {
 			continue
 		}
-		childPath := filepath.Join(scanBase.basePath, name)
-		size, modTime, err := scanLocalTree(ctx, childPath)
+		if _, ok := seen[name]; ok {
+			continue
+		}
+		item, err := scanLocalCheckpointChild(ctx, scanBase, name)
 		if err != nil {
 			if errors.Is(err, os.ErrNotExist) {
 				continue
 			}
 			return ServiceScanResponse{}, err
 		}
-		if modTime.IsZero() {
-			modTime = childInfo.ModTime()
-		}
-		items = append(items, ServiceScanItem{
-			Name:        name,
-			Path:        checkpointPath(scanBase.checkpointDir, name, true),
-			StoragePath: filepath.ToSlash(filepath.Join(scanBase.storagePath, name)),
-			Step:        stepFromName(name),
-			SizeBytes:   size,
-			ModTime:     modTime,
-		})
+		items = append(items, item)
+		seen[name] = struct{}{}
 	}
 	return ServiceScanResponse{Items: items, LatestMarker: latestMarker}, nil
+}
+
+func scanLocalCheckpointChild(ctx context.Context, scanBase localScanBase, name string) (ServiceScanItem, error) {
+	childPath := filepath.Join(scanBase.basePath, name)
+	childInfo, err := os.Stat(childPath)
+	if err != nil {
+		return ServiceScanItem{}, err
+	}
+	size, modTime, err := scanLocalTree(ctx, childPath)
+	if err != nil {
+		return ServiceScanItem{}, err
+	}
+	if modTime.IsZero() {
+		modTime = childInfo.ModTime()
+	}
+	item := ServiceScanItem{
+		Name:        name,
+		Path:        checkpointPath(scanBase.checkpointDir, name, true),
+		StoragePath: filepath.ToSlash(filepath.Join(scanBase.storagePath, name)),
+		Step:        stepFromName(name),
+		SizeBytes:   size,
+		ModTime:     modTime,
+	}
+	applyLocalManifestToScanItem(
+		&item,
+		childPath,
+		manifestPathForCheckpoint(filepath.ToSlash(filepath.Join(scanBase.storagePath, name))),
+	)
+	return item, nil
+}
+
+func applyLocalManifestToScanItem(item *ServiceScanItem, checkpointPath string, manifestStoragePath string) {
+	manifestPath := manifestPathForCheckpoint(checkpointPath)
+	data, err := os.ReadFile(manifestPath)
+	if err != nil {
+		return
+	}
+	manifest, err := parseCheckpointManifest(data)
+	if err != nil {
+		return
+	}
+	if name := strings.TrimSpace(manifest.Name); name != "" {
+		item.Name = name
+	}
+	if path := strings.TrimSpace(manifest.Path); path != "" {
+		item.Path = filepath.ToSlash(filepath.Clean(path))
+	}
+	if framework := strings.TrimSpace(manifest.Framework); framework != "" {
+		item.Framework = strings.ToLower(framework)
+	}
+	if manifest.Step != nil {
+		item.Step = *manifest.Step
+	}
+	if manifest.SizeBytes != nil && item.SizeBytes == 0 {
+		item.SizeBytes = *manifest.SizeBytes
+	}
+	item.Metadata = mergeManifestMetadata(item.Metadata, manifest, manifestStoragePath)
+	item.ManifestStoragePath = manifestStoragePath
 }
 
 func readLatestCheckpointMarker(base string) string {

@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 import { zodResolver } from '@hookform/resolvers/zod'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { HTTPError } from 'ky'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-
-import LoadableButton from '@/components/button/loadable-button'
+import { Form } from '@/components/ui/form'
 
 import { apiSignup } from '@/services/api/auth'
 
@@ -101,57 +93,67 @@ export function SignupForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-        <FormField
+      <form onSubmit={form.handleSubmit(onSubmit)} className="orbit-auth-template-form">
+        <Controller
           control={form.control}
           name="username"
-          render={({ field }) => (
-            <FormItem>
-              {/* <FormLabel className=" text-left">Username</FormLabel> */}
-              <FormLabel>账号</FormLabel>
-              <FormControl>
-                <Input autoComplete="off" {...field} />
-                {/* <Input placeholder="shadcn" {...field} /> */}
-              </FormControl>
-              {/* <FormDescription>密码</FormDescription> */}
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              fullWidth
+              label="账号"
+              autoComplete="off"
+              placeholder="设置平台账号"
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
           )}
         />
-        <FormField
+        <Controller
           control={form.control}
           name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>密码</FormLabel>
-              <FormControl>
-                <Input type="password" autoComplete="off" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              fullWidth
+              label="密码"
+              type="password"
+              autoComplete="off"
+              placeholder="设置登录密码"
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
           )}
         />
-        <FormField
+        <Controller
           control={form.control}
           name="passwordConfirm"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>确认密码</FormLabel>
-              <FormControl>
-                <Input type="password" autoComplete="off" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              fullWidth
+              label="确认密码"
+              type="password"
+              autoComplete="off"
+              placeholder="再次输入密码"
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
           )}
         />
-        <LoadableButton
-          isLoadingText="注册中"
+        <Button
+          fullWidth
+          size="large"
           type="submit"
-          className="w-full"
-          isLoading={isPending}
+          color="inherit"
+          variant="contained"
+          disabled={isPending}
         >
-          注册
-        </LoadableButton>
+          {isPending ? '注册中...' : '注册'}
+        </Button>
       </form>
     </Form>
   )

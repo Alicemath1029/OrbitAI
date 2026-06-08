@@ -275,6 +275,9 @@ func (mgr *VolcanojobMgr) DeleteJobCheckpoint(c *gin.Context) {
 	if err := refreshLatestAfterMutation(c, job); err != nil {
 		klog.Warningf("failed to refresh latest checkpoint for job %s: %v", job.JobName, err)
 	}
+	if err := checkpointsvc.SyncCheckpointArtifacts(c.Request.Context(), query.GetDB().WithContext(c), job.ID); err != nil {
+		klog.Warningf("failed to sync checkpoint artifacts for job %s: %v", job.JobName, err)
+	}
 	details := checkpointOpDetails(job, checkpoint, map[string]any{
 		"sizeBytes": checkpoint.SizeBytes,
 	})
@@ -324,6 +327,9 @@ func (mgr *VolcanojobMgr) CleanupJobCheckpoints(c *gin.Context) {
 		}
 		if err := refreshLatestAfterMutation(c, job); err != nil {
 			klog.Warningf("failed to refresh latest checkpoint for job %s: %v", job.JobName, err)
+		}
+		if err := checkpointsvc.SyncCheckpointArtifacts(c.Request.Context(), query.GetDB().WithContext(c), job.ID); err != nil {
+			klog.Warningf("failed to sync checkpoint artifacts for job %s: %v", job.JobName, err)
 		}
 	}
 
@@ -685,7 +691,7 @@ func createRestoreExperimentRun(
 		tags["restoredFromRunID"] = *parentRunID
 	}
 	checkpointSnapshot := checkpointSnapshotFromRestore(checkpoint, checkpointInfo)
-	result, err := service.NewExperimentService().CreateRun(ctx, &service.CreateRunInput{
+	result, err := newExperimentService().CreateRun(ctx, &service.CreateRunInput{
 		ExperimentID:       experimentID,
 		ParentRunID:        parentRunID,
 		SourceCheckpointID: &checkpoint.ID,

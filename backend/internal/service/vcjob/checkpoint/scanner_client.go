@@ -63,8 +63,17 @@ func ScanJobWithService(ctx context.Context, record *model.Job, opts ServiceScan
 		if item.Step >= 0 {
 			checkpoint.Step = item.Step
 		}
+		if framework := strings.TrimSpace(item.Framework); framework != "" {
+			checkpoint.Framework = strings.ToLower(framework)
+		}
 		if checkpoint.Metadata == nil {
 			checkpoint.Metadata = datatypes.JSONMap{}
+		}
+		for key, value := range item.Metadata {
+			checkpoint.Metadata[key] = value
+		}
+		if item.ManifestStoragePath != "" {
+			checkpoint.Metadata["manifestStoragePath"] = item.ManifestStoragePath
 		}
 		checkpoint.Metadata["scanBackend"] = scannerBackendService
 		if checkpointMatchesTracker(&checkpoint, resp.LatestMarker, latestMarkerStep(resp.LatestMarker)) {

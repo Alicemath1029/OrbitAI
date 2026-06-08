@@ -31,6 +31,7 @@ func main() {
 		model.UserDataset{},
 		model.Resource{},
 		model.Job{},
+		model.JobCheckpoint{},
 		model.Image{},
 		model.Experiment{},
 		model.ExperimentRun{},

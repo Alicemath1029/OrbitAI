@@ -1,0 +1,106 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: orbit
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: Asia/Shanghai
+    volumes:
+      - orbit-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d orbit"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.compose
+    command: ["/app/migrate"]
+    environment:
+      GIN_MODE: release
+      ORBIT_ADMIN_USERNAME: admin
+      ORBIT_ADMIN_PASSWORD: admin123
+    volumes:
+      - ./deploy/compose/backend-config.yaml:/etc/config/config.yaml:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.compose
+    command: ["/app/orbit"]
+    environment:
+      GIN_MODE: release
+      KUBECONFIG: /app/kubeconfig
+      ORBIT_STORAGE_ROOT: /app/storage-data
+    volumes:
+      - ./deploy/compose/backend-config.yaml:/etc/config/config.yaml:ro
+      - ${KUBECONFIG:-${HOME}/.kube/config}:/app/kubeconfig:ro
+      - orbit-storage-data:/app/storage-data
+    ports:
+      - "18088:8088"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  storage:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.compose
+    command: ["/app/storage-server"]
+    environment:
+      GIN_MODE: release
+      ORBIT_STORAGE_PORT: "7320"
+      ORBIT_STORAGE_ROOT: /app/storage-data
+    volumes:
+      - ./deploy/compose/backend-config.yaml:/etc/config/config.yaml:ro
+      - orbit-storage-data:/app/storage-data
+    ports:
+      - "17320:7320"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  checkpoint-scanner:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.compose
+    command: ["/app/checkpoint-scanner"]
+    environment:
+      ORBIT_CHECKPOINT_SCANNER_PORT: "7330"
+      ORBIT_CHECKPOINT_SCANNER_ROOT: /app/storage-data
+    volumes:
+      - orbit-storage-data:/app/storage-data:ro
+    ports:
+      - "17330:7330"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.compose
+    ports:
+      - "18080:80"
+    depends_on:
+      - backend
+      - storage
+    restart: unless-stopped
+
+volumes:
+  orbit-postgres-data:
+  orbit-storage-data:

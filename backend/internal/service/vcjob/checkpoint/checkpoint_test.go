@@ -265,6 +265,51 @@ func TestFileSystemScannerScansFrameworkLayouts(t *testing.T) {
 	}
 }
 
+func TestFileSystemScannerReadsSDKManifest(t *testing.T) {
+	t.Parallel()
+
+	root := t.TempDir()
+	base := filepath.Join(root, "users", "u-admin", "exp", "checkpoints")
+	mustWriteFile(t, filepath.Join(base, "custom-final.bin"), "checkpoint")
+	mustWriteFile(t, filepath.Join(base, "custom-final.bin.orbit.json"), `{
+		"schemaVersion": "1",
+		"framework": "pytorch",
+		"name": "custom-final",
+		"path": "/workspace/checkpoints/custom-final.bin",
+		"step": 123,
+		"sha256": "abc123",
+		"metadata": {"metric": "loss"}
+	}`)
+
+	scanner := NewFileSystemScanner(root)
+	resp, err := scanner.Scan(context.Background(), ServiceScanRequest{
+		Framework:     FrameworkPytorch,
+		CheckpointDir: "/workspace/checkpoints",
+		StoragePath:   "users/u-admin/exp/checkpoints",
+	})
+	if err != nil {
+		t.Fatalf("Scan() error = %v", err)
+	}
+	if len(resp.Items) != 1 {
+		t.Fatalf("Scan() items = %#v, want one manifest-discovered checkpoint", resp.Items)
+	}
+
+	item := resp.Items[0]
+	if item.Name != "custom-final" || item.Path != "/workspace/checkpoints/custom-final.bin" {
+		t.Fatalf("manifest name/path not applied: %#v", item)
+	}
+	if item.Step != 123 || item.Framework != FrameworkPytorch {
+		t.Fatalf("manifest step/framework not applied: %#v", item)
+	}
+	if item.Metadata["metric"] != "loss" || item.Metadata["manifestSchemaVersion"] != "1" ||
+		item.Metadata["sha256"] != "abc123" {
+		t.Fatalf("manifest metadata = %#v", item.Metadata)
+	}
+	if item.ManifestStoragePath != "users/u-admin/exp/checkpoints/custom-final.bin.orbit.json" {
+		t.Fatalf("ManifestStoragePath = %q", item.ManifestStoragePath)
+	}
+}
+
 func TestLatestCheckpointPrefersFrameworkTracker(t *testing.T) {
 	t.Parallel()
 
@@ -375,9 +420,93 @@ func TestUpsertCheckpointArtifactUpdatesExistingSource(t *testing.T) {
 	}
 }
 
-func TestScanJobWithKubernetesDoesNotCreateFallbackPod(t *testing.T) {
+func TestSyncCheckpointArtifactsRemovesStaleArtifacts(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("open sqlite: %v", err)
+	}
+	if err := db.AutoMigrate(&model.JobCheckpoint{}, &model.RunArtifact{}); err != nil {
+		t.Fatalf("migrate: %v", err)
+	}
+
+	runID := uint(7)
+	ready := model.JobCheckpoint{
+		JobID:       1,
+		RunID:       &runID,
+		JobName:     "job-a",
+		UserID:      1,
+		AccountID:   1,
+		Framework:   FrameworkPytorch,
+		Name:        "checkpoint-4.pt",
+		Path:        "/workspace/checkpoints/checkpoint-4.pt",
+		StoragePath: "users/u/checkpoint-4.pt",
+		Step:        4,
+		SizeBytes:   64,
+		Status:      model.JobCheckpointStatusReady,
+		Latest:      true,
+		Metadata:    datatypes.JSONMap{"source": "scan"},
+	}
+	deleted := model.JobCheckpoint{
+		JobID:       1,
+		RunID:       &runID,
+		JobName:     "job-a",
+		UserID:      1,
+		AccountID:   1,
+		Framework:   FrameworkPytorch,
+		Name:        "checkpoint-2.pt",
+		Path:        "/workspace/checkpoints/checkpoint-2.pt",
+		StoragePath: "users/u/checkpoint-2.pt",
+		Step:        2,
+		SizeBytes:   32,
+		Status:      model.JobCheckpointStatusDeleted,
+	}
+	if err := db.Create(&ready).Error; err != nil {
+		t.Fatalf("create ready checkpoint: %v", err)
+	}
+	if err := db.Create(&deleted).Error; err != nil {
+		t.Fatalf("create deleted checkpoint: %v", err)
+	}
+
+	deletedSourceID := deleted.ID
+	if err := db.Create(&model.RunArtifact{
+		RunID:      runID,
+		Name:       deleted.Name,
+		Type:       "checkpoint",
+		Path:       deleted.Path,
+		SourceType: "checkpoint",
+		SourceID:   &deletedSourceID,
+	}).Error; err != nil {
+		t.Fatalf("create stale artifact: %v", err)
+	}
+
+	if err := SyncCheckpointArtifacts(context.Background(), db, 1); err != nil {
+		t.Fatalf("SyncCheckpointArtifacts() error = %v", err)
+	}
+
+	var readyArtifact model.RunArtifact
+	if err := db.Where("source_type = ? AND source_id = ?", "checkpoint", ready.ID).First(&readyArtifact).Error; err != nil {
+		t.Fatalf("ready artifact was not upserted: %v", err)
+	}
+	if readyArtifact.Metadata["latest"] != true || readyArtifact.Metadata["jobName"] != "job-a" {
+		t.Fatalf("ready artifact metadata = %#v", readyArtifact.Metadata)
+	}
+
+	var count int64
+	if err := db.Model(&model.RunArtifact{}).
+		Where("source_type = ? AND source_id = ?", "checkpoint", deleted.ID).
+		Count(&count).Error; err != nil {
+		t.Fatalf("count stale artifact: %v", err)
+	}
+	if count != 0 {
+		t.Fatalf("stale artifact count = %d, want 0", count)
+	}
+}
+
+func TestScanJobWithKubernetesReportsServiceFailureWithoutFallback(t *testing.T) {
 	t.Setenv("ORBIT_CHECKPOINT_SCANNER_ENDPOINT", "http://127.0.0.1:1")
 	t.Setenv("ORBIT_CHECKPOINT_SCANNER_TIMEOUT_SECONDS", "1")
+	t.Setenv("ORBIT_CHECKPOINT_SCANNER_FALLBACK", "disabled")
+	t.Setenv("CRATER_CHECKPOINT_SCANNER_FALLBACK", "disabled")
 
 	record := &model.Job{
 		JobName: "scan-service-required",
@@ -408,6 +537,9 @@ func TestScanJobWithKubernetesDoesNotCreateFallbackPod(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "call checkpoint scanner service") {
 		t.Fatalf("ScanJobWithKubernetes() error = %v, want scanner service call error", err)
+	}
+	if !strings.Contains(err.Error(), "ORBIT_CHECKPOINT_SCANNER_FALLBACK=local") {
+		t.Fatalf("ScanJobWithKubernetes() error = %v, want fallback hint", err)
 	}
 }
 

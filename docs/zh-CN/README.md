@@ -71,6 +71,7 @@ Orbit 的整体架构与主要组件概览。
 
 - 管理员指南（中文）: https://raids-lab.github.io/orbit/zh/docs/admin/
 - 管理员指南（English）: https://raids-lab.github.io/orbit/en/docs/admin/
+- 后端代码梳理: [backend-code-overview.md](backend-code-overview.md)
 - 实验中心第一阶段功能说明: [experiment-center-phase1.md](experiment-center-phase1.md)
 - 本次训练模板与 Checkpoint 恢复能力变更说明: [checkpoint-template-restore-update.md](checkpoint-template-restore-update.md)
 
