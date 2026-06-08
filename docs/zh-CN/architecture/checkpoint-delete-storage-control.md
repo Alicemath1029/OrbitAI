@@ -8,8 +8,8 @@ Checkpoint 的物理文件删除由 `checkpoint-scanner` 服务执行，主 back
 
 - scanner 只接受 storage root 下的相对路径，拒绝目录逃逸。
 - scanner 的 PVC 默认以读写方式挂载，以支持删除和 cleanup。
-- backend 本地存储 fallback 默认关闭；只有显式设置 `ORBIT_CHECKPOINT_SCANNER_FALLBACK=local` 时才允许 backend 本地删除。
-- 如果 scanner endpoint 未配置或服务不可用，DELETE/cleanup 会返回带 fallback 提示的错误，不会静默走错误的生产架构。
+- checkpoint 删除链路不提供 backend 本地存储 fallback。
+- 如果 scanner endpoint 未配置或服务不可用，DELETE/cleanup 会直接失败，不会静默走错误的生产架构。
 
 相关配置：
 

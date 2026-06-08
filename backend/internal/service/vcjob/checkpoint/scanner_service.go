@@ -134,7 +134,7 @@ func (s FileSystemScanner) Delete(ctx context.Context, req ServiceDeleteRequest)
 	}
 	deleted = append(deleted, manifestStoragePath)
 
-	if err := s.removeMatchingLatestMarker(storagePath, markerItem); err != nil {
+	if err := s.removeMatchingLatestMarker(storagePath, &markerItem); err != nil {
 		return ServiceDeleteResponse{}, err
 	}
 	return ServiceDeleteResponse{Deleted: deleted}, ctx.Err()
@@ -175,7 +175,7 @@ func (s FileSystemScanner) resolveBase(req ServiceScanRequest) (localScanBase, e
 	}, nil
 }
 
-func (s FileSystemScanner) resolveStoragePath(raw string) (absolutePath string, storagePath string, err error) {
+func (s FileSystemScanner) resolveStoragePath(raw string) (absolutePath, storagePath string, err error) {
 	root := filepath.Clean(strings.TrimSpace(s.Root))
 	if root == "" || !filepath.IsAbs(root) {
 		return "", "", fmt.Errorf("scanner root %q must be absolute", s.Root)
@@ -191,7 +191,7 @@ func (s FileSystemScanner) resolveStoragePath(raw string) (absolutePath string, 
 	return absolutePath, storagePath, nil
 }
 
-func (s FileSystemScanner) removeMatchingLatestMarker(storagePath string, item model.JobCheckpoint) error {
+func (s FileSystemScanner) removeMatchingLatestMarker(storagePath string, item *model.JobCheckpoint) error {
 	root := filepath.Clean(strings.TrimSpace(s.Root))
 	markerPath := filepath.Join(root, filepath.Dir(filepath.FromSlash(storagePath)), latestCheckpointTracker)
 	marker, err := os.ReadFile(markerPath)
@@ -201,7 +201,7 @@ func (s FileSystemScanner) removeMatchingLatestMarker(storagePath string, item m
 		}
 		return err
 	}
-	if checkpointMatchesTracker(&item, strings.TrimSpace(string(marker)), latestMarkerStep(string(marker))) {
+	if checkpointMatchesTracker(item, strings.TrimSpace(string(marker)), latestMarkerStep(string(marker))) {
 		if err := removeLocalPath(markerPath); err != nil {
 			return err
 		}
@@ -288,56 +288,79 @@ func scanLocalCheckpointDir(ctx context.Context, framework string, scanBase loca
 	items := make([]ServiceScanItem, 0, len(entries))
 	seen := make(map[string]struct{}, len(entries))
 	for _, entry := range entries {
-		if err := ctx.Err(); err != nil {
+		item, ok, err := scanLocalCheckpointEntry(ctx, framework, scanBase, entry, seen)
+		if err != nil {
 			return ServiceScanResponse{}, err
 		}
-		name := entry.Name()
-		if strings.HasSuffix(name, checkpointManifestSuffix) {
-			targetName := strings.TrimSuffix(name, checkpointManifestSuffix)
-			if targetName == "" {
-				continue
-			}
-			if _, ok := seen[targetName]; ok {
-				continue
-			}
-			item, err := scanLocalCheckpointChild(ctx, scanBase, targetName)
-			if err != nil {
-				if errors.Is(err, os.ErrNotExist) {
-					continue
-				}
-				return ServiceScanResponse{}, err
-			}
+		if ok {
 			items = append(items, item)
-			seen[targetName] = struct{}{}
-			continue
 		}
-		if shouldSkipCheckpointChild(name) {
-			continue
-		}
-		childInfo, err := entry.Info()
-		if err != nil {
-			if errors.Is(err, os.ErrNotExist) {
-				continue
-			}
-			return ServiceScanResponse{}, err
-		}
-		if !looksLikeCheckpointEntry(framework, name, childInfo.IsDir()) {
-			continue
-		}
-		if _, ok := seen[name]; ok {
-			continue
-		}
-		item, err := scanLocalCheckpointChild(ctx, scanBase, name)
-		if err != nil {
-			if errors.Is(err, os.ErrNotExist) {
-				continue
-			}
-			return ServiceScanResponse{}, err
-		}
-		items = append(items, item)
-		seen[name] = struct{}{}
 	}
 	return ServiceScanResponse{Items: items, LatestMarker: latestMarker}, nil
+}
+
+func scanLocalCheckpointEntry(
+	ctx context.Context,
+	framework string,
+	scanBase localScanBase,
+	entry os.DirEntry,
+	seen map[string]struct{},
+) (ServiceScanItem, bool, error) {
+	if err := ctx.Err(); err != nil {
+		return ServiceScanItem{}, false, err
+	}
+	name := entry.Name()
+	if strings.HasSuffix(name, checkpointManifestSuffix) {
+		return scanLocalManifestEntry(ctx, scanBase, strings.TrimSuffix(name, checkpointManifestSuffix), seen)
+	}
+	if shouldSkipCheckpointChild(name) {
+		return ServiceScanItem{}, false, nil
+	}
+	childInfo, err := entry.Info()
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return ServiceScanItem{}, false, nil
+		}
+		return ServiceScanItem{}, false, err
+	}
+	if !looksLikeCheckpointEntry(framework, name, childInfo.IsDir()) || checkpointEntrySeen(seen, name) {
+		return ServiceScanItem{}, false, nil
+	}
+	return scanLocalCheckpointEntryByName(ctx, scanBase, name, seen)
+}
+
+func scanLocalManifestEntry(
+	ctx context.Context,
+	scanBase localScanBase,
+	targetName string,
+	seen map[string]struct{},
+) (ServiceScanItem, bool, error) {
+	if targetName == "" || checkpointEntrySeen(seen, targetName) {
+		return ServiceScanItem{}, false, nil
+	}
+	return scanLocalCheckpointEntryByName(ctx, scanBase, targetName, seen)
+}
+
+func scanLocalCheckpointEntryByName(
+	ctx context.Context,
+	scanBase localScanBase,
+	name string,
+	seen map[string]struct{},
+) (ServiceScanItem, bool, error) {
+	item, err := scanLocalCheckpointChild(ctx, scanBase, name)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return ServiceScanItem{}, false, nil
+		}
+		return ServiceScanItem{}, false, err
+	}
+	seen[name] = struct{}{}
+	return item, true, nil
+}
+
+func checkpointEntrySeen(seen map[string]struct{}, name string) bool {
+	_, ok := seen[name]
+	return ok
 }
 
 func scanLocalCheckpointChild(ctx context.Context, scanBase localScanBase, name string) (ServiceScanItem, error) {
@@ -413,7 +436,7 @@ func applyLocalManifestToScanItem(
 	if issues := validateCheckpointManifest(ctx, manifest, target); len(issues) > 0 {
 		markScanItemInvalid(item, manifestStoragePath, issues...)
 	} else if item.Metadata != nil {
-		item.Metadata["validationStatus"] = "valid"
+		item.Metadata[checkpointValidationStatusKey] = checkpointValidationValid
 	}
 }
 
@@ -425,8 +448,8 @@ func markScanItemInvalid(item *ServiceScanItem, manifestStoragePath string, issu
 		item.Metadata = datatypes.JSONMap{}
 	}
 	item.Status = string(model.JobCheckpointStatusInvalid)
-	item.Metadata["validationStatus"] = "invalid"
-	item.Metadata["validationErrors"] = issues
+	item.Metadata[checkpointValidationStatusKey] = checkpointValidationInvalid
+	item.Metadata[checkpointValidationErrorsKey] = issues
 	if manifestStoragePath != "" {
 		item.Metadata["manifestStoragePath"] = filepath.ToSlash(filepath.Clean(manifestStoragePath))
 	}

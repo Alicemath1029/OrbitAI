@@ -16,6 +16,7 @@ import (
 	batch "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 
 	"github.com/raids-lab/orbit/dao/model"
+	"github.com/raids-lab/orbit/internal/storage"
 )
 
 func TestPrepareAppliesPolicyDefaults(t *testing.T) {
@@ -622,6 +623,36 @@ func TestSyncCheckpointArtifactsRemovesStaleArtifacts(t *testing.T) {
 	}
 }
 
+func TestDeleteCheckpointStorageWithControlRequiresScannerService(t *testing.T) {
+	t.Setenv("ORBIT_CHECKPOINT_SCANNER_ENDPOINT", "")
+	t.Setenv("CRATER_CHECKPOINT_SCANNER_ENDPOINT", "")
+	t.Setenv("ORBIT_CHECKPOINT_SCANNER_FALLBACK", "local")
+	t.Setenv("CRATER_CHECKPOINT_SCANNER_FALLBACK", "local")
+
+	root := t.TempDir()
+	storage.SetRootDir(root)
+	storagePath := "users/u-admin/exp/checkpoints/checkpoint-1.pt"
+	localPath := filepath.Join(root, filepath.FromSlash(storagePath))
+	mustWriteFile(t, localPath, "checkpoint")
+
+	configPath := filepath.Join(t.TempDir(), "config.yaml")
+	mustWriteFile(t, configPath, minimalConfigWithScannerEndpoint(""))
+	t.Setenv("ORBIT_DEBUG_CONFIG_PATH", configPath)
+
+	err := DeleteCheckpointStorageWithControl(context.Background(), &model.JobCheckpoint{
+		Name:        "checkpoint-1.pt",
+		Path:        "/workspace/checkpoints/checkpoint-1.pt",
+		StoragePath: storagePath,
+		Step:        1,
+	})
+	if err == nil || err.Error() != "checkpoint scanner service is required for checkpoint delete" {
+		t.Fatalf("DeleteCheckpointStorageWithControl() error = %v, want scanner required error", err)
+	}
+	if _, statErr := os.Stat(localPath); statErr != nil {
+		t.Fatalf("local checkpoint was removed or became inaccessible: %v", statErr)
+	}
+}
+
 func TestScanJobWithKubernetesReportsServiceFailureWithoutFallback(t *testing.T) {
 	t.Setenv("ORBIT_CHECKPOINT_SCANNER_ENDPOINT", "http://127.0.0.1:1")
 	t.Setenv("ORBIT_CHECKPOINT_SCANNER_TIMEOUT_SECONDS", "1")
@@ -661,6 +692,67 @@ func TestScanJobWithKubernetesReportsServiceFailureWithoutFallback(t *testing.T)
 	if !strings.Contains(err.Error(), "ORBIT_CHECKPOINT_SCANNER_FALLBACK=local") {
 		t.Fatalf("ScanJobWithKubernetes() error = %v, want fallback hint", err)
 	}
+}
+
+func minimalConfigWithScannerEndpoint(endpoint string) string {
+	return `enableLeaderElection: false
+port: :8088
+host: 127.0.0.1
+prometheusAPI: ""
+modelDownload:
+  image: python:3.11-slim
+checkpointScanner:
+  endpoint: "` + endpoint + `"
+  timeoutSeconds: 1
+  intervalSeconds: 0
+  batchSize: 100
+postgres:
+  host: 127.0.0.1
+  port: "5432"
+  dbname: orbit
+  user: postgres
+  password: postgres
+  sslmode: disable
+  TimeZone: Asia/Shanghai
+storage:
+  prefix:
+    user: users
+    account: accounts
+    public: public
+  pvc:
+    readWriteMany: crater-storage
+    readOnlyMany: crater-storage
+namespaces:
+  job: crater-workspace
+  image: crater-images
+secrets:
+  tlsSecretName: orbit-tls-secret
+  tlsForwardSecretName: orbit-tls-forward-secret
+  imagePullSecretName: ""
+registry:
+  enable: false
+smtp:
+  enable: false
+auth:
+  token:
+    accessTokenSecret: local-debug-access-token-secret
+    refreshTokenSecret: local-debug-refresh-token-secret
+  ldap:
+    enable: false
+    uid:
+      source: default
+  normal:
+    allowRegister: false
+    allowLogin: true
+schedulerPlugins:
+  aijob:
+    enable: false
+    enableProfiling: false
+    profilingTimeout: 30
+  spjob:
+    enable: false
+    predictionServiceAddress: ""
+`
 }
 
 func mustWriteFile(t *testing.T, path, content string) {

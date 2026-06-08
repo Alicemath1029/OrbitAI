@@ -17,8 +17,15 @@ import (
 )
 
 const (
-	checkpointManifestSuffix    = ".orbit.json"
-	checkpointManifestReadLimit = 64 * 1024
+	checkpointManifestSuffix        = ".orbit.json"
+	checkpointManifestReadLimit     = 64 * 1024
+	checkpointSHA256BufferSize      = 1024 * 1024
+	checkpointManifestSchemaVersion = "orbit.checkpoint.manifest.v1"
+
+	checkpointValidationStatusKey = "validationStatus"
+	checkpointValidationErrorsKey = "validationErrors"
+	checkpointValidationValid     = "valid"
+	checkpointValidationInvalid   = "invalid"
 )
 
 type checkpointManifest struct {
@@ -59,7 +66,17 @@ func validateCheckpointManifest(
 		return nil
 	}
 	issues := make([]string, 0)
-	if schema := strings.TrimSpace(manifest.SchemaVersion); schema != "" && schema != "orbit.checkpoint.manifest.v1" {
+	issues = append(issues, validateManifestBasics(manifest)...)
+	issues = append(issues, validateManifestTargetFields(manifest, target)...)
+	if shaIssue := validateManifestSHA256(ctx, manifest, target.FilePath); shaIssue != "" {
+		issues = append(issues, shaIssue)
+	}
+	return issues
+}
+
+func validateManifestBasics(manifest *checkpointManifest) []string {
+	issues := make([]string, 0)
+	if schema := strings.TrimSpace(manifest.SchemaVersion); schema != "" && schema != checkpointManifestSchemaVersion {
 		issues = append(issues, fmt.Sprintf("unsupported schemaVersion %q", schema))
 	}
 	if manifest.Step != nil && *manifest.Step < 0 {
@@ -68,6 +85,11 @@ func validateCheckpointManifest(
 	if schemaIssue := validateFrameworkCheckpointSchema(manifest); schemaIssue != "" {
 		issues = append(issues, schemaIssue)
 	}
+	return issues
+}
+
+func validateManifestTargetFields(manifest *checkpointManifest, target manifestValidationTarget) []string {
+	issues := make([]string, 0)
 	if manifest.SizeBytes != nil && target.ActualSize >= 0 && *manifest.SizeBytes != target.ActualSize {
 		issues = append(issues, fmt.Sprintf("sizeBytes mismatch: manifest=%d actual=%d", *manifest.SizeBytes, target.ActualSize))
 	}
@@ -82,15 +104,22 @@ func validateCheckpointManifest(
 			issues = append(issues, fmt.Sprintf("runID mismatch: manifest=%d run=%d", parsed, *target.RunID))
 		}
 	}
-	if sha := strings.TrimSpace(manifest.SHA256); sha != "" && target.FilePath != "" {
-		actual, err := sha256File(ctx, target.FilePath)
-		if err != nil {
-			issues = append(issues, fmt.Sprintf("sha256 verification failed: %v", err))
-		} else if actual != "" && !strings.EqualFold(sha, actual) {
-			issues = append(issues, "sha256 mismatch")
-		}
-	}
 	return issues
+}
+
+func validateManifestSHA256(ctx context.Context, manifest *checkpointManifest, filePath string) string {
+	sha := strings.TrimSpace(manifest.SHA256)
+	if sha == "" || filePath == "" {
+		return ""
+	}
+	actual, err := sha256File(ctx, filePath)
+	if err != nil {
+		return fmt.Sprintf("sha256 verification failed: %v", err)
+	}
+	if actual != "" && !strings.EqualFold(sha, actual) {
+		return "sha256 mismatch"
+	}
+	return ""
 }
 
 func validateFrameworkCheckpointSchema(manifest *checkpointManifest) string {
@@ -137,7 +166,7 @@ func sha256File(ctx context.Context, path string) (string, error) {
 	defer file.Close()
 
 	digest := sha256.New()
-	buf := make([]byte, 1024*1024)
+	buf := make([]byte, checkpointSHA256BufferSize)
 	for {
 		if err := ctx.Err(); err != nil {
 			return "", err
@@ -194,8 +223,8 @@ func applyManifestValidationToCheckpoint(checkpoint *model.JobCheckpoint, issues
 	}
 	checkpoint.Status = model.JobCheckpointStatusInvalid
 	checkpoint.Latest = false
-	checkpoint.Metadata["validationStatus"] = "invalid"
-	checkpoint.Metadata["validationErrors"] = issues
+	checkpoint.Metadata[checkpointValidationStatusKey] = checkpointValidationInvalid
+	checkpoint.Metadata[checkpointValidationErrorsKey] = issues
 }
 
 func applyManifestParseErrorToCheckpoint(checkpoint *model.JobCheckpoint, manifestStoragePath string, err error) {
@@ -207,8 +236,8 @@ func applyManifestParseErrorToCheckpoint(checkpoint *model.JobCheckpoint, manife
 	}
 	checkpoint.Status = model.JobCheckpointStatusInvalid
 	checkpoint.Latest = false
-	checkpoint.Metadata["validationStatus"] = "invalid"
-	checkpoint.Metadata["validationErrors"] = []string{fmt.Sprintf("manifest parse failed: %v", err)}
+	checkpoint.Metadata[checkpointValidationStatusKey] = checkpointValidationInvalid
+	checkpoint.Metadata[checkpointValidationErrorsKey] = []string{fmt.Sprintf("manifest parse failed: %v", err)}
 	if manifestStoragePath != "" {
 		checkpoint.Metadata["manifestStoragePath"] = filepath.ToSlash(filepath.Clean(manifestStoragePath))
 	}

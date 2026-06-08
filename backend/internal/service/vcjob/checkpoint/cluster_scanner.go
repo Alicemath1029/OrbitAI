@@ -30,7 +30,7 @@ func ScanJobWithKubernetes(
 		if errors.Is(err, errServiceScannerDisabled) {
 			return nil, fmt.Errorf("checkpoint scanner service is not configured and local fallback failed: %w", localErr)
 		}
-		return nil, fmt.Errorf("%w; local fallback also failed: %v", err, localErr)
+		return nil, fmt.Errorf("%w; local fallback also failed: %w", err, localErr)
 	}
 
 	if checkpointScannerServiceError(err) {
