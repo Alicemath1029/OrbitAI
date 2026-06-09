@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-logr/logr"
 	"gorm.io/datatypes"
@@ -68,6 +69,11 @@ const (
 	bytesInMB                           = bytesInKB * 1024
 	bytesInGB                           = bytesInMB * 1024
 	progressReportIntervalSeconds int64 = 5
+
+	modelDownloadAppLabel      = "model-download"
+	modelDownloadContainerName = "downloader"
+	modelExportAppLabel        = "model-export"
+	modelExportContainerName   = "exporter"
 )
 
 //+kubebuilder:rbac:groups=batch,resources=jobs,verbs=get;list;watch;create;update;patch;delete
@@ -87,16 +93,22 @@ func (r *ModelDownloadReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		return result, err
 	}
 
-	if job.Labels["app"] != "model-download" {
+	switch job.Labels["app"] {
+	case modelDownloadAppLabel:
+		download, result, err := r.fetchDownloadRecord(ctx, job, logger)
+		if err != nil || download == nil {
+			return result, err
+		}
+		return r.syncDownloadWithJob(ctx, job, download, logger)
+	case modelExportAppLabel:
+		exportRecord, result, err := r.fetchModelExportRecord(ctx, job, logger)
+		if err != nil || exportRecord == nil {
+			return result, err
+		}
+		return r.syncModelExportWithJob(ctx, job, exportRecord, logger)
+	default:
 		return ctrl.Result{}, nil
 	}
-
-	download, result, err := r.fetchDownloadRecord(ctx, job, logger)
-	if err != nil || download == nil {
-		return result, err
-	}
-
-	return r.syncDownloadWithJob(ctx, job, download, logger)
 }
 
 func (r *ModelDownloadReconciler) fetchJob(
@@ -145,6 +157,34 @@ func (r *ModelDownloadReconciler) fetchDownloadRecord(
 	return nil, ctrl.Result{Requeue: true}, err
 }
 
+func (r *ModelDownloadReconciler) fetchModelExportRecord(
+	ctx context.Context, job *batchv1.Job, logger logr.Logger,
+) (*model.ModelExport, ctrl.Result, error) {
+	var exportRecord model.ModelExport
+	err := query.GetDB().WithContext(ctx).Where("job_name = ?", job.Name).First(&exportRecord).Error
+	if err == nil {
+		return &exportRecord, ctrl.Result{}, nil
+	}
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		logger.Info("model export record not found, cleaning up orphaned job", "jobName", job.Name)
+
+		if job.Status.Succeeded > 0 || job.Status.Failed > 0 {
+			deletePolicy := metav1.DeletePropagationBackground
+			if err := r.KubeClient.BatchV1().Jobs(job.Namespace).Delete(
+				ctx, job.Name, metav1.DeleteOptions{PropagationPolicy: &deletePolicy},
+			); err != nil {
+				logger.Error(err, "failed to delete orphaned model export job", "jobName", job.Name)
+			}
+		}
+
+		return nil, ctrl.Result{}, nil
+	}
+
+	logger.Error(err, "unable to fetch model export record")
+	return nil, ctrl.Result{Requeue: true}, err
+}
+
 func (r *ModelDownloadReconciler) syncDownloadWithJob(
 	ctx context.Context, job *batchv1.Job, download *model.ModelDownload, logger logr.Logger,
 ) (ctrl.Result, error) {
@@ -178,6 +218,66 @@ func (r *ModelDownloadReconciler) syncDownloadWithJob(
 	return ctrl.Result{}, nil
 }
 
+func (r *ModelDownloadReconciler) syncModelExportWithJob(
+	ctx context.Context,
+	job *batchv1.Job,
+	exportRecord *model.ModelExport,
+	logger logr.Logger,
+) (ctrl.Result, error) {
+	oldStatus := exportRecord.Status
+	newStatus := r.getModelExportJobStatus(job)
+
+	updates := map[string]any{"status": newStatus}
+	if newStatus == model.ModelExportStatusRunning && exportRecord.StartedAt == nil {
+		now := time.Now()
+		updates["started_at"] = &now
+	}
+	if isTerminalModelExportStatus(newStatus) && exportRecord.FinishedAt == nil {
+		now := time.Now()
+		updates["finished_at"] = &now
+	}
+
+	if newStatus == model.ModelExportStatusSucceeded && oldStatus != model.ModelExportStatusSucceeded {
+		sizeBytes, err := r.extractModelExportFinalResult(ctx, job)
+		if err != nil {
+			logger.Error(err, "failed to extract model export final result")
+		} else {
+			updates["size_bytes"] = sizeBytes
+		}
+
+		datasetID, err := r.createDatasetForExport(ctx, exportRecord, sizeBytes)
+		if err != nil {
+			logger.Error(err, "failed to create exported model dataset")
+		} else if datasetID != 0 {
+			updates["dataset_id"] = datasetID
+			exportRecord.DatasetID = &datasetID
+		}
+
+		runArtifactID, err := r.createRunArtifactForExport(ctx, exportRecord, sizeBytes)
+		if err != nil {
+			logger.Error(err, "failed to create exported model run artifact")
+		} else if runArtifactID != 0 {
+			updates["run_artifact_id"] = runArtifactID
+		}
+	}
+
+	if newStatus == model.ModelExportStatusFailed && oldStatus != model.ModelExportStatusFailed {
+		updates["message"] = "model export job failed"
+	}
+
+	if newStatus != oldStatus || len(updates) > 1 {
+		if err := query.GetDB().WithContext(ctx).Model(&model.ModelExport{}).
+			Where("id = ?", exportRecord.ID).
+			Updates(updates).Error; err != nil {
+			logger.Error(err, "failed to update model export status")
+			return ctrl.Result{Requeue: true}, err
+		}
+		logger.Info(fmt.Sprintf("model export: %s, status: %s -> %s", job.Name, oldStatus, newStatus))
+	}
+
+	return ctrl.Result{}, nil
+}
+
 func (r *ModelDownloadReconciler) handleJobNotFound(ctx context.Context, jobName string) (ctrl.Result, error) {
 	logger := log.FromContext(ctx)
 
@@ -185,9 +285,7 @@ func (r *ModelDownloadReconciler) handleJobNotFound(ctx context.Context, jobName
 	download, err := q.WithContext(ctx).Where(q.JobName.Eq(jobName)).First()
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			// Job和数据库记录都不存在，这是正常的（可能是旧Job或已清理的任务）
-			logger.V(1).Info("Job not found in both k8s and database", "jobName", jobName)
-			return ctrl.Result{}, nil
+			return r.handleModelExportJobNotFound(ctx, jobName, logger)
 		}
 		logger.Error(err, "unable to fetch download record")
 		return ctrl.Result{Requeue: true}, err
@@ -213,6 +311,39 @@ func (r *ModelDownloadReconciler) handleJobNotFound(ctx context.Context, jobName
 	return ctrl.Result{}, nil
 }
 
+func (r *ModelDownloadReconciler) handleModelExportJobNotFound(
+	ctx context.Context,
+	jobName string,
+	logger logr.Logger,
+) (ctrl.Result, error) {
+	var exportRecord model.ModelExport
+	err := query.GetDB().WithContext(ctx).Where("job_name = ?", jobName).First(&exportRecord).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.V(1).Info("Job not found in both k8s and database", "jobName", jobName)
+			return ctrl.Result{}, nil
+		}
+		logger.Error(err, "unable to fetch model export record")
+		return ctrl.Result{Requeue: true}, err
+	}
+
+	if isTerminalModelExportStatus(exportRecord.Status) {
+		return ctrl.Result{}, nil
+	}
+	now := time.Now()
+	if err := query.GetDB().WithContext(ctx).Model(&model.ModelExport{}).
+		Where("id = ?", exportRecord.ID).
+		Updates(map[string]any{
+			"status":      model.ModelExportStatusFailed,
+			"message":     "Job was deleted",
+			"finished_at": &now,
+		}).Error; err != nil {
+		logger.Error(err, "failed to update model export status to failed")
+		return ctrl.Result{Requeue: true}, err
+	}
+	return ctrl.Result{}, nil
+}
+
 func (r *ModelDownloadReconciler) getJobStatus(job *batchv1.Job) model.ModelDownloadStatus {
 	if job.Status.Succeeded == 1 {
 		return model.ModelDownloadStatusReady
@@ -226,6 +357,23 @@ func (r *ModelDownloadReconciler) getJobStatus(job *batchv1.Job) model.ModelDown
 	}
 
 	return model.ModelDownloadStatusPending
+}
+
+func (r *ModelDownloadReconciler) getModelExportJobStatus(job *batchv1.Job) model.ModelExportStatus {
+	if job.Status.Succeeded == 1 {
+		return model.ModelExportStatusSucceeded
+	}
+	if job.Status.Failed >= 1 {
+		return model.ModelExportStatusFailed
+	}
+	if job.Status.Active > 0 {
+		return model.ModelExportStatusRunning
+	}
+	return model.ModelExportStatusPending
+}
+
+func isTerminalModelExportStatus(status model.ModelExportStatus) bool {
+	return status == model.ModelExportStatusSucceeded || status == model.ModelExportStatusFailed
 }
 
 func (r *ModelDownloadReconciler) updateDownloadStatus(
@@ -331,9 +479,13 @@ func (r *ModelDownloadReconciler) extractFinalResult(ctx context.Context, job *b
 }
 
 func (r *ModelDownloadReconciler) getPodLogs(ctx context.Context, pod *v1.Pod) (string, error) {
+	return r.getPodLogsForContainer(ctx, pod, modelDownloadContainerName)
+}
+
+func (r *ModelDownloadReconciler) getPodLogsForContainer(ctx context.Context, pod *v1.Pod, container string) (string, error) {
 	// Get pod logs using Kubernetes clientset
 	req := r.KubeClient.CoreV1().Pods(pod.Namespace).GetLogs(pod.Name, &v1.PodLogOptions{
-		Container: "downloader",
+		Container: container,
 		TailLines: func() *int64 { i := podLogTailLines; return &i }(),
 	})
 
@@ -350,6 +502,27 @@ func (r *ModelDownloadReconciler) getPodLogs(ctx context.Context, pod *v1.Pod) (
 	}
 
 	return string(buf), nil
+}
+
+func (r *ModelDownloadReconciler) extractModelExportFinalResult(ctx context.Context, job *batchv1.Job) (int64, error) {
+	podList := &v1.PodList{}
+	err := r.List(ctx, podList, client.InNamespace(job.Namespace), client.MatchingLabels{"job-name": job.Name})
+	if err != nil || len(podList.Items) == 0 {
+		return 0, err
+	}
+
+	logs, err := r.getPodLogsForContainer(ctx, &podList.Items[0], modelExportContainerName)
+	if err != nil {
+		return 0, err
+	}
+
+	resultPattern := regexp.MustCompile(`\[RESULT\] size_bytes=(\d+)`)
+	matches := resultPattern.FindStringSubmatch(logs)
+	if len(matches) <= 1 {
+		return 0, nil
+	}
+	sizeBytes, _ := strconv.ParseInt(matches[1], 10, 64)
+	return sizeBytes, nil
 }
 
 func formatSpeed(bytesPerSec int64) string {
@@ -484,6 +657,118 @@ func (r *ModelDownloadReconciler) createDatasetForModel(ctx context.Context, dow
 
 	klog.Infof("Created dataset for %s %s (dataset ID: %d)", resourceLabel, download.Name, dataset.ID)
 	return nil
+}
+
+func (r *ModelDownloadReconciler) createDatasetForExport(
+	ctx context.Context,
+	exportRecord *model.ModelExport,
+	sizeBytes int64,
+) (uint, error) {
+	if exportRecord == nil {
+		return 0, nil
+	}
+	qDataset := query.Dataset
+	qUserDataset := query.UserDataset
+	qAccountDataset := query.AccountDataset
+
+	existing, _ := qDataset.WithContext(ctx).Where(qDataset.URL.Eq(exportRecord.OutputPath)).First()
+	if existing != nil {
+		return existing.ID, nil
+	}
+
+	dataset := &model.Dataset{
+		Name:     exportRecord.Name,
+		URL:      exportRecord.OutputPath,
+		Describe: fmt.Sprintf("从 checkpoint %d 导出的模型", exportRecord.CheckpointID),
+		Type:     model.DataTypeModel,
+		UserID:   exportRecord.UserID,
+		Extra: datatypes.NewJSONType(model.ExtraContent{
+			Tags: []string{
+				"checkpoint-export",
+				exportRecord.Framework,
+				exportRecord.Format,
+				fmt.Sprintf("checkpoint-%d", exportRecord.CheckpointID),
+			},
+			Editable: false,
+		}),
+	}
+	if err := qDataset.WithContext(ctx).Create(dataset); err != nil {
+		return 0, fmt.Errorf("failed to create exported model dataset: %w", err)
+	}
+
+	if err := qUserDataset.WithContext(ctx).Create(&model.UserDataset{
+		UserID:    exportRecord.UserID,
+		DatasetID: dataset.ID,
+	}); err != nil {
+		return 0, fmt.Errorf("failed to create exported model user association: %w", err)
+	}
+
+	if err := qAccountDataset.WithContext(ctx).Create(&model.AccountDataset{
+		AccountID: model.DefaultAccountID,
+		DatasetID: dataset.ID,
+	}); err != nil {
+		klog.Warningf("Failed to create exported model public association: %v", err)
+	}
+
+	if sizeBytes > 0 {
+		klog.Infof("Created exported model dataset %d size=%d", dataset.ID, sizeBytes)
+	}
+	return dataset.ID, nil
+}
+
+func (r *ModelDownloadReconciler) createRunArtifactForExport(
+	ctx context.Context,
+	exportRecord *model.ModelExport,
+	sizeBytes int64,
+) (uint, error) {
+	if exportRecord == nil || exportRecord.RunID == nil || *exportRecord.RunID == 0 {
+		return 0, nil
+	}
+	sourceID := exportRecord.ID
+	artifact := model.RunArtifact{
+		RunID:      *exportRecord.RunID,
+		Name:       exportRecord.Name,
+		Type:       "model",
+		Path:       exportRecord.OutputPath,
+		SizeBytes:  sizeBytes,
+		SourceType: "model-export",
+		SourceID:   &sourceID,
+		Metadata: datatypes.JSONMap{
+			"sourceCheckpointID":      exportRecord.CheckpointID,
+			"sourceCheckpointPath":    exportRecord.CheckpointPath,
+			"sourceCheckpointStorage": exportRecord.CheckpointStorage,
+			"framework":               exportRecord.Framework,
+			"format":                  exportRecord.Format,
+			"jobName":                 exportRecord.JobName,
+			"exportID":                exportRecord.ID,
+		},
+	}
+	var existing model.RunArtifact
+	err := query.GetDB().WithContext(ctx).
+		Where("source_type = ? AND source_id = ?", artifact.SourceType, sourceID).
+		First(&existing).Error
+	if err == nil {
+		artifact.ID = existing.ID
+		if err := query.GetDB().WithContext(ctx).Model(&model.RunArtifact{}).
+			Where("id = ?", existing.ID).
+			Updates(map[string]any{
+				"run_id":     artifact.RunID,
+				"name":       artifact.Name,
+				"path":       artifact.Path,
+				"size_bytes": artifact.SizeBytes,
+				"metadata":   artifact.Metadata,
+			}).Error; err != nil {
+			return 0, err
+		}
+		return existing.ID, nil
+	}
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return 0, err
+	}
+	if err := query.GetDB().WithContext(ctx).Create(&artifact).Error; err != nil {
+		return 0, err
+	}
+	return artifact.ID, nil
 }
 
 // convertToPhysicalPath 将前端路径转换为物理存储路径

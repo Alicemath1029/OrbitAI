@@ -125,7 +125,10 @@ class OrbitClientTest(unittest.TestCase):
             manifest_path = Path(str(target) + ".orbit.json")
             latest_path = Path(tmpdir) / "latest_checkpointed_iteration.txt"
             self.assertEqual(manifest["step"], 3)
+            self.assertEqual(manifest["format"], "file")
             self.assertTrue(manifest_path.exists())
+            persisted = json.loads(manifest_path.read_text(encoding="utf-8"))
+            self.assertEqual(persisted["format"], "file")
             self.assertEqual(latest_path.read_text(encoding="utf-8"), "global_step_3")
 
     def test_pytorch_async_snapshot_recursively_clones_tensors_to_cpu(self):

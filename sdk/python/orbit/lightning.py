@@ -17,7 +17,9 @@ def save_checkpoint(
     trainer.save_checkpoint(str(target), weights_only=weights_only)
     record_metadata = dict(metadata or {})
     record_metadata["framework"] = "lightning"
-    orbit_checkpoint.record(str(target), step=int(step), metadata=record_metadata)
+    record_metadata["format"] = "lightning-ckpt"
+    record_metadata["checkpointSchemaVersion"] = "orbit.lightning.checkpoint.v1"
+    orbit_checkpoint.record(str(target), step=int(step), metadata=record_metadata, format="lightning-ckpt")
     return str(target)
 
 

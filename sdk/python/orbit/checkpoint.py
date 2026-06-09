@@ -18,12 +18,20 @@ def resume_from() -> str:
     return os.getenv("ORBIT_RESUME_FROM") or os.getenv("ORBIT_LATEST_CHECKPOINT") or ""
 
 
-def record(path: str, step: int = 0, metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def record(
+    path: str,
+    step: int = 0,
+    metadata: Optional[Dict[str, Any]] = None,
+    format: Optional[str] = None,
+) -> Dict[str, Any]:
     target = Path(path)
+    manifest_metadata = dict(metadata or {})
+    checkpoint_format = format or manifest_metadata.get("format") or ("file" if target.is_file() else "directory")
     size = _size_bytes(target)
     manifest = {
         "schemaVersion": "orbit.checkpoint.manifest.v1",
-        "framework": (metadata or {}).get("framework", "custom"),
+        "framework": manifest_metadata.get("framework", "custom"),
+        "format": checkpoint_format,
         "name": target.name,
         "path": str(target),
         "step": int(step),
@@ -32,17 +40,18 @@ def record(path: str, step: int = 0, metadata: Optional[Dict[str, Any]] = None) 
         "sha256": _sha256(target) if target.is_file() else "",
         "runID": os.getenv("ORBIT_RUN_ID", ""),
         "jobName": os.getenv("ORBIT_JOB_NAME", ""),
-        "metadata": metadata or {},
+        "metadata": manifest_metadata,
     }
     manifest_path = target.with_name(target.name + ".orbit.json")
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     _write_latest_marker(target.parent, step, target.name)
-    artifact_metadata = dict(metadata or {})
+    artifact_metadata = dict(manifest_metadata)
     artifact_metadata.update(
         {
             "step": int(step),
             "manifestPath": str(manifest_path),
             "framework": manifest["framework"],
+            "format": checkpoint_format,
         }
     )
     log_artifact(target.name, str(target), type="checkpoint", metadata=artifact_metadata)

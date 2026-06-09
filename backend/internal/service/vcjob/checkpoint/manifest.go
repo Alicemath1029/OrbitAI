@@ -31,6 +31,7 @@ const (
 type checkpointManifest struct {
 	SchemaVersion string            `json:"schemaVersion"`
 	Framework     string            `json:"framework"`
+	Format        string            `json:"format"`
 	Name          string            `json:"name"`
 	Path          string            `json:"path"`
 	Step          *int64            `json:"step"`
@@ -146,6 +147,26 @@ func validateFrameworkCheckpointSchema(manifest *checkpointManifest) string {
 	case FrameworkFSDP:
 		if schema != "orbit.fsdp.checkpoint.v1" {
 			return fmt.Sprintf("unsupported fsdp checkpoint schema %q", schema)
+		}
+	case FrameworkDeepSpeed:
+		if schema != "orbit.deepspeed.checkpoint.v1" {
+			return fmt.Sprintf("unsupported deepspeed checkpoint schema %q", schema)
+		}
+	case FrameworkHFTrainer:
+		if schema != "orbit.hf-trainer.checkpoint.v1" {
+			return fmt.Sprintf("unsupported hf-trainer checkpoint schema %q", schema)
+		}
+	case FrameworkLightning:
+		if schema != "orbit.lightning.checkpoint.v1" {
+			return fmt.Sprintf("unsupported lightning checkpoint schema %q", schema)
+		}
+	case FrameworkTensorFlow:
+		if schema != "orbit.tensorflow.checkpoint.v1" {
+			return fmt.Sprintf("unsupported tensorflow checkpoint schema %q", schema)
+		}
+	case FrameworkJAX:
+		if schema != "orbit.jax.checkpoint.v1" {
+			return fmt.Sprintf("unsupported jax checkpoint schema %q", schema)
 		}
 	}
 	return ""
@@ -263,6 +284,9 @@ func mergeManifestMetadata(
 	}
 	if manifest.SHA256 != "" {
 		next["sha256"] = manifest.SHA256
+	}
+	if manifest.Format != "" {
+		next["format"] = manifest.Format
 	}
 	if manifest.CreatedAt != "" {
 		next["manifestCreatedAt"] = manifest.CreatedAt

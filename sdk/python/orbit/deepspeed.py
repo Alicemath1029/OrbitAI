@@ -20,8 +20,15 @@ def save_checkpoint(
     engine.save_checkpoint(str(target_dir), tag=checkpoint_tag, client_state=client_state)
     checkpoint_path = target_dir / checkpoint_tag
     record_metadata = dict(metadata or {})
-    record_metadata.update({"framework": "deepspeed", "tag": checkpoint_tag})
-    orbit_checkpoint.record(str(checkpoint_path), step=int(step), metadata=record_metadata)
+    record_metadata.update(
+        {
+            "framework": "deepspeed",
+            "format": "zero-sharded",
+            "checkpointSchemaVersion": "orbit.deepspeed.checkpoint.v1",
+            "checkpointTag": checkpoint_tag,
+        }
+    )
+    orbit_checkpoint.record(str(checkpoint_path), step=int(step), metadata=record_metadata, format="zero-sharded")
     return str(checkpoint_path)
 
 

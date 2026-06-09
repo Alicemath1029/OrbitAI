@@ -22,7 +22,9 @@ def save_checkpoint(
         target = target.with_suffix(".pkl")
     record_metadata = dict(metadata or {})
     record_metadata["framework"] = "jax"
-    orbit_checkpoint.record(str(target), step=int(step), metadata=record_metadata)
+    record_metadata["format"] = "orbax" if checkpointer is not None else "pickle"
+    record_metadata["checkpointSchemaVersion"] = "orbit.jax.checkpoint.v1"
+    orbit_checkpoint.record(str(target), step=int(step), metadata=record_metadata, format=record_metadata["format"])
     return str(target)
 
 

@@ -337,6 +337,36 @@ export interface JobCheckpoint {
   metadata?: Record<string, unknown>
 }
 
+export type ModelExportStatus = 'pending' | 'running' | 'succeeded' | 'failed'
+
+export interface ModelExport {
+  ID: number
+  CreatedAt: string
+  UpdatedAt: string
+  DeletedAt?: string | null
+  jobID: number
+  runID?: number
+  checkpointID: number
+  sourceJobName: string
+  userID: number
+  accountID: number
+  name: string
+  framework: string
+  format: string
+  checkpointPath: string
+  checkpointStorage: string
+  outputPath: string
+  sizeBytes: number
+  status: ModelExportStatus
+  jobName: string
+  message?: string
+  datasetID?: number
+  runArtifactID?: number
+  startedAt?: string
+  finishedAt?: string
+  metadata?: Record<string, unknown>
+}
+
 export interface CheckpointQuota {
   maxToKeep: number
   maxBytes: number
@@ -348,6 +378,7 @@ export interface CheckpointQuota {
 
 export interface JobCheckpointListResp {
   items: JobCheckpoint[]
+  exports: ModelExport[]
   latest?: JobCheckpoint
   total: number
   totalSizeBytes: number
@@ -373,6 +404,15 @@ export interface CheckpointRestoreResp {
   name: string
   checkpointPath: string
   experimentRunID?: number
+}
+
+export interface CheckpointExportReq {
+  format?: string
+  name?: string
+}
+
+export interface CheckpointExportResp {
+  export: ModelExport
 }
 
 export interface IJupyterDetail {
@@ -572,6 +612,16 @@ export const apiJobCheckpointRestore = (
 ) =>
   apiV1Post<IResponse<CheckpointRestoreResp>>(
     `${JOB_URL}/${jobName}/checkpoints/${checkpointID}/restore`,
+    payload ?? {}
+  )
+
+export const apiJobCheckpointExport = (
+  jobName: string,
+  checkpointID: number,
+  payload?: CheckpointExportReq
+) =>
+  apiV1Post<IResponse<CheckpointExportResp>>(
+    `${JOB_URL}/${jobName}/checkpoints/${checkpointID}/export`,
     payload ?? {}
   )
 

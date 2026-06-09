@@ -17,7 +17,9 @@ def save_checkpoint(
         path = checkpoint.save(str(target_dir / f"ckpt-{int(step)}"))
     record_metadata = dict(metadata or {})
     record_metadata["framework"] = "tensorflow"
-    orbit_checkpoint.record(str(path), step=int(step), metadata=record_metadata)
+    record_metadata["format"] = "tensorflow-checkpoint"
+    record_metadata["checkpointSchemaVersion"] = "orbit.tensorflow.checkpoint.v1"
+    orbit_checkpoint.record(str(path), step=int(step), metadata=record_metadata, format="tensorflow-checkpoint")
     return str(path)
 
 

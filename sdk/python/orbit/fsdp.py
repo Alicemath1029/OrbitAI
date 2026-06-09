@@ -31,8 +31,9 @@ def save_checkpoint(
     tmp.replace(target)
     record_metadata = dict(metadata or {})
     record_metadata["framework"] = "fsdp"
+    record_metadata["format"] = "state-dict"
     record_metadata["checkpointSchemaVersion"] = state["schema_version"]
-    orbit_checkpoint.record(str(target), step=int(step), metadata=record_metadata)
+    orbit_checkpoint.record(str(target), step=int(step), metadata=record_metadata, format="state-dict")
     return str(target)
 
 

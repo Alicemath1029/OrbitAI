@@ -57,6 +57,7 @@ type restoreCheckpointReq struct {
 
 type checkpointListResp struct {
 	Items          []model.JobCheckpoint `json:"items"`
+	Exports        []model.ModelExport   `json:"exports"`
 	Latest         *model.JobCheckpoint  `json:"latest,omitempty"`
 	Total          int64                 `json:"total"`
 	TotalSizeBytes int64                 `json:"totalSizeBytes"`
@@ -352,6 +353,13 @@ func buildCheckpointListResp(c *gin.Context, job *model.Job) (checkpointListResp
 		Find(&items).Error; err != nil {
 		return checkpointListResp{}, err
 	}
+	var exports []model.ModelExport
+	if err := query.GetDB().WithContext(c).
+		Where("job_id = ?", job.ID).
+		Order("created_at desc, id desc").
+		Find(&exports).Error; err != nil {
+		return checkpointListResp{}, err
+	}
 
 	totalSize := int64(0)
 	var latest *model.JobCheckpoint
@@ -385,6 +393,7 @@ func buildCheckpointListResp(c *gin.Context, job *model.Job) (checkpointListResp
 	}
 	return checkpointListResp{
 		Items:          items,
+		Exports:        exports,
 		Latest:         latest,
 		Total:          int64(len(items)),
 		TotalSizeBytes: totalSize,

@@ -13,6 +13,7 @@ const (
 	OpTypeRestoreCheckpoint   = "RestoreCheckpoint"
 	OpTypeDeleteCheckpoint    = "DeleteCheckpoint"
 	OpTypeCleanupCheckpoint   = "CleanupCheckpoint"
+	OpTypeExportCheckpoint    = "ExportCheckpoint"
 
 	// Execution Status
 	OpStatusSuccess = "Success"

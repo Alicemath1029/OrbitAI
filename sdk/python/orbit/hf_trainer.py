@@ -39,7 +39,14 @@ def record_latest_checkpoint(
         current_step = int(getattr(state, "global_step", 0) or 0)
     record_metadata = dict(metadata or {})
     record_metadata["framework"] = "hf-trainer"
-    return orbit_checkpoint.record(str(checkpoint_path), step=int(current_step or 0), metadata=record_metadata)
+    record_metadata["format"] = "huggingface-trainer"
+    record_metadata["checkpointSchemaVersion"] = "orbit.hf-trainer.checkpoint.v1"
+    return orbit_checkpoint.record(
+        str(checkpoint_path),
+        step=int(current_step or 0),
+        metadata=record_metadata,
+        format="huggingface-trainer",
+    )
 
 
 def latest_checkpoint_path(training_args: Any = None) -> Optional[Path]:

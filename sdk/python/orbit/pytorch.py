@@ -123,8 +123,9 @@ def _write_checkpoint(target: Path, state: Dict[str, Any], step: int, metadata: 
     tmp.replace(target)
     record_metadata = dict(metadata or {})
     record_metadata["framework"] = "pytorch"
+    record_metadata["format"] = "state-dict"
     record_metadata["checkpointSchemaVersion"] = state.get("schema_version", "")
-    orbit_checkpoint.record(str(target), step=step, metadata=record_metadata)
+    orbit_checkpoint.record(str(target), step=step, metadata=record_metadata, format="state-dict")
 
 
 def _cpu_snapshot(value: Any) -> Any:

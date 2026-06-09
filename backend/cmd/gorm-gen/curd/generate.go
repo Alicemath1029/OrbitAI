@@ -51,6 +51,7 @@ func main() {
 		model.CronJobConfig{},
 		model.ModelDownload{},
 		model.UserModelDownload{},
+		model.ModelExport{},
 		model.GpuAnalysis{},
 		model.SystemConfig{},
 		model.PrequeueConfig{},
