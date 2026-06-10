@@ -227,6 +227,9 @@ func TestBuildModelExportJobMountsStorageAndRunsExporter(t *testing.T) {
 	if container.Name != modelExportContainerName {
 		t.Fatalf("container name = %q", container.Name)
 	}
+	if container.Image != "orbit/checkpoint-exporter:deepspeed" {
+		t.Fatalf("container image = %q, want framework-specific checkpoint exporter image", container.Image)
+	}
 	if len(container.VolumeMounts) != 1 || container.VolumeMounts[0].MountPath != modelExportMountPath {
 		t.Fatalf("volume mounts = %#v", container.VolumeMounts)
 	}
@@ -238,14 +241,26 @@ func TestBuildModelExportJobMountsStorageAndRunsExporter(t *testing.T) {
 	command := container.Args[0]
 	if !strings.Contains(command, "/orbit/users/u/checkpoints/global_step42") ||
 		!strings.Contains(command, "/orbit/public/Models/exported-model") ||
-		!strings.Contains(command, "zero_to_fp32.py") {
+		!strings.Contains(command, "python -m orbit.export") ||
+		!strings.Contains(command, "--framework \"$ORBIT_CHECKPOINT_FRAMEWORK\"") {
 		t.Fatalf("export command = %s", command)
+	}
+	if strings.Contains(command, "zero_to_fp32.py") {
+		t.Fatalf("export command should delegate framework conversion to SDK exporter: %s", command)
 	}
 	values := envValues(container.Env)
 	if values["ORBIT_EXPORT_ID"] != "99" ||
 		values["ORBIT_EXPORT_FORMAT"] != "pytorch" ||
 		values["ORBIT_CHECKPOINT_FRAMEWORK"] != checkpointsvc.FrameworkDeepSpeed {
 		t.Fatalf("envs = %#v", values)
+	}
+}
+
+func TestModelExportImageFallsBackToDefaultExporterImage(t *testing.T) {
+	t.Parallel()
+
+	if got := modelExportImage(checkpointsvc.FrameworkPytorch); got != defaultModelExportImage {
+		t.Fatalf("modelExportImage(pytorch) = %q, want default %q", got, defaultModelExportImage)
 	}
 }
 

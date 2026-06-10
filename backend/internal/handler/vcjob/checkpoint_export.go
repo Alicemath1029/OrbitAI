@@ -27,9 +27,15 @@ import (
 
 const (
 	defaultModelExportFormat = "huggingface"
+	defaultModelExportImage  = "python:3.11-slim"
 	modelExportMountPath     = "/orbit"
 	modelExportAppLabel      = "model-export"
 	modelExportContainerName = "exporter"
+
+	defaultModelExportCPURequest    = "1"
+	defaultModelExportMemoryRequest = "2Gi"
+	defaultModelExportCPULimit      = "4"
+	defaultModelExportMemoryLimit   = "8Gi"
 )
 
 type exportCheckpointReq struct {
@@ -194,7 +200,7 @@ func buildModelExportJob(exportRecord *model.ModelExport) *batchv1.Job {
 					Containers: []v1.Container{
 						{
 							Name:    modelExportContainerName,
-							Image:   modelExportImage(),
+							Image:   modelExportImage(exportRecord.Framework),
 							Command: []string{"/bin/bash", "-lc"},
 							Args:    []string{buildModelExportCommand(exportRecord)},
 							Env: []v1.EnvVar{
@@ -202,16 +208,7 @@ func buildModelExportJob(exportRecord *model.ModelExport) *batchv1.Job {
 								{Name: "ORBIT_EXPORT_FORMAT", Value: exportRecord.Format},
 								{Name: "ORBIT_CHECKPOINT_FRAMEWORK", Value: exportRecord.Framework},
 							},
-							Resources: v1.ResourceRequirements{
-								Requests: v1.ResourceList{
-									v1.ResourceCPU:    resource.MustParse("1"),
-									v1.ResourceMemory: resource.MustParse("2Gi"),
-								},
-								Limits: v1.ResourceList{
-									v1.ResourceCPU:    resource.MustParse("4"),
-									v1.ResourceMemory: resource.MustParse("8Gi"),
-								},
-							},
+							Resources: modelExportResources(),
 							VolumeMounts: []v1.VolumeMount{{
 								Name:      "orbit-storage",
 								MountPath: modelExportMountPath,
@@ -235,7 +232,6 @@ func buildModelExportJob(exportRecord *model.ModelExport) *batchv1.Job {
 func buildModelExportCommand(exportRecord *model.ModelExport) string {
 	checkpointPath := filepath.ToSlash(filepath.Join(modelExportMountPath, exportRecord.CheckpointStorage))
 	outputPath := filepath.ToSlash(filepath.Join(modelExportMountPath, exportRecord.OutputPath))
-	command := frameworkExportCommand(exportRecord.Framework, exportRecord.Format, checkpointPath, outputPath)
 	return fmt.Sprintf(`
 set -euo pipefail
 CHECKPOINT_DIR=%q
@@ -243,32 +239,12 @@ OUT_DIR=%q
 export CHECKPOINT_DIR OUT_DIR
 mkdir -p "$OUT_DIR"
 echo "Exporting checkpoint $CHECKPOINT_DIR to $OUT_DIR as %s/%s"
-%s
-SIZE=$(du -sb "$OUT_DIR" 2>/dev/null | cut -f1 || echo 0)
-echo "[RESULT] size_bytes=$SIZE output_path=%s"
-`, checkpointPath, outputPath, exportRecord.Framework, exportRecord.Format, command, exportRecord.OutputPath)
-}
-
-func frameworkExportCommand(framework, format, checkpointPath, outputPath string) string {
-	switch strings.ToLower(framework) {
-	case checkpointsvc.FrameworkDeepSpeed:
-		if format == "pytorch" {
-			return fmt.Sprintf(`zero_to_fp32.py %q %q`, checkpointPath, filepath.ToSlash(filepath.Join(outputPath, "pytorch_model.bin")))
-		}
-		return fmt.Sprintf(`
-if command -v zero_to_fp32.py >/dev/null 2>&1; then
-  zero_to_fp32.py %q %q
-else
-  cp -a %q/. %q/
-fi
-`, checkpointPath, filepath.ToSlash(filepath.Join(outputPath, "pytorch_model.bin")), checkpointPath, outputPath)
-	case checkpointsvc.FrameworkHFTrainer, checkpointsvc.FrameworkLightning:
-		return fmt.Sprintf(`cp -a %q/. %q/`, checkpointPath, outputPath)
-	case checkpointsvc.FrameworkPytorch, checkpointsvc.FrameworkFSDP:
-		return fmt.Sprintf(`cp -a %q %q/`, checkpointPath, outputPath)
-	default:
-		return fmt.Sprintf(`cp -a %q/. %q/ 2>/dev/null || cp -a %q %q/`, checkpointPath, outputPath, checkpointPath, outputPath)
-	}
+python -m orbit.export \
+  --framework "$ORBIT_CHECKPOINT_FRAMEWORK" \
+  --format "$ORBIT_EXPORT_FORMAT" \
+  --checkpoint "$CHECKPOINT_DIR" \
+  --output "$OUT_DIR"
+`, checkpointPath, outputPath, exportRecord.Framework, exportRecord.Format)
 }
 
 func normalizeModelExportFormat(format string) string {
@@ -304,11 +280,45 @@ func sanitizeModelExportName(name string) string {
 	return name
 }
 
-func modelExportImage() string {
-	if img := config.GetConfig().ModelDownload.Image; img != "" {
+func modelExportImage(framework string) string {
+	exporterConfig := config.GetConfig().CheckpointExporter
+	framework = strings.ToLower(strings.TrimSpace(framework))
+	if framework != "" && exporterConfig.Images != nil {
+		if img := strings.TrimSpace(exporterConfig.Images[framework]); img != "" {
+			return img
+		}
+	}
+	if img := strings.TrimSpace(exporterConfig.DefaultImage); img != "" {
 		return img
 	}
-	return "python:3.11-slim"
+	return defaultModelExportImage
+}
+
+func modelExportResources() v1.ResourceRequirements {
+	resources := config.GetConfig().CheckpointExporter.Resources
+	return v1.ResourceRequirements{
+		Requests: v1.ResourceList{
+			v1.ResourceCPU:    parseModelExportQuantity(resources.CPURequest, defaultModelExportCPURequest),
+			v1.ResourceMemory: parseModelExportQuantity(resources.MemoryRequest, defaultModelExportMemoryRequest),
+		},
+		Limits: v1.ResourceList{
+			v1.ResourceCPU:    parseModelExportQuantity(resources.CPULimit, defaultModelExportCPULimit),
+			v1.ResourceMemory: parseModelExportQuantity(resources.MemoryLimit, defaultModelExportMemoryLimit),
+		},
+	}
+}
+
+func parseModelExportQuantity(value string, fallback string) resource.Quantity {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		value = fallback
+	}
+	quantity, err := resource.ParseQuantity(value)
+	if err == nil {
+		return quantity
+	}
+	klog.Warningf("invalid checkpoint exporter resource quantity %q, using %q: %v", value, fallback, err)
+	return resource.MustParse(fallback)
 }
 
 func cloneJSONMetadata(src datatypes.JSONMap) datatypes.JSONMap {

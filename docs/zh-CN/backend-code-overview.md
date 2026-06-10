@@ -87,6 +87,7 @@
 | `postgres` | PostgreSQL 连接参数 |
 | `storage` | RWX/ROX PVC 名称和用户、账号、公共空间路径前缀 |
 | `checkpointScanner` | checkpoint-scanner 服务地址和超时 |
+| `checkpointExporter` | checkpoint 导出 Job 的默认镜像、按框架覆盖镜像和资源规格 |
 | `modelDownload` | 模型下载 Job 使用的镜像 |
 | `secrets` | TLS、转发、镜像拉取 Secret |
 | `registry` | Harbor 和镜像构建工具配置 |
@@ -376,15 +377,17 @@ checkpoint 业务逻辑位于 `backend/internal/service/vcjob/checkpoint/`：
 
 ### Checkpoint 模型导出
 
-第一阶段模型导出不在后端进程内加载训练框架文件。后端和 scanner 只读取 `.orbit.json` manifest 以及 checkpoint 元数据；真正的转换在独立 Kubernetes `batch/v1 Job` 中执行。
+第一阶段模型导出不在后端进程内加载训练框架文件。后端和 scanner 只读取 `.orbit.json` manifest 以及 checkpoint 元数据；真正的转换在独立 Kubernetes `batch/v1 Job` 中由 exporter 镜像里的 `python -m orbit.export` 执行。
 
 链路如下：
 
 - `POST /api/v1/vcjobs/:name/checkpoints/:checkpointID/export` 创建 `ModelExport` 记录。
 - 导出 Job 使用 `app=model-export` label，挂载共享存储 PVC，把 checkpoint 路径转换到导出目录。
+- 导出 Job 镜像由 `checkpointExporter.images[framework]` 选择；没有框架专用镜像时回退到 `checkpointExporter.defaultImage`。
 - `ModelDownloadReconciler` 同时监听 `app=model-download` 和 `app=model-export` 的 Job。导出成功后会回填 `model_exports` 的大小、状态和输出路径。
 - 导出成功会创建或复用 `Dataset` 类型为模型的数据记录；如果 checkpoint 关联了实验 Run，还会创建 `RunArtifact`，其 `SourceType` 为 `model-export`。
 - Python SDK 的 checkpoint adapter 会在 manifest 顶层写入 `format`，并在 metadata 中写入 `checkpointSchemaVersion`，供扫描和导出链路判断来源格式。
+- exporter 成功后会写出 `export_manifest.json`；DeepSpeed 导出要求镜像内提供 `zero_to_fp32.py`，其他框架当前先标记为 `basic-copy`。
 
 ## 十四、镜像构建链路
 

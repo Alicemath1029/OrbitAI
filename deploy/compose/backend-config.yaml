@@ -13,6 +13,19 @@ checkpointScanner:
   intervalSeconds: 0
   batchSize: 100
 
+checkpointExporter:
+  defaultImage: python:3.11-slim
+  images:
+    deepspeed: ""
+    pytorch: ""
+    tensorflow: ""
+    jax: ""
+  resources:
+    cpuRequest: "1"
+    memoryRequest: "2Gi"
+    cpuLimit: "4"
+    memoryLimit: "8Gi"
+
 postgres:
   host: postgres
   port: "5432"

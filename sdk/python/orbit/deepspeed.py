@@ -12,23 +12,24 @@ def save_checkpoint(
     metadata: Optional[Dict[str, Any]] = None,
     save_dir: Optional[str] = None,
 ) -> Optional[str]:
-    if not _is_rank0():
-        return None
     target_dir = Path(save_dir) if save_dir else orbit_checkpoint.checkpoint_dir()
     target_dir.mkdir(parents=True, exist_ok=True)
     checkpoint_tag = tag or f"global_step{int(step)}"
     engine.save_checkpoint(str(target_dir), tag=checkpoint_tag, client_state=client_state)
     checkpoint_path = target_dir / checkpoint_tag
-    record_metadata = dict(metadata or {})
-    record_metadata.update(
-        {
-            "framework": "deepspeed",
-            "format": "zero-sharded",
-            "checkpointSchemaVersion": "orbit.deepspeed.checkpoint.v1",
-            "checkpointTag": checkpoint_tag,
-        }
-    )
-    orbit_checkpoint.record(str(checkpoint_path), step=int(step), metadata=record_metadata, format="zero-sharded")
+    _barrier_if_distributed()
+    if _is_rank0():
+        record_metadata = dict(metadata or {})
+        record_metadata.update(
+            {
+                "framework": "deepspeed",
+                "format": "zero-sharded",
+                "checkpointSchemaVersion": "orbit.deepspeed.checkpoint.v1",
+                "checkpointTag": checkpoint_tag,
+            }
+        )
+        orbit_checkpoint.record(str(checkpoint_path), step=int(step), metadata=record_metadata, format="zero-sharded")
+    _barrier_if_distributed()
     return str(checkpoint_path)
 
 
@@ -59,6 +60,20 @@ def _split_load_target(path: Path, tag: Optional[str]) -> Tuple[Path, Optional[s
 
 
 def _is_rank0() -> bool:
+    try:
+        import torch
+
+        distributed = getattr(torch, "distributed", None)
+        if (
+            distributed is not None
+            and distributed.is_available()
+            and distributed.is_initialized()
+            and hasattr(distributed, "get_rank")
+        ):
+            return distributed.get_rank() == 0
+    except ImportError:
+        pass
+
     for name in ("RANK", "LOCAL_RANK"):
         value = __import__("os").getenv(name)
         if value is None:
@@ -68,3 +83,16 @@ def _is_rank0() -> bool:
         except ValueError:
             return True
     return True
+
+
+def _barrier_if_distributed() -> None:
+    try:
+        import torch
+    except ImportError:
+        return
+
+    distributed = getattr(torch, "distributed", None)
+    if distributed is None:
+        return
+    if distributed.is_available() and distributed.is_initialized():
+        distributed.barrier()
