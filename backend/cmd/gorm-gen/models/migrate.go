@@ -1230,15 +1230,6 @@ func main() {
 				return nil
 			},
 		},
-		{
-			ID: "202606081200",
-			Migrate: func(tx *gorm.DB) error {
-				return tx.AutoMigrate(&model.ModelExport{})
-			},
-			Rollback: func(tx *gorm.DB) error {
-				return tx.Migrator().DropTable(&model.ModelExport{})
-			},
-		},
 	})
 
 	m.InitSchema(func(tx *gorm.DB) error {
@@ -1256,7 +1247,6 @@ func main() {
 			&model.ExperimentRun{},
 			&model.RunMetric{},
 			&model.RunArtifact{},
-			&model.ModelExport{},
 			&model.AITask{},
 			&model.Kaniko{},
 			&model.Image{},

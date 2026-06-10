@@ -26,23 +26,6 @@ checkpointScanner:
   # Max checkpoint-enabled jobs scanned in one background tick.
   batchSize: 100
 
-# Checkpoint exporter job configuration
-checkpointExporter:
-  # Default exporter image used when framework-specific image is empty.
-  # This image must contain the orbit Python SDK. Framework-specific images should
-  # also include required tools such as torch, deepspeed, transformers, tensorflow, or jax.
-  defaultImage: python:3.11-slim
-  images:
-    deepspeed: ""
-    pytorch: ""
-    tensorflow: ""
-    jax: ""
-  resources:
-    cpuRequest: "1"
-    memoryRequest: "2Gi"
-    cpuLimit: "4"
-    memoryLimit: "8Gi"
-
 # Endpoint URL for Prometheus API used for metrics and monitoring
 # Optional: If not specified, Prometheus integration will be disabled
 prometheusAPI: http://192.168.0.1:12345

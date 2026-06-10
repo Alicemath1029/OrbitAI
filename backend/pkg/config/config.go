@@ -148,22 +148,6 @@ type Config struct {
 		BatchSize int `json:"batchSize"`
 	} `json:"checkpointScanner"`
 
-	// CheckpointExporter contains configuration for checkpoint-to-model export jobs.
-	// Optional: If not specified, default values will be used.
-	CheckpointExporter struct {
-		// DefaultImage is used when there is no framework-specific exporter image.
-		DefaultImage string `json:"defaultImage"`
-		// Images maps framework names, e.g. deepspeed or pytorch, to exporter images.
-		Images map[string]string `json:"images"`
-		// Resources configures resource requests and limits for export jobs.
-		Resources struct {
-			CPURequest    string `json:"cpuRequest"`
-			MemoryRequest string `json:"memoryRequest"`
-			CPULimit      string `json:"cpuLimit"`
-			MemoryLimit   string `json:"memoryLimit"`
-		} `json:"resources"`
-	} `json:"checkpointExporter"`
-
 	// Registry contains container registry configuration for image storage and building.
 	// Optional: If Enable is false, registry functionality will be disabled.
 	Registry struct {
@@ -625,11 +609,6 @@ func (c *Config) PrintConfig() {
 		klog.Infof("Model Download Image: %s", c.ModelDownload.Image)
 	} else {
 		klog.Info("Model Download Image: <default: orbit-harbor.act.buaa.edu.cn/orbit/base/python:3.11-slim>")
-	}
-	if c.CheckpointExporter.DefaultImage != "" {
-		klog.Infof("Checkpoint Exporter Default Image: %s", c.CheckpointExporter.DefaultImage)
-	} else {
-		klog.Info("Checkpoint Exporter Default Image: <default: python:3.11-slim>")
 	}
 
 	// Secrets

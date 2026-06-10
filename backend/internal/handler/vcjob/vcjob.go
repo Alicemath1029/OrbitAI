@@ -98,7 +98,6 @@ func (mgr *VolcanojobMgr) RegisterProtected(g *gin.RouterGroup) {
 	g.POST(":name/checkpoints/scan", mgr.ScanJobCheckpoints)
 	g.POST(":name/checkpoints/cleanup", mgr.CleanupJobCheckpoints)
 	g.POST(":name/checkpoints/:checkpointID/restore", mgr.RestoreJobFromCheckpoint)
-	g.POST(":name/checkpoints/:checkpointID/export", mgr.ExportCheckpointModel)
 	g.DELETE(":name/checkpoints/:checkpointID", mgr.DeleteJobCheckpoint)
 
 	// open ssh

@@ -47,20 +47,6 @@ The same sync operation is available from the command line:
 python -m orbit sync /path/to/offline_metrics.jsonl
 ```
 
-Checkpoint exporter CLI used by Orbit export jobs:
-
-```bash
-python -m orbit.export \
-  --framework deepspeed \
-  --format pytorch \
-  --checkpoint "$CHECKPOINT_DIR" \
-  --output "$OUT_DIR"
-```
-
-DeepSpeed export requires `zero_to_fp32.py` in the exporter image. Other
-frameworks currently use `basic-copy` mode and record that in
-`export_manifest.json`.
-
 PyTorch checkpoint helper:
 
 ```python

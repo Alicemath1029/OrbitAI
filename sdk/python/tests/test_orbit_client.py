@@ -5,15 +5,12 @@ import tempfile
 import types
 import unittest
 import urllib.request
-from contextlib import redirect_stdout, redirect_stderr
-from io import StringIO
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from orbit import checkpoint  # noqa: E402
 from orbit import deepspeed as orbit_deepspeed  # noqa: E402
-from orbit import export as orbit_export  # noqa: E402
 from orbit import pytorch as orbit_torch  # noqa: E402
 import orbit.client as client_module  # noqa: E402
 from orbit.client import OrbitClient, main  # noqa: E402
@@ -238,63 +235,6 @@ class OrbitClientTest(unittest.TestCase):
         self.assertEqual(engine.saved[1], "global_step6")
         self.assertEqual(len(records), 1)
         self.assertEqual(records[0][1]["format"], "zero-sharded")
-
-    def test_export_cli_deepspeed_requires_zero_to_fp32(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            checkpoint_dir = Path(tmpdir) / "checkpoint"
-            checkpoint_dir.mkdir()
-            output_dir = Path(tmpdir) / "output"
-            empty_path = Path(tmpdir) / "bin"
-            empty_path.mkdir()
-            os.environ["PATH"] = str(empty_path)
-            stderr = StringIO()
-            with redirect_stderr(stderr):
-                code = orbit_export.main(
-                    [
-                        "--framework",
-                        "deepspeed",
-                        "--format",
-                        "pytorch",
-                        "--checkpoint",
-                        str(checkpoint_dir),
-                        "--output",
-                        str(output_dir),
-                    ]
-                )
-
-        self.assertEqual(code, 1)
-        self.assertIn("zero_to_fp32.py is required", stderr.getvalue())
-
-    def test_export_cli_basic_copy_writes_manifest_and_result(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            checkpoint_file = Path(tmpdir) / "checkpoint.pt"
-            checkpoint_file.write_text("checkpoint", encoding="utf-8")
-            output_dir = Path(tmpdir) / "output"
-            stdout = StringIO()
-            with redirect_stdout(stdout):
-                code = orbit_export.main(
-                    [
-                        "--framework",
-                        "pytorch",
-                        "--format",
-                        "huggingface",
-                        "--checkpoint",
-                        str(checkpoint_file),
-                        "--output",
-                        str(output_dir),
-                    ]
-                )
-
-            manifest = json.loads((output_dir / "export_manifest.json").read_text(encoding="utf-8"))
-            copied_exists = (output_dir / "checkpoint.pt").exists()
-
-        self.assertEqual(code, 0)
-        self.assertTrue(copied_exists)
-        self.assertEqual(manifest["exportMode"], "basic-copy")
-        self.assertEqual(manifest["framework"], "pytorch")
-        self.assertEqual(manifest["format"], "huggingface")
-        self.assertIn("[RESULT] size_bytes=", stdout.getvalue())
-
 
 if __name__ == "__main__":
     unittest.main()

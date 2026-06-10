@@ -18,14 +18,12 @@ import { useNavigate } from '@tanstack/react-router'
 import {
   ArchiveRestoreIcon,
   CopyIcon,
-  PackageOpenIcon,
   RefreshCwIcon,
   RotateCcwIcon,
   ShieldCheckIcon,
   TerminalSquareIcon,
   Trash2Icon,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { Badge } from '@/components/ui/badge'
@@ -54,10 +52,8 @@ import {
 import {
   type CheckpointConfig,
   type JobCheckpoint,
-  type ModelExport,
   apiJobCheckpointCleanup,
   apiJobCheckpointDelete,
-  apiJobCheckpointExport,
   apiJobCheckpointRestore,
   apiJobCheckpointScan,
   apiJobCheckpoints,
@@ -74,7 +70,6 @@ interface CheckpointPanelProps {
 export default function CheckpointPanel({ jobName }: CheckpointPanelProps) {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const [exportingCheckpointID, setExportingCheckpointID] = useState<number | null>(null)
   const queryKey = ['job', 'detail', jobName, 'checkpoints']
 
   const { data, isFetching } = useQuery({
@@ -131,27 +126,7 @@ export default function CheckpointPanel({ jobName }: CheckpointPanelProps) {
     },
   })
 
-  const exportMutation = useMutation({
-    mutationFn: (checkpoint: JobCheckpoint) => {
-      setExportingCheckpointID(checkpoint.ID)
-      return apiJobCheckpointExport(jobName, checkpoint.ID, {
-        format: 'huggingface',
-      })
-    },
-    onSuccess: async (res) => {
-      toast.success(`已提交模型导出 ${res.data.export.name}`)
-      await refreshQueries()
-    },
-    onSettled: () => {
-      setExportingCheckpointID(null)
-    },
-  })
-
   const checkpoints = data?.items ?? []
-  const latestExports = useMemo(
-    () => latestExportsByCheckpoint(data?.exports ?? []),
-    [data?.exports]
-  )
   const maxToKeep = data?.quota.maxToKeep || data?.checkpoint?.maxToKeep || 0
   const lastScannedAt = data?.lastScannedAt ? new Date(data.lastScannedAt).toLocaleString() : '-'
   const latestCheckpoint = data?.latest
@@ -288,7 +263,6 @@ export default function CheckpointPanel({ jobName }: CheckpointPanelProps) {
             <TableHead>Step</TableHead>
             <TableHead>大小</TableHead>
             <TableHead>更新时间</TableHead>
-            <TableHead>模型导出</TableHead>
             <TableHead>路径</TableHead>
             <TableHead className="text-right">操作</TableHead>
           </TableRow>
@@ -296,93 +270,77 @@ export default function CheckpointPanel({ jobName }: CheckpointPanelProps) {
         <TableBody>
           {checkpoints.length === 0 && (
             <TableRow>
-              <TableCell colSpan={7} className="text-muted-foreground h-24 text-center">
+              <TableCell colSpan={6} className="text-muted-foreground h-24 text-center">
                 暂无 checkpoint
               </TableCell>
             </TableRow>
           )}
-          {checkpoints.map((checkpoint) => {
-            const latestExport = latestExports.get(checkpoint.ID)
-            const isExporting = exportMutation.isPending && exportingCheckpointID === checkpoint.ID
-            return (
-              <TableRow key={checkpoint.ID}>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{checkpoint.name}</span>
-                    {checkpoint.latest && <Badge variant="secondary">latest</Badge>}
-                  </div>
-                </TableCell>
-                <TableCell>{checkpoint.step >= 0 ? checkpoint.step : '-'}</TableCell>
-                <TableCell>{formatBytes(checkpoint.sizeBytes)}</TableCell>
-                <TableCell>{new Date(checkpoint.modTime).toLocaleString()}</TableCell>
-                <TableCell>
-                  <ModelExportSummary exportRecord={latestExport} />
-                </TableCell>
-                <TableCell className="max-w-[360px] truncate font-mono text-xs">
-                  {checkpoint.path}
-                </TableCell>
-                <TableCell>
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={exportMutation.isPending}
-                      onClick={() => exportMutation.mutate(checkpoint)}
-                    >
-                      <PackageOpenIcon className={cn('size-4', isExporting && 'animate-spin')} />
-                      导出模型
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="secondary" size="sm" disabled={restoreMutation.isPending}>
-                          <ArchiveRestoreIcon className="size-4" />
-                          从此恢复
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>从 checkpoint 恢复</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            将基于当前作业配置提交一个新作业，并设置恢复路径为 {checkpoint.path}。
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>取消</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => restoreMutation.mutate(checkpoint)}>
-                            提交恢复作业
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm" disabled={deleteMutation.isPending}>
-                          <Trash2Icon className="size-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>删除 checkpoint</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            将删除 {checkpoint.name} 对应的存储目录，并记录审计日志。
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>取消</AlertDialogCancel>
-                          <AlertDialogAction
-                            variant="destructive"
-                            onClick={() => deleteMutation.mutate(checkpoint)}
-                          >
-                            删除
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )
-          })}
+          {checkpoints.map((checkpoint) => (
+            <TableRow key={checkpoint.ID}>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{checkpoint.name}</span>
+                  {checkpoint.latest && <Badge variant="secondary">latest</Badge>}
+                </div>
+              </TableCell>
+              <TableCell>{checkpoint.step >= 0 ? checkpoint.step : '-'}</TableCell>
+              <TableCell>{formatBytes(checkpoint.sizeBytes)}</TableCell>
+              <TableCell>{new Date(checkpoint.modTime).toLocaleString()}</TableCell>
+              <TableCell className="max-w-[360px] truncate font-mono text-xs">
+                {checkpoint.path}
+              </TableCell>
+              <TableCell>
+                <div className="flex justify-end gap-2">
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="secondary" size="sm" disabled={restoreMutation.isPending}>
+                        <ArchiveRestoreIcon className="size-4" />
+                        从此恢复
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>从 checkpoint 恢复</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          将基于当前作业配置提交一个新作业，并设置恢复路径为 {checkpoint.path}。
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>取消</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => restoreMutation.mutate(checkpoint)}>
+                          提交恢复作业
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" disabled={deleteMutation.isPending}>
+                        <Trash2Icon className="size-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>删除 checkpoint</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          将删除 {checkpoint.name} 对应的存储目录，并记录审计日志。
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>取消</AlertDialogCancel>
+                        <AlertDialogAction
+                          variant="destructive"
+                          onClick={() => deleteMutation.mutate(checkpoint)}
+                        >
+                          删除
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
 
@@ -403,65 +361,6 @@ function Metric({ label, value, mono }: { label: string; value: string; mono?: b
       <div className={cn('mt-1 truncate text-sm font-medium', mono && 'font-mono')}>{value}</div>
     </div>
   )
-}
-
-function ModelExportSummary({ exportRecord }: { exportRecord?: ModelExport }) {
-  if (!exportRecord) {
-    return <span className="text-muted-foreground text-sm">-</span>
-  }
-
-  return (
-    <div className="flex min-w-[150px] flex-col gap-1">
-      <ModelExportStatusBadge status={exportRecord.status} />
-      <div className="text-muted-foreground max-w-[220px] truncate font-mono text-xs">
-        {exportRecord.outputPath || exportRecord.name}
-      </div>
-    </div>
-  )
-}
-
-function ModelExportStatusBadge({ status }: { status: ModelExport['status'] }) {
-  const statusConfig = {
-    pending: {
-      label: '等待中',
-      className: 'border-highlight-slate/20 bg-highlight-slate/10 text-highlight-slate',
-    },
-    running: {
-      label: '导出中',
-      className: 'border-highlight-sky/20 bg-highlight-sky/10 text-highlight-sky',
-    },
-    succeeded: {
-      label: '已导出',
-      className: 'border-highlight-emerald/20 bg-highlight-emerald/10 text-highlight-emerald',
-    },
-    failed: {
-      label: '失败',
-      className: 'border-highlight-red/20 bg-highlight-red/10 text-highlight-red',
-    },
-  }[status]
-
-  return (
-    <Badge
-      variant="outline"
-      className={cn('w-fit rounded-full px-2 font-normal', statusConfig.className)}
-    >
-      {statusConfig.label}
-    </Badge>
-  )
-}
-
-function latestExportsByCheckpoint(exports: ModelExport[]) {
-  const byCheckpoint = new Map<number, ModelExport>()
-  for (const exportRecord of exports) {
-    const existing = byCheckpoint.get(exportRecord.checkpointID)
-    if (
-      !existing ||
-      new Date(exportRecord.CreatedAt).getTime() > new Date(existing.CreatedAt).getTime()
-    ) {
-      byCheckpoint.set(exportRecord.checkpointID, exportRecord)
-    }
-  }
-  return byCheckpoint
 }
 
 function buildResumeCommand(checkpoint?: CheckpointConfig, latestPath?: string) {

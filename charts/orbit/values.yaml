@@ -200,23 +200,6 @@ backendConfig:
     # Internal deployment uses: orbit-harbor.act.buaa.edu.cn/docker.io/library/python:3.11-slim
     image: "orbit-harbor.act.buaa.edu.cn/docker.io/library/python:3.11-slim"
 
-  # -- Checkpoint exporter job configuration
-  checkpointExporter:
-    # -- Default exporter image used when no framework-specific image is configured
-    defaultImage: "python:3.11-slim"
-    # -- Framework-specific exporter images. Images should include orbit SDK and framework export dependencies.
-    images:
-      deepspeed: ""
-      pytorch: ""
-      tensorflow: ""
-      jax: ""
-    # -- Export job resource requests and limits
-    resources:
-      cpuRequest: "1"
-      memoryRequest: "2Gi"
-      cpuLimit: "4"
-      memoryLimit: "8Gi"
-
   # -- Always-on checkpoint scanner service used by backend checkpoint scan APIs
   checkpointScanner:
     # -- HTTP base URL for the scanner service. If empty, helper templates fill the in-cluster service endpoint.
