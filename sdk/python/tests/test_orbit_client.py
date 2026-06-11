@@ -129,8 +129,52 @@ class OrbitClientTest(unittest.TestCase):
             self.assertEqual(manifest["format"], "file")
             self.assertTrue(manifest_path.exists())
             persisted = json.loads(manifest_path.read_text(encoding="utf-8"))
+            success_path = Path(str(target) + "._SUCCESS")
+            self.assertEqual(manifest["schemaVersion"], "orbit.checkpoint.manifest.v2")
+            self.assertEqual(manifest["status"], "committed")
             self.assertEqual(persisted["format"], "file")
+            self.assertTrue(success_path.exists())
             self.assertEqual(latest_path.read_text(encoding="utf-8"), "global_step_3")
+
+    def test_checkpoint_record_manifest_uses_final_path_for_staging_save(self):
+        with tempfile.TemporaryDirectory() as staging_dir, tempfile.TemporaryDirectory() as final_dir:
+            os.environ.clear()
+            os.environ["ORBIT_CHECKPOINT_STAGING_DIR"] = staging_dir
+            os.environ["ORBIT_CHECKPOINT_FINAL_DIR"] = final_dir
+            os.environ["ORBIT_CHECKPOINT_FINAL_LAYOUT"] = "flat"
+            target = Path(staging_dir) / "checkpoint-4.pt"
+            target.write_text("checkpoint", encoding="utf-8")
+
+            manifest = checkpoint.record(str(target), step=4, metadata={"framework": "custom"})
+
+            final_path = str(Path(final_dir) / "checkpoint-4.pt")
+            self.assertEqual(manifest["path"], final_path)
+            self.assertEqual(manifest["storagePath"], final_path)
+            self.assertEqual(manifest["stagingPath"], str(target))
+
+    def test_resume_from_ignores_empty_local_prefetch_dir(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            os.environ.clear()
+            local_path = Path(tmpdir) / "resume"
+            local_path.mkdir()
+            os.environ["ORBIT_RESUME_LOCAL_PATH"] = str(local_path)
+            os.environ["ORBIT_RESUME_FROM"] = "/workspace/checkpoints/checkpoint-1"
+
+            self.assertEqual(checkpoint.resume_from(), "/workspace/checkpoints/checkpoint-1")
+            (local_path / "model.bin").write_text("checkpoint", encoding="utf-8")
+            self.assertEqual(checkpoint.resume_from(), str(local_path))
+
+    def test_checkpoint_manager_async_flush_raises_writer_errors(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            manager = checkpoint.Manager(staging_dir=tmpdir)
+
+            def failing_writer(_target):
+                raise RuntimeError("write failed")
+
+            manager.save_async(name="checkpoint-err", step=4, writer=failing_writer)
+
+            with self.assertRaisesRegex(RuntimeError, "write failed"):
+                manager.flush()
 
     def test_pytorch_async_snapshot_recursively_clones_tensors_to_cpu(self):
         class FakeTensor:

@@ -8,7 +8,8 @@
 
 - `cmd/orbit/`：主后端进程，包含 Gin API Server 和 controller-runtime Manager。
 - `cmd/storage-server/`：独立文件服务进程，提供 WebDAV 与文件/数据集访问接口。
-- `cmd/checkpoint-scanner/`：独立 checkpoint 扫描进程，读取共享存储并返回 checkpoint manifest。
+- `cmd/checkpoint-scanner/`：独立 checkpoint reconcile 进程，读取共享存储并返回 checkpoint manifest。
+- `cmd/checkpoint-agent/`：训练 Pod sidecar 数据面进程，处理 checkpoint staging、提交和状态上报。
 - `cmd/gorm-gen/`：数据库迁移和 GORM Gen 代码生成工具。
 - `internal/`：业务 HTTP handler、service、middleware、storage 实现。
 - `pkg/`：可复用基础能力，包括 Kubernetes controller、CR client、监控、镜像构建、定时任务、清理策略、预排队 watcher 等。
@@ -27,7 +28,8 @@
 | --- | --- | --- | --- |
 | 主后端 | `backend/cmd/orbit/main.go` | API、鉴权、业务编排、Kubernetes controller、定时任务 | `8088` |
 | Storage Server | `backend/cmd/storage-server/main.go` | WebDAV、文件浏览、上传下载、数据集文件访问 | `7320` |
-| Checkpoint Scanner | `backend/cmd/checkpoint-scanner/main.go` | 扫描共享存储中的 checkpoint 文件 | `7330` |
+| Checkpoint Scanner | `backend/cmd/checkpoint-scanner/main.go` | reconcile 共享存储中的 checkpoint 文件 | `7330` |
+| Checkpoint Agent | `backend/cmd/checkpoint-agent/main.go` | 训练 Pod sidecar，处理 checkpoint staging 和提交 | 无固定端口 |
 | DB Migrator | `backend/cmd/gorm-gen/models/migrate.go` | 数据库建表、迁移、初始化默认数据 | 无常驻端口 |
 
 主后端并不是纯 API 服务。它启动后也会创建 controller-runtime manager，监听 Kubernetes 资源变化，并将作业、镜像构建、模型下载等状态同步回数据库。
@@ -87,6 +89,7 @@
 | `postgres` | PostgreSQL 连接参数 |
 | `storage` | RWX/ROX PVC 名称和用户、账号、公共空间路径前缀 |
 | `checkpointScanner` | checkpoint-scanner 服务地址和超时 |
+| `checkpoint` | checkpoint staging、agent sidecar、最终存储根目录和扫描模式 |
 | `modelDownload` | 模型下载 Job 使用的镜像 |
 | `secrets` | TLS、转发、镜像拉取 Secret |
 | `registry` | Harbor 和镜像构建工具配置 |
@@ -346,9 +349,15 @@ Manager 创建在 `backend/cmd/orbit/helper/manager.go`。它注册：
 - 公共空间按 `PublicAccessMode` 控制。
 - 路径会从逻辑路径重定向到真实存储路径，例如用户、账户、公共空间前缀。
 
-## 十三、Checkpoint Scanner
+## 十三、Checkpoint 数据面
 
-入口是 `backend/cmd/checkpoint-scanner/main.go`。它是只读扫描服务，生产环境中与 storage 共享同一个 PVC。
+checkpoint 分为三层：
+
+- SDK：负责框架级 save/load，并写 manifest v2 与 success marker。
+- checkpoint-agent：训练 Pod sidecar，监听 staging 目录，提交到最终存储并上报状态。
+- backend：只做权限、元数据、状态机、API 和恢复 Job 编排。
+
+scanner 入口是 `backend/cmd/checkpoint-scanner/main.go`。它是 reconcile 服务，生产环境中与 storage 共享同一个 PVC，用于发现遗留文件、校验 manifest、修复 missing/invalid/deleted 状态。
 
 环境变量：
 
@@ -371,11 +380,13 @@ checkpoint 业务逻辑位于 `backend/internal/service/vcjob/checkpoint/`：
 - `validator.go`、`normalizer.go`、`policy.go`、`processor.go`：校验、规范化、保留策略和处理。
 - `annotations.go`、`env.go`：作业注解和环境变量。
 
-`vcjobs` 的 checkpoint API 会触发扫描、清理、恢复、删除等操作。
+`vcjobs` 的 checkpoint API 会触发扫描、清理、恢复、删除等控制面操作。删除和 cleanup 只把记录标记为 `deleting`，物理文件删除由 agent/scanner 数据面完成，后续扫描再 reconcile 为 `deleted`。
 
 ### Checkpoint 训练恢复边界
 
 checkpoint 只作为训练恢复和审计对象使用。后端和 scanner 读取 `.orbit.json` manifest 以及 checkpoint 元数据，用于扫描、latest 识别、恢复作业、删除和保留策略清理。
+
+只有 manifest v2 且带 success marker 的 checkpoint 可以进入 `committed` 状态并作为 latest/restore 候选。`creating`、`staged`、`uploading`、`deleting` 等中间状态不会展示为可恢复 checkpoint。
 
 平台不会把 checkpoint 复制或轻度转换成模型目录，也不会登记为模型数据集或实验模型 artifact。需要部署推理产物时，应由训练代码或独立流水线显式产出可推理的模型文件。
 
@@ -432,7 +443,7 @@ Run Token 接口通过 `PublicV1Manager` 注册到 `/api/v1/experiments/runs/:ru
 - `templates/orbit-backend/deployment.yaml`：主后端 Deployment 和 migration initContainer。
 - `templates/orbit-backend/configmap.yaml`：生成 `/etc/config/config.yaml`。
 - `templates/storage-server/deployment.yaml`：WebDAV/storage server。
-- `templates/checkpoint-scanner/deployment.yaml`：checkpoint scanner，只读挂载共享 PVC。
+- `templates/checkpoint-scanner/deployment.yaml`：checkpoint scanner，reconcile 共享 PVC。
 - `templates/buildkit/`：BuildKit 相关 StatefulSet/ConfigMap。
 - `templates/job/`：训练作业启动脚本 ConfigMap。
 - `templates/ingress/`：frontend、backend、storage、grafana-proxy Ingress。
@@ -443,6 +454,7 @@ Run Token 接口通过 `PublicV1Manager` 注册到 `/api/v1/experiments/runs/:ru
 - `namespaces.job` / `namespaces.image`，其中镜像构建 Job 运行在 job namespace，BuildKit daemon 等基础组件使用 image namespace。
 - `storage.pvc.readWriteMany`。
 - `checkpointScanner.endpoint`。
+- `checkpoint.agent.image` / `checkpoint.staging.mountPath` / `checkpoint.storage.finalRoot`。
 - `registry` 和 Harbor。
 - JWT secret。
 - SMTP、LDAP、Prometheus。
@@ -463,6 +475,7 @@ Run Token 接口通过 `PublicV1Manager` 注册到 `/api/v1/experiments/runs/:ru
 ### 镜像
 
 - `backend/Dockerfile`：生产后端镜像，包含 `controller`、`migrate`、`checkpoint-scanner`。
+- `backend/cmd/checkpoint-agent`：checkpoint sidecar 入口，可独立构建为 agent 镜像。
 - `backend/storage-server.Dockerfile`：storage-server 独立镜像。
 - `backend/Dockerfile.compose`：Compose 联调镜像，包含 `orbit`、`storage-server`、`checkpoint-scanner`、`migrate`。
 
@@ -482,6 +495,7 @@ Run Token 接口通过 `PublicV1Manager` 注册到 `/api/v1/experiments/runs/:ru
 | `make build` | 构建主后端二进制 |
 | `make build-storage` | 构建 storage-server |
 | `make build-checkpoint-scanner` | 构建 checkpoint scanner |
+| `make build-checkpoint-agent` | 构建 checkpoint agent |
 | `make build-migrate` | 构建迁移二进制 |
 
 本地运行主后端至少需要：

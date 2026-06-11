@@ -331,7 +331,16 @@ export interface JobCheckpoint {
   step: number
   sizeBytes: number
   modTime: string
-  status: 'ready' | 'missing' | 'deleted'
+  status:
+    | 'creating'
+    | 'staged'
+    | 'uploading'
+    | 'committed'
+    | 'failed'
+    | 'deleting'
+    | 'deleted'
+    | 'missing'
+    | 'invalid'
   latest: boolean
   source: string
   metadata?: Record<string, unknown>

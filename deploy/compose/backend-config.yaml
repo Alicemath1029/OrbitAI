@@ -13,6 +13,23 @@ checkpointScanner:
   intervalSeconds: 0
   batchSize: 100
 
+checkpoint:
+  staging:
+    enabled: true
+    mountPath: /checkpoint-staging
+    medium: disk
+  agent:
+    enabled: true
+    image: orbit-checkpoint-agent
+    backendEndpoint: http://backend:8088
+    uploadConcurrency: 4
+    bandwidthLimit: ""
+  storage:
+    backend: pvc
+    finalRoot: ""
+  scanner:
+    mode: reconcile
+
 postgres:
   host: postgres
   port: "5432"

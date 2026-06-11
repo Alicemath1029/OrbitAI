@@ -211,6 +211,27 @@ backendConfig:
     # -- Max checkpoint-enabled jobs scanned in one background tick
     batchSize: 100
 
+  # -- Checkpoint data-plane configuration
+  checkpoint:
+    staging:
+      enabled: true
+      mountPath: /checkpoint-staging
+      medium: disk
+    agent:
+      enabled: true
+      # -- Checkpoint agent sidecar image. If empty, helper templates use the backend image because it contains /checkpoint-agent.
+      image: ""
+      # -- Backend internal endpoint used by checkpoint-agent sidecars. If empty, helper templates fill the in-cluster service endpoint.
+      backendEndpoint: ""
+      uploadConcurrency: 4
+      bandwidthLimit: ""
+    storage:
+      backend: pvc
+      # -- Empty means each job copies staged checkpoints into its configured checkpointDir. Set an absolute mounted path for a shared global root.
+      finalRoot: ""
+    scanner:
+      mode: reconcile
+
   # -- Endpoint URL for Prometheus API used for metrics and monitoring
   # If not specified, Prometheus integration will be disabled
   prometheusAPI: http://192.168.0.1:12345

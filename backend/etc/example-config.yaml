@@ -26,6 +26,26 @@ checkpointScanner:
   # Max checkpoint-enabled jobs scanned in one background tick.
   batchSize: 100
 
+# Checkpoint data-plane configuration.
+checkpoint:
+  staging:
+    enabled: true
+    mountPath: /checkpoint-staging
+    medium: disk
+  agent:
+    enabled: true
+    image: orbit-checkpoint-agent
+    backendEndpoint: http://orbit-backend-svc.orbit.svc.cluster.local:8088
+    uploadConcurrency: 4
+    bandwidthLimit: ""
+  storage:
+    backend: pvc
+    # Empty means each job copies staged checkpoints into its configured checkpointDir.
+    # Set an absolute mounted path to use a shared global root.
+    finalRoot: ""
+  scanner:
+    mode: reconcile
+
 # Endpoint URL for Prometheus API used for metrics and monitoring
 # Optional: If not specified, Prometheus integration will be disabled
 prometheusAPI: http://192.168.0.1:12345

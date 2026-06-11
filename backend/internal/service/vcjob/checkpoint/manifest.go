@@ -17,10 +17,12 @@ import (
 )
 
 const (
-	checkpointManifestSuffix        = ".orbit.json"
-	checkpointManifestReadLimit     = 64 * 1024
-	checkpointSHA256BufferSize      = 1024 * 1024
-	checkpointManifestSchemaVersion = "orbit.checkpoint.manifest.v1"
+	checkpointManifestSuffix    = ".orbit.json"
+	checkpointSuccessMarker     = "_SUCCESS"
+	checkpointFileSuccessSuffix = "._SUCCESS"
+	checkpointManifestReadLimit = 64 * 1024
+	checkpointSHA256BufferSize  = 1024 * 1024
+	checkpointManifestSchemaV2  = "orbit.checkpoint.manifest.v2"
 
 	checkpointValidationStatusKey = "validationStatus"
 	checkpointValidationErrorsKey = "validationErrors"
@@ -29,25 +31,34 @@ const (
 )
 
 type checkpointManifest struct {
-	SchemaVersion string            `json:"schemaVersion"`
-	Framework     string            `json:"framework"`
-	Format        string            `json:"format"`
-	Name          string            `json:"name"`
-	Path          string            `json:"path"`
-	Step          *int64            `json:"step"`
-	SizeBytes     *int64            `json:"sizeBytes"`
-	SHA256        string            `json:"sha256"`
-	RunID         string            `json:"runID"`
-	JobName       string            `json:"jobName"`
-	CreatedAt     string            `json:"createdAt"`
-	Metadata      datatypes.JSONMap `json:"metadata"`
+	SchemaVersion  string                    `json:"schemaVersion"`
+	CheckpointID   string                    `json:"checkpointID"`
+	JobName        string                    `json:"jobName"`
+	RunID          string                    `json:"runID"`
+	Framework      string                    `json:"framework"`
+	Format         string                    `json:"format"`
+	Name           string                    `json:"name"`
+	Path           string                    `json:"path"`
+	Step           *int64                    `json:"step"`
+	Status         model.JobCheckpointStatus `json:"status"`
+	Distributed    bool                      `json:"distributed"`
+	WorldSize      int                       `json:"worldSize"`
+	StorageBackend string                    `json:"storageBackend"`
+	StoragePath    string                    `json:"storagePath"`
+	StagingPath    string                    `json:"stagingPath"`
+	SizeBytes      *int64                    `json:"sizeBytes"`
+	SHA256         string                    `json:"sha256"`
+	CreatedAt      string                    `json:"createdAt"`
+	CommittedAt    string                    `json:"committedAt"`
+	Metadata       datatypes.JSONMap         `json:"metadata"`
 }
 
 type manifestValidationTarget struct {
-	ActualSize int64
-	FilePath   string
-	JobName    string
-	RunID      *uint
+	ActualSize    int64
+	FilePath      string
+	JobName       string
+	RunID         *uint
+	SuccessMarker bool
 }
 
 func parseCheckpointManifest(data []byte) (*checkpointManifest, error) {
@@ -77,11 +88,17 @@ func validateCheckpointManifest(
 
 func validateManifestBasics(manifest *checkpointManifest) []string {
 	issues := make([]string, 0)
-	if schema := strings.TrimSpace(manifest.SchemaVersion); schema != "" && schema != checkpointManifestSchemaVersion {
-		issues = append(issues, fmt.Sprintf("unsupported schemaVersion %q", schema))
+	if schema := strings.TrimSpace(manifest.SchemaVersion); schema != checkpointManifestSchemaV2 {
+		issues = append(issues, fmt.Sprintf("manifest schemaVersion must be %q", checkpointManifestSchemaV2))
 	}
 	if manifest.Step != nil && *manifest.Step < 0 {
 		issues = append(issues, "step must be non-negative")
+	}
+	if manifest.WorldSize < 0 {
+		issues = append(issues, "worldSize must be non-negative")
+	}
+	if manifest.Status != "" && !isValidManifestCheckpointStatus(manifest.Status) {
+		issues = append(issues, fmt.Sprintf("unsupported checkpoint status %q", manifest.Status))
 	}
 	if schemaIssue := validateFrameworkCheckpointSchema(manifest); schemaIssue != "" {
 		issues = append(issues, schemaIssue)
@@ -105,7 +122,27 @@ func validateManifestTargetFields(manifest *checkpointManifest, target manifestV
 			issues = append(issues, fmt.Sprintf("runID mismatch: manifest=%d run=%d", parsed, *target.RunID))
 		}
 	}
+	if manifest.Status == model.JobCheckpointStatusCommitted && !target.SuccessMarker {
+		issues = append(issues, "committed checkpoint requires _SUCCESS marker")
+	}
 	return issues
+}
+
+func isValidManifestCheckpointStatus(status model.JobCheckpointStatus) bool {
+	switch status {
+	case model.JobCheckpointStatusCreating,
+		model.JobCheckpointStatusStaged,
+		model.JobCheckpointStatusUploading,
+		model.JobCheckpointStatusCommitted,
+		model.JobCheckpointStatusFailed,
+		model.JobCheckpointStatusDeleting,
+		model.JobCheckpointStatusDeleted,
+		model.JobCheckpointStatusMissing,
+		model.JobCheckpointStatusInvalid:
+		return true
+	default:
+		return false
+	}
 }
 
 func validateManifestSHA256(ctx context.Context, manifest *checkpointManifest, filePath string) string {
@@ -213,6 +250,13 @@ func manifestPathForCheckpoint(path string) string {
 	return path + checkpointManifestSuffix
 }
 
+func successMarkerPathForCheckpoint(path string, isDir bool) string {
+	if isDir {
+		return filepath.ToSlash(filepath.Join(path, checkpointSuccessMarker))
+	}
+	return path + checkpointFileSuccessSuffix
+}
+
 func applyManifestToCheckpoint(checkpoint *model.JobCheckpoint, manifest *checkpointManifest, manifestStoragePath string) {
 	if checkpoint == nil || manifest == nil {
 		return
@@ -232,7 +276,29 @@ func applyManifestToCheckpoint(checkpoint *model.JobCheckpoint, manifest *checkp
 	if manifest.SizeBytes != nil && checkpoint.SizeBytes == 0 {
 		checkpoint.SizeBytes = *manifest.SizeBytes
 	}
+	if status := manifest.Status; status != "" {
+		checkpoint.Status = status
+	}
+	if storagePath := strings.TrimSpace(manifest.StoragePath); storagePath != "" {
+		checkpoint.StoragePath = filepath.ToSlash(filepath.Clean(storagePath))
+	}
 	checkpoint.Metadata = mergeManifestMetadata(checkpoint.Metadata, manifest, manifestStoragePath)
+}
+
+func applyMissingManifestToCheckpoint(checkpoint *model.JobCheckpoint, manifestStoragePath string) {
+	if checkpoint == nil {
+		return
+	}
+	if checkpoint.Metadata == nil {
+		checkpoint.Metadata = datatypes.JSONMap{}
+	}
+	checkpoint.Status = model.JobCheckpointStatusInvalid
+	checkpoint.Latest = false
+	checkpoint.Metadata[checkpointValidationStatusKey] = checkpointValidationInvalid
+	checkpoint.Metadata[checkpointValidationErrorsKey] = []string{fmt.Sprintf("manifest schemaVersion %s is required", checkpointManifestSchemaV2)}
+	if manifestStoragePath != "" {
+		checkpoint.Metadata["manifestStoragePath"] = filepath.ToSlash(filepath.Clean(manifestStoragePath))
+	}
 }
 
 func applyManifestValidationToCheckpoint(checkpoint *model.JobCheckpoint, issues []string) {
@@ -285,11 +351,33 @@ func mergeManifestMetadata(
 	if manifest.SHA256 != "" {
 		next["sha256"] = manifest.SHA256
 	}
+	if manifest.CheckpointID != "" {
+		next["checkpointID"] = manifest.CheckpointID
+	}
 	if manifest.Format != "" {
 		next["format"] = manifest.Format
 	}
+	if manifest.Status != "" {
+		next["manifestStatus"] = string(manifest.Status)
+	}
+	if manifest.StorageBackend != "" {
+		next["storageBackend"] = manifest.StorageBackend
+	}
+	if manifest.StoragePath != "" {
+		next["manifestStoragePathValue"] = manifest.StoragePath
+	}
+	if manifest.StagingPath != "" {
+		next["stagingPath"] = manifest.StagingPath
+	}
+	next["distributed"] = manifest.Distributed
+	if manifest.WorldSize > 0 {
+		next["worldSize"] = manifest.WorldSize
+	}
 	if manifest.CreatedAt != "" {
 		next["manifestCreatedAt"] = manifest.CreatedAt
+	}
+	if manifest.CommittedAt != "" {
+		next["manifestCommittedAt"] = manifest.CommittedAt
 	}
 	if manifest.RunID != "" {
 		next["manifestRunID"] = manifest.RunID

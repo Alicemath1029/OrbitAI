@@ -168,17 +168,20 @@ func (r *VcJobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 
 		// 作业被定时策略释放，进行性能数据收集
 		podName := getPodNameFromJobTemplate(record.Attributes.Data())
-		profileData := r.prometheusClient.QueryProfileData(types.NamespacedName{
-			Namespace: config.GetConfig().Namespaces.Job,
-			Name:      podName,
-		}, record.RunningTimestamp)
-
-		var info gen.ResultInfo
-		info, err = j.WithContext(ctx).Where(j.JobName.Eq(req.Name)).Updates(model.Job{
+		updateRecord := model.Job{
 			Status:             model.Freed,
 			CompletedTimestamp: time.Now(),
-			ProfileData:        ptr.To(datatypes.NewJSONType(profileData)),
-		})
+		}
+		if podName != "" {
+			profileData := r.prometheusClient.QueryProfileData(types.NamespacedName{
+				Namespace: config.GetConfig().Namespaces.Job,
+				Name:      podName,
+			}, record.RunningTimestamp)
+			updateRecord.ProfileData = ptr.To(datatypes.NewJSONType(profileData))
+		}
+
+		var info gen.ResultInfo
+		info, err = j.WithContext(ctx).Where(j.JobName.Eq(req.Name)).Updates(updateRecord)
 		if err != nil {
 			logger.Error(err, "unable to update job status to freed")
 			return ctrl.Result{Requeue: true}, err
@@ -330,6 +333,9 @@ func (r *VcJobReconciler) updateMissingJobProfile(ctx context.Context, jobName s
 	}
 
 	podName := getPodNameFromJobTemplate(record.Attributes.Data())
+	if podName == "" {
+		return nil
+	}
 	profileData := r.prometheusClient.QueryProfileData(types.NamespacedName{
 		Namespace: config.GetConfig().Namespaces.Job,
 		Name:      podName,
@@ -550,12 +556,15 @@ func (r *VcJobReconciler) generateUpdateJobModel(ctx context.Context, job *batch
 			// 作业进入了终止态
 			if oldRecord.ProfileData == nil {
 				// 进行性能数据收集
-				profile := r.prometheusClient.QueryProfileData(types.NamespacedName{
-					Namespace: job.Namespace,
-					Name:      getPodNameFromJobTemplate(job),
-				}, runningTimestamp)
-				if profile != nil {
-					profilePtr = ptr.To(datatypes.NewJSONType(profile))
+				podName := getPodNameFromJobTemplate(job)
+				if podName != "" {
+					profile := r.prometheusClient.QueryProfileData(types.NamespacedName{
+						Namespace: job.Namespace,
+						Name:      podName,
+					}, runningTimestamp)
+					if profile != nil {
+						profilePtr = ptr.To(datatypes.NewJSONType(profile))
+					}
 				}
 			}
 			if isReleasedJobPhase(status) {

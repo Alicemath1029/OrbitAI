@@ -163,6 +163,12 @@ build-checkpoint-scanner: fmt lint ## Build checkpoint scanner binary.
 	go build -ldflags="-w -s $(VERSION_LDFLAGS)" -o bin/checkpoint-scanner cmd/checkpoint-scanner/main.go
 	@echo "$(GREEN)✅ Checkpoint scanner binary built successfully: bin/checkpoint-scanner$(RESET)"
 
+.PHONY: build-checkpoint-agent
+build-checkpoint-agent: fmt lint ## Build checkpoint agent binary.
+	@echo "$(YELLOW)🔨 Building checkpoint agent binary...$(RESET)"
+	go build -ldflags="-w -s $(VERSION_LDFLAGS)" -o bin/checkpoint-agent cmd/checkpoint-agent/main.go
+	@echo "$(GREEN)✅ Checkpoint agent binary built successfully: bin/checkpoint-agent$(RESET)"
+
 .PHONY: build-migrate
 build-migrate: fmt lint ## Build migration binary.
 	@echo "$(YELLOW)🔨 Building migration binary...$(RESET)"

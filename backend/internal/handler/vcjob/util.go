@@ -406,6 +406,7 @@ func generatePodSpecForParallelJob(
 	envs []v1.EnvVar,
 	ports []v1.ContainerPort,
 	cpuPinningEnabled bool,
+	checkpoint *CheckpointConfig,
 ) (podSpec v1.PodSpec) {
 	imagePullSecrets := []v1.LocalObjectReference{}
 	if config.GetConfig().Secrets.ImagePullSecretName != "" {
@@ -454,6 +455,7 @@ func generatePodSpecForParallelJob(
 	if task.WorkingDir != nil {
 		podSpec.Containers[0].WorkingDir = *task.WorkingDir
 	}
+	applyCheckpointAgent(&podSpec, checkpoint)
 	return podSpec
 }
 
@@ -825,6 +827,7 @@ func generateInteractivePodSpec(
 		EnableServiceLinks:    ptr.To(false),
 		ShareProcessNamespace: ptr.To(true),
 	}
+	applyCheckpointAgent(&podSpec, checkpoint)
 	return podSpec, nil
 }
 

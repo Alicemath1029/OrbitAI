@@ -17,6 +17,9 @@ import (
 const MaxJobEvents = 20
 
 func getPodNameFromJobTemplate(job *batch.Job) string {
+	if job == nil {
+		return ""
+	}
 	for i := range job.Spec.Tasks {
 		task := &job.Spec.Tasks[i]
 		if task.Replicas > 0 {
@@ -28,6 +31,9 @@ func getPodNameFromJobTemplate(job *batch.Job) string {
 }
 
 func getPodNamesFromJobTemplate(job *batch.Job) []string {
+	if job == nil {
+		return nil
+	}
 	podNames := make([]string, 0)
 	for i := range job.Spec.Tasks {
 		task := &job.Spec.Tasks[i]

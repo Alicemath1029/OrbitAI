@@ -8,6 +8,8 @@ from typing import Any, Dict, Optional
 from . import checkpoint as orbit_checkpoint
 
 _threads = []
+_errors = []
+_lock = threading.Lock()
 
 
 @dataclass
@@ -78,7 +80,7 @@ def save_checkpoint(
     if async_save:
         state = _cpu_snapshot(state)
     if async_save:
-        thread = threading.Thread(target=_write_checkpoint, args=(target, state, int(step), metadata), daemon=False)
+        thread = threading.Thread(target=_write_checkpoint_async, args=(target, state, int(step), metadata), daemon=False)
         thread.start()
         _threads.append(thread)
     else:
@@ -90,6 +92,19 @@ def flush() -> None:
     while _threads:
         thread = _threads.pop(0)
         thread.join()
+    with _lock:
+        if _errors:
+            error = _errors.pop(0)
+            _errors.clear()
+            raise error
+
+
+def _write_checkpoint_async(target: Path, state: Dict[str, Any], step: int, metadata: Optional[Dict[str, Any]]) -> None:
+    try:
+        _write_checkpoint(target, state, step, metadata)
+    except BaseException as exc:  # noqa: BLE001 - propagated by flush.
+        with _lock:
+            _errors.append(exc)
 
 
 def _state_dict(
@@ -123,9 +138,9 @@ def _write_checkpoint(target: Path, state: Dict[str, Any], step: int, metadata: 
     tmp.replace(target)
     record_metadata = dict(metadata or {})
     record_metadata["framework"] = "pytorch"
-    record_metadata["format"] = "state-dict"
+    record_metadata["format"] = "pytorch-state-dict"
     record_metadata["checkpointSchemaVersion"] = state.get("schema_version", "")
-    orbit_checkpoint.record(str(target), step=step, metadata=record_metadata, format="state-dict")
+    orbit_checkpoint.record(str(target), step=step, metadata=record_metadata, format="pytorch-state-dict")
 
 
 def _cpu_snapshot(value: Any) -> Any:

@@ -10,10 +10,18 @@ import (
 type JobCheckpointStatus string
 
 const (
-	JobCheckpointStatusReady   JobCheckpointStatus = "ready"
-	JobCheckpointStatusMissing JobCheckpointStatus = "missing"
-	JobCheckpointStatusDeleted JobCheckpointStatus = "deleted"
-	JobCheckpointStatusInvalid JobCheckpointStatus = "invalid"
+	JobCheckpointStatusCreating  JobCheckpointStatus = "creating"
+	JobCheckpointStatusStaged    JobCheckpointStatus = "staged"
+	JobCheckpointStatusUploading JobCheckpointStatus = "uploading"
+	JobCheckpointStatusCommitted JobCheckpointStatus = "committed"
+	JobCheckpointStatusFailed    JobCheckpointStatus = "failed"
+	JobCheckpointStatusDeleting  JobCheckpointStatus = "deleting"
+	JobCheckpointStatusDeleted   JobCheckpointStatus = "deleted"
+	JobCheckpointStatusMissing   JobCheckpointStatus = "missing"
+	JobCheckpointStatusInvalid   JobCheckpointStatus = "invalid"
+
+	// JobCheckpointStatusReady is kept as a compatibility alias for older call sites.
+	JobCheckpointStatusReady JobCheckpointStatus = JobCheckpointStatusCommitted
 )
 
 type JobCheckpoint struct {
@@ -30,7 +38,7 @@ type JobCheckpoint struct {
 	Step        int64               `json:"step" gorm:"index;comment:checkpoint步数，无法识别时为-1"`
 	SizeBytes   int64               `json:"sizeBytes" gorm:"not null;default:0;comment:checkpoint大小"`
 	ModTime     time.Time           `json:"modTime" gorm:"index;comment:checkpoint最后修改时间"`
-	Status      JobCheckpointStatus `json:"status" gorm:"type:varchar(32);not null;default:ready;index;comment:checkpoint状态"`
+	Status      JobCheckpointStatus `json:"status" gorm:"type:varchar(32);not null;default:committed;index;comment:checkpoint状态"`
 	Latest      bool                `json:"latest" gorm:"not null;default:false;index;comment:是否为最新checkpoint"`
 	Source      string              `json:"source" gorm:"type:varchar(32);comment:来源(scan/manual)"`
 	Metadata    datatypes.JSONMap   `json:"metadata" gorm:"comment:checkpoint元数据"`

@@ -148,6 +148,29 @@ type Config struct {
 		BatchSize int `json:"batchSize"`
 	} `json:"checkpointScanner"`
 
+	// Checkpoint contains checkpoint data-plane configuration.
+	Checkpoint struct {
+		Staging struct {
+			Enabled   bool   `json:"enabled"`
+			MountPath string `json:"mountPath"`
+			Medium    string `json:"medium"`
+		} `json:"staging"`
+		Agent struct {
+			Enabled           bool   `json:"enabled"`
+			Image             string `json:"image"`
+			BackendEndpoint   string `json:"backendEndpoint"`
+			UploadConcurrency int    `json:"uploadConcurrency"`
+			BandwidthLimit    string `json:"bandwidthLimit"`
+		} `json:"agent"`
+		Storage struct {
+			Backend   string `json:"backend"`
+			FinalRoot string `json:"finalRoot"`
+		} `json:"storage"`
+		Scanner struct {
+			Mode string `json:"mode"`
+		} `json:"scanner"`
+	} `json:"checkpoint"`
+
 	// Registry contains container registry configuration for image storage and building.
 	// Optional: If Enable is false, registry functionality will be disabled.
 	Registry struct {
@@ -610,6 +633,16 @@ func (c *Config) PrintConfig() {
 	} else {
 		klog.Info("Model Download Image: <default: orbit-harbor.act.buaa.edu.cn/orbit/base/python:3.11-slim>")
 	}
+	klog.Infof(
+		"Checkpoint: agent=%t image=%s backend=%s staging=%s storage=%s:%s scannerMode=%s",
+		c.Checkpoint.Agent.Enabled,
+		c.Checkpoint.Agent.Image,
+		c.Checkpoint.Agent.BackendEndpoint,
+		c.Checkpoint.Staging.MountPath,
+		c.Checkpoint.Storage.Backend,
+		c.Checkpoint.Storage.FinalRoot,
+		c.Checkpoint.Scanner.Mode,
+	)
 
 	// Secrets
 	klog.Infof("TLS Secrets: %s, %s", c.Secrets.TLSSecretName, c.Secrets.TLSForwardSecretName)

@@ -177,10 +177,13 @@ func discoverCheckpoints(
 		} else if manifest != nil {
 			applyManifestToCheckpoint(&item, manifest, manifestStoragePath)
 			applyManifestValidationToCheckpoint(&item, validateCheckpointManifest(ctx, manifest, manifestValidationTarget{
-				ActualSize: size,
-				JobName:    record.JobName,
-				RunID:      item.RunID,
+				ActualSize:    size,
+				JobName:       record.JobName,
+				RunID:         item.RunID,
+				SuccessMarker: storageSuccessMarkerExists(ctx, storagePath, root.IsDir),
 			}))
+		} else {
+			applyMissingManifestToCheckpoint(&item, manifestPathForCheckpoint(storagePath))
 		}
 		return []model.JobCheckpoint{item}, nil
 	}
@@ -255,19 +258,24 @@ func checkpointFromStoragePath(
 	} else if manifest != nil {
 		applyManifestToCheckpoint(&item, manifest, manifestStoragePath)
 		applyManifestValidationToCheckpoint(&item, validateCheckpointManifest(ctx, manifest, manifestValidationTarget{
-			ActualSize: size,
-			JobName:    record.JobName,
-			RunID:      item.RunID,
+			ActualSize:    size,
+			JobName:       record.JobName,
+			RunID:         item.RunID,
+			SuccessMarker: storageSuccessMarkerExists(ctx, childStoragePath, stat.IsDir),
 		}))
+	} else {
+		applyMissingManifestToCheckpoint(&item, manifestPathForCheckpoint(childStoragePath))
 	}
 	return item, nil
 }
 
 func shouldSkipCheckpointChild(name string) bool {
 	return name == "" ||
+		name == checkpointSuccessMarker ||
 		strings.HasPrefix(name, ".") ||
 		strings.HasPrefix(name, "_tmp") ||
 		strings.HasSuffix(name, ".tmp") ||
+		strings.HasSuffix(name, checkpointFileSuccessSuffix) ||
 		strings.HasSuffix(name, checkpointManifestSuffix)
 }
 
@@ -358,7 +366,7 @@ func newCheckpointRecord(
 		Step:        stepFromName(name),
 		SizeBytes:   size,
 		ModTime:     modTime,
-		Status:      model.JobCheckpointStatusReady,
+		Status:      model.JobCheckpointStatusInvalid,
 		Source:      "scan",
 		Metadata: datatypes.JSONMap{
 			"checkpointDir": info.CheckpointDir,
@@ -554,6 +562,17 @@ func persistScan(
 	}).Error; err != nil {
 		return err
 	}
+	deletedQuery := db.Model(&model.JobCheckpoint{}).Where("job_id = ? AND status = ?", record.ID, model.JobCheckpointStatusDeleting)
+	if len(seenPaths) > 0 {
+		deletedQuery = deletedQuery.Where("path NOT IN ?", seenPaths)
+	}
+	if err := deletedQuery.Updates(map[string]any{
+		"status":     model.JobCheckpointStatusDeleted,
+		"latest":     false,
+		"updated_at": now,
+	}).Error; err != nil {
+		return err
+	}
 
 	info.LastScannedAt = now
 	if latest != nil {
@@ -602,6 +621,14 @@ func SyncCheckpointArtifacts(ctx context.Context, db *gorm.DB, jobID uint) error
 		}
 	}
 	return nil
+}
+
+func storageSuccessMarkerExists(ctx context.Context, storagePath string, isDir bool) bool {
+	if storagePath == "" {
+		return false
+	}
+	_, err := storage.StatRelativePath(ctx, successMarkerPathForCheckpoint(storagePath, isDir))
+	return err == nil
 }
 
 func upsertCheckpointArtifact(ctx context.Context, db *gorm.DB, checkpoint *model.JobCheckpoint) error {

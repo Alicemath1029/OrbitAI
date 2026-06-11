@@ -182,7 +182,7 @@ func (mgr *VolcanojobMgr) RestoreJobFromCheckpoint(c *gin.Context) {
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
-	checkpoint, err := getReadyCheckpoint(c, job, uriReq.CheckpointID)
+	checkpoint, err := getCommittedCheckpoint(c, job, uriReq.CheckpointID)
 	if err != nil {
 		details := checkpointOpDetails(job, nil, nil)
 		recordCheckpointOperation(c, constants.OpTypeRestoreCheckpoint, uriReq.JobName, constants.OpStatusFailed, err.Error(), details)
@@ -256,7 +256,7 @@ func (mgr *VolcanojobMgr) DeleteJobCheckpoint(c *gin.Context) {
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
-	checkpoint, err := getReadyCheckpoint(c, job, req.CheckpointID)
+	checkpoint, err := getCommittedCheckpoint(c, job, req.CheckpointID)
 	if err != nil {
 		details := checkpointOpDetails(job, nil, nil)
 		recordCheckpointOperation(c, constants.OpTypeDeleteCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
@@ -264,7 +264,7 @@ func (mgr *VolcanojobMgr) DeleteJobCheckpoint(c *gin.Context) {
 		return
 	}
 
-	if err := deleteCheckpoint(c, checkpoint); err != nil {
+	if err := markCheckpointDeleting(c, checkpoint); err != nil {
 		details := checkpointOpDetails(job, checkpoint, nil)
 		recordCheckpointOperation(c, constants.OpTypeDeleteCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
@@ -316,7 +316,7 @@ func (mgr *VolcanojobMgr) CleanupJobCheckpoints(c *gin.Context) {
 	}
 	if !bodyReq.DryRun {
 		for i := range candidates {
-			if err := deleteCheckpoint(c, &candidates[i]); err != nil {
+			if err := markCheckpointDeleting(c, &candidates[i]); err != nil {
 				details := checkpointOpDetails(job, &candidates[i], nil)
 				recordCheckpointOperation(c, constants.OpTypeCleanupCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
 				resputil.Error(c, err.Error(), resputil.NotSpecified)
@@ -347,7 +347,7 @@ func (mgr *VolcanojobMgr) CleanupJobCheckpoints(c *gin.Context) {
 func buildCheckpointListResp(c *gin.Context, job *model.Job) (checkpointListResp, error) {
 	var items []model.JobCheckpoint
 	if err := query.GetDB().WithContext(c).
-		Where("job_id = ? AND status = ?", job.ID, model.JobCheckpointStatusReady).
+		Where("job_id = ? AND status = ?", job.ID, model.JobCheckpointStatusCommitted).
 		Order("latest desc, step desc, mod_time desc, id desc").
 		Find(&items).Error; err != nil {
 		return checkpointListResp{}, err
@@ -409,10 +409,10 @@ func shouldAutoScanCheckpoint(job *model.Job) bool {
 	return info.LastScannedAt.IsZero() || time.Since(info.LastScannedAt) > defaultCheckpointListTTL
 }
 
-func getReadyCheckpoint(c *gin.Context, job *model.Job, id uint) (*model.JobCheckpoint, error) {
+func getCommittedCheckpoint(c *gin.Context, job *model.Job, id uint) (*model.JobCheckpoint, error) {
 	var checkpoint model.JobCheckpoint
 	err := query.GetDB().WithContext(c).
-		Where("id = ? AND job_id = ? AND status = ?", id, job.ID, model.JobCheckpointStatusReady).
+		Where("id = ? AND job_id = ? AND status = ?", id, job.ID, model.JobCheckpointStatusCommitted).
 		First(&checkpoint).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -423,17 +423,14 @@ func getReadyCheckpoint(c *gin.Context, job *model.Job, id uint) (*model.JobChec
 	return &checkpoint, nil
 }
 
-func deleteCheckpoint(c *gin.Context, checkpoint *model.JobCheckpoint) error {
+func markCheckpointDeleting(c *gin.Context, checkpoint *model.JobCheckpoint) error {
 	if checkpoint.StoragePath == "" {
 		return fmt.Errorf("checkpoint has no storage path")
-	}
-	if err := checkpointsvc.DeleteCheckpointStorageWithControl(c.Request.Context(), checkpoint); err != nil {
-		return err
 	}
 	return query.GetDB().WithContext(c).Model(&model.JobCheckpoint{}).
 		Where("id = ?", checkpoint.ID).
 		Updates(map[string]any{
-			"status":     model.JobCheckpointStatusDeleted,
+			"status":     model.JobCheckpointStatusDeleting,
 			"latest":     false,
 			"updated_at": time.Now(),
 		}).Error
@@ -442,7 +439,7 @@ func deleteCheckpoint(c *gin.Context, checkpoint *model.JobCheckpoint) error {
 func selectCleanupCheckpoints(c *gin.Context, job *model.Job, req cleanupCheckpointReq) ([]model.JobCheckpoint, error) {
 	var items []model.JobCheckpoint
 	if err := query.GetDB().WithContext(c).
-		Where("job_id = ? AND status = ?", job.ID, model.JobCheckpointStatusReady).
+		Where("job_id = ? AND status = ?", job.ID, model.JobCheckpointStatusCommitted).
 		Order("latest desc, step desc, mod_time desc, id desc").
 		Find(&items).Error; err != nil {
 		return nil, err
@@ -641,6 +638,7 @@ func buildCheckpointRestoreJob(
 			container.Env = checkpointsvc.AppendEnvs(container.Env, cfg, newJobName)
 			container.Env = AppendExperimentEnvs(container.Env, experimentRuntime, newJobName, container.VolumeMounts)
 		}
+		applyCheckpointAgent(&task.Template.Spec, cfg)
 	}
 	return restored, displayName, experimentRuntime, nil
 }

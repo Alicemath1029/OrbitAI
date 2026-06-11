@@ -9,6 +9,7 @@ import (
 
 	docs "github.com/raids-lab/orbit/docs"
 	"github.com/raids-lab/orbit/internal/handler"
+	"github.com/raids-lab/orbit/internal/handler/vcjob"
 	"github.com/raids-lab/orbit/internal/middleware"
 	"github.com/raids-lab/orbit/pkg/constants"
 )
@@ -29,6 +30,7 @@ func Register(registerConfig *handler.RegisterConfig) *Backend {
 
 	// Register custom routes
 	s.RegisterService(registerConfig)
+	vcjob.RegisterCheckpointInternalRoutes(s.Group("/internal/checkpoints"))
 
 	// Swagger
 	// todo: DisablingWrapHandler https://github.com/swaggo/gin-swagger/blob/master/swagger.go#L205

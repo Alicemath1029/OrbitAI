@@ -70,3 +70,27 @@ orbit_torch.save_checkpoint(
 orbit_torch.flush()
 orbit.finish("succeeded")
 ```
+
+Unified checkpoint manager:
+
+```python
+manager = orbit.checkpoint.Manager()
+manager.save(
+    name="checkpoint-1000",
+    step=1000,
+    writer=lambda path: path.mkdir(parents=True, exist_ok=True),
+    framework="pytorch",
+    format="pytorch-dcp",
+)
+manager.flush()
+```
+
+The manager writes manifest v2 and a success marker only after the writer
+returns. Async save exceptions are re-raised by `flush()`.
+
+When the platform injects checkpoint staging, saves go to
+`ORBIT_CHECKPOINT_STAGING_DIR` first. The checkpoint agent copies committed
+manifests to `ORBIT_CHECKPOINT_FINAL_DIR` and rewrites `path`/`storagePath` to
+the final readable location. `resume_from()` uses `ORBIT_RESUME_LOCAL_PATH`
+only after the agent has populated it; otherwise it falls back to
+`ORBIT_RESUME_FROM`.

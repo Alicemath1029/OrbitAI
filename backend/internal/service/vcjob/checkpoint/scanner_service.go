@@ -257,6 +257,10 @@ func scanLocalCheckpoint(ctx context.Context, scanBase localScanBase) (ServiceSc
 	if err != nil {
 		return ServiceScanItem{}, err
 	}
+	stat, err := os.Stat(scanBase.basePath)
+	if err != nil {
+		return ServiceScanItem{}, err
+	}
 	name := filepath.Base(scanBase.basePath)
 	item := ServiceScanItem{
 		Name:        name,
@@ -267,10 +271,11 @@ func scanLocalCheckpoint(ctx context.Context, scanBase localScanBase) (ServiceSc
 		ModTime:     modTime,
 	}
 	applyLocalManifestToScanItem(ctx, &item, scanBase.basePath, manifestPathForCheckpoint(scanBase.storagePath), manifestValidationTarget{
-		ActualSize: size,
-		FilePath:   scanBase.basePath,
-		JobName:    scanBase.jobName,
-		RunID:      scanBase.runID,
+		ActualSize:    size,
+		FilePath:      scanBase.basePath,
+		JobName:       scanBase.jobName,
+		RunID:         scanBase.runID,
+		SuccessMarker: localSuccessMarkerExists(scanBase.basePath, stat.IsDir()),
 	})
 	return item, nil
 }
@@ -390,10 +395,11 @@ func scanLocalCheckpointChild(ctx context.Context, scanBase localScanBase, name 
 		childPath,
 		manifestPathForCheckpoint(filepath.ToSlash(filepath.Join(scanBase.storagePath, name))),
 		manifestValidationTarget{
-			ActualSize: size,
-			FilePath:   childPath,
-			JobName:    scanBase.jobName,
-			RunID:      scanBase.runID,
+			ActualSize:    size,
+			FilePath:      childPath,
+			JobName:       scanBase.jobName,
+			RunID:         scanBase.runID,
+			SuccessMarker: localSuccessMarkerExists(childPath, childInfo.IsDir()),
 		},
 	)
 	return item, nil
@@ -409,6 +415,7 @@ func applyLocalManifestToScanItem(
 	manifestPath := manifestPathForCheckpoint(checkpointPath)
 	data, err := os.ReadFile(manifestPath)
 	if err != nil {
+		markScanItemInvalid(item, manifestStoragePath, fmt.Sprintf("manifest schemaVersion %s is required", checkpointManifestSchemaV2))
 		return
 	}
 	manifest, err := parseCheckpointManifest(data)
@@ -431,6 +438,12 @@ func applyLocalManifestToScanItem(
 	if manifest.SizeBytes != nil && item.SizeBytes == 0 {
 		item.SizeBytes = *manifest.SizeBytes
 	}
+	if manifest.Status != "" {
+		item.Status = string(manifest.Status)
+	}
+	if storagePath := strings.TrimSpace(manifest.StoragePath); storagePath != "" {
+		item.StoragePath = filepath.ToSlash(filepath.Clean(storagePath))
+	}
 	item.Metadata = mergeManifestMetadata(item.Metadata, manifest, manifestStoragePath)
 	item.ManifestStoragePath = manifestStoragePath
 	if issues := validateCheckpointManifest(ctx, manifest, target); len(issues) > 0 {
@@ -438,6 +451,11 @@ func applyLocalManifestToScanItem(
 	} else if item.Metadata != nil {
 		item.Metadata[checkpointValidationStatusKey] = checkpointValidationValid
 	}
+}
+
+func localSuccessMarkerExists(checkpointPath string, isDir bool) bool {
+	_, err := os.Stat(successMarkerPathForCheckpoint(checkpointPath, isDir))
+	return err == nil
 }
 
 func markScanItemInvalid(item *ServiceScanItem, manifestStoragePath string, issues ...string) {

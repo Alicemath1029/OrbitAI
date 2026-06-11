@@ -27,6 +27,7 @@ build_backend() {
   env -u GOROOT GOCACHE="$GO_BUILD_CACHE" CGO_ENABLED=0 GOOS=linux GOARCH="$goarch" go build -ldflags="-w -s" -o bin/compose/orbit ./cmd/orbit/main.go
   env -u GOROOT GOCACHE="$GO_BUILD_CACHE" CGO_ENABLED=0 GOOS=linux GOARCH="$goarch" go build -ldflags="-w -s" -o bin/compose/storage-server ./cmd/storage-server/main.go
   env -u GOROOT GOCACHE="$GO_BUILD_CACHE" CGO_ENABLED=0 GOOS=linux GOARCH="$goarch" go build -ldflags="-w -s" -o bin/compose/checkpoint-scanner ./cmd/checkpoint-scanner/main.go
+  env -u GOROOT GOCACHE="$GO_BUILD_CACHE" CGO_ENABLED=0 GOOS=linux GOARCH="$goarch" go build -ldflags="-w -s" -o bin/compose/checkpoint-agent ./cmd/checkpoint-agent/main.go
   env -u GOROOT GOCACHE="$GO_BUILD_CACHE" CGO_ENABLED=0 GOOS=linux GOARCH="$goarch" go build -ldflags="-w -s" -o bin/compose/migrate ./cmd/gorm-gen/models/migrate.go
 }
 

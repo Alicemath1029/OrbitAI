@@ -10,14 +10,32 @@ def save_checkpoint(
     step: int = 0,
     filename: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None,
-    rank0_only: bool = True,
+    rank0_only: bool = False,
 ) -> Optional[str]:
-    if rank0_only and not _is_rank0():
-        return None
     import torch
 
     target_dir = orbit_checkpoint.checkpoint_dir()
     target_dir.mkdir(parents=True, exist_ok=True)
+    record_metadata = dict(metadata or {})
+    record_metadata["framework"] = "fsdp"
+
+    dcp = _distributed_checkpoint_module()
+    if dcp is not None and not filename:
+        target = target_dir / f"checkpoint-{int(step)}"
+        target.mkdir(parents=True, exist_ok=True)
+        state = {
+            "model": model.state_dict(),
+            "optimizer": optimizer.state_dict() if optimizer is not None else None,
+            "metadata": {"step": int(step), **(metadata or {})},
+        }
+        dcp.save(state, checkpoint_id=str(target))
+        record_metadata["format"] = "pytorch-dcp"
+        record_metadata["checkpointSchemaVersion"] = "orbit.fsdp.checkpoint.v1"
+        orbit_checkpoint.record(str(target), step=int(step), metadata=record_metadata, format="pytorch-dcp")
+        return str(target)
+
+    if rank0_only and not _is_rank0():
+        return None
     target = target_dir / (filename or f"checkpoint-{int(step)}.pt")
     state = {
         "schema_version": "orbit.fsdp.checkpoint.v1",
@@ -29,11 +47,9 @@ def save_checkpoint(
     tmp = target.with_name(target.name + ".tmp")
     torch.save(state, tmp)
     tmp.replace(target)
-    record_metadata = dict(metadata or {})
-    record_metadata["framework"] = "fsdp"
-    record_metadata["format"] = "state-dict"
+    record_metadata["format"] = "fsdp-state-dict"
     record_metadata["checkpointSchemaVersion"] = state["schema_version"]
-    orbit_checkpoint.record(str(target), step=int(step), metadata=record_metadata, format="state-dict")
+    orbit_checkpoint.record(str(target), step=int(step), metadata=record_metadata, format="fsdp-state-dict")
     return str(target)
 
 
@@ -70,3 +86,12 @@ def _is_rank0() -> bool:
         except ValueError:
             return True
     return True
+
+
+def _distributed_checkpoint_module() -> Any:
+    try:
+        import torch.distributed.checkpoint as dcp
+
+        return dcp
+    except Exception:
+        return None

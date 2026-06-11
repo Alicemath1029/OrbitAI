@@ -132,6 +132,7 @@ func (mgr *VolcanojobMgr) CreatePytorchJob(c *gin.Context) {
 		labels,
 		podAnnotations,
 		req.CpuPinningEnabled,
+		checkpoint,
 	)
 
 	queueName := vcqueue.ResolveJobQueueName(token)
@@ -180,6 +181,7 @@ func buildPytorchTasks(
 	labels map[string]string,
 	podAnnotations map[string]string,
 	cpuPinningEnabled bool,
+	checkpoint *CheckpointConfig,
 ) (tasks []batch.TaskSpec, minAvailable int32) {
 	tasks = make([]batch.TaskSpec, len(inputTasks))
 	minAvailable = int32(0)
@@ -197,7 +199,17 @@ func buildPytorchTasks(
 			}
 		}
 
-		podSpec := generatePodSpecForParallelJob(task, taskAffinity, baseTolerations, volumes, volumeMounts, envs, ports, cpuPinningEnabled)
+		podSpec := generatePodSpecForParallelJob(
+			task,
+			taskAffinity,
+			baseTolerations,
+			volumes,
+			volumeMounts,
+			envs,
+			ports,
+			cpuPinningEnabled,
+			checkpoint,
+		)
 		taskSpec := batch.TaskSpec{
 			Name:     task.Name,
 			Replicas: task.Replicas,

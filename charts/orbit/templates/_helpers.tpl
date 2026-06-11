@@ -82,6 +82,16 @@ Generate backend config with images from top-level images section
   {{- end -}}
   {{- $_ := set $config "checkpointScanner" $scanner -}}
 {{- end -}}
+{{- $checkpoint := default (dict) $config.checkpoint -}}
+{{- $agent := default (dict) $checkpoint.agent -}}
+{{- if not $agent.image -}}
+  {{- $_ := set $agent "image" (printf "%s:%s" .Values.images.backend.repository .Values.images.backend.tag) -}}
+{{- end -}}
+{{- if not $agent.backendEndpoint -}}
+  {{- $_ := set $agent "backendEndpoint" (printf "http://orbit-backend-svc.%s.svc.cluster.local:%s" .Release.Namespace (trimPrefix ":" .Values.backendConfig.port)) -}}
+{{- end -}}
+{{- $_ := set $checkpoint "agent" $agent -}}
+{{- $_ := set $config "checkpoint" $checkpoint -}}
 {{- $config | toYaml -}}
 {{- end -}}
 
