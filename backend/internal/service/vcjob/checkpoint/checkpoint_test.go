@@ -81,12 +81,21 @@ func TestAppendEnvsOverridesOrbitNamespace(t *testing.T) {
 		ResumeMode:     ResumeModeNone,
 		SaveSteps:      100,
 		MaxToKeep:      2,
-	}, "job-name")
+	}, "job-name", []v1.VolumeMount{
+		{Name: "storage", MountPath: "/workspace", SubPath: "users/u-admin", ReadOnly: false},
+	})
 
 	foundUserEnv := false
+	foundStoragePrefix := false
 	for _, env := range envs {
 		if env.Name == "ORBIT_CHECKPOINT_DIR" && env.Value != "/workspace/ckpt" {
 			t.Fatalf("ORBIT_CHECKPOINT_DIR = %q, want platform value", env.Value)
+		}
+		if env.Name == "ORBIT_CHECKPOINT_STORAGE_PREFIX" {
+			foundStoragePrefix = true
+			if env.Value != "users/u-admin/ckpt" {
+				t.Fatalf("ORBIT_CHECKPOINT_STORAGE_PREFIX = %q, want users/u-admin/ckpt", env.Value)
+			}
 		}
 		if env.Name == "USER_ENV" {
 			foundUserEnv = true
@@ -94,6 +103,9 @@ func TestAppendEnvsOverridesOrbitNamespace(t *testing.T) {
 	}
 	if !foundUserEnv {
 		t.Fatal("AppendEnvs() dropped non-ORBIT user env")
+	}
+	if !foundStoragePrefix {
+		t.Fatal("AppendEnvs() did not set ORBIT_CHECKPOINT_STORAGE_PREFIX")
 	}
 }
 
@@ -363,9 +375,11 @@ func TestFileSystemScannerDeleteRemovesCheckpointManifestAndLatestMarker(t *test
 	base := filepath.Join(root, "users", "u-admin", "exp", "checkpoints")
 	checkpointPath := filepath.Join(base, "custom-final.bin")
 	manifestPath := checkpointPath + checkpointManifestSuffix
+	successPath := checkpointPath + checkpointFileSuccessSuffix
 	markerPath := filepath.Join(base, latestCheckpointTracker)
 	mustWriteFile(t, checkpointPath, "checkpoint")
 	mustWriteFile(t, manifestPath, `{"schemaVersion":"orbit.checkpoint.manifest.v1","step":42}`)
+	mustWriteFile(t, successPath, "ok")
 	mustWriteFile(t, markerPath, "custom-final.bin")
 
 	scanner := NewFileSystemScanner(root)
@@ -379,10 +393,10 @@ func TestFileSystemScannerDeleteRemovesCheckpointManifestAndLatestMarker(t *test
 	if err != nil {
 		t.Fatalf("Delete() error = %v", err)
 	}
-	if len(resp.Deleted) != 2 {
-		t.Fatalf("Delete() deleted = %#v, want checkpoint and manifest", resp.Deleted)
+	if len(resp.Deleted) != 3 {
+		t.Fatalf("Delete() deleted = %#v, want checkpoint, manifest, and success marker", resp.Deleted)
 	}
-	for _, path := range []string{checkpointPath, manifestPath, markerPath} {
+	for _, path := range []string{checkpointPath, manifestPath, successPath, markerPath} {
 		if _, err := os.Stat(path); !os.IsNotExist(err) {
 			t.Fatalf("%s still exists or stat failed with non-not-exist error: %v", path, err)
 		}

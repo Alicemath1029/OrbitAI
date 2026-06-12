@@ -1,12 +1,14 @@
 package vcjob
 
 import (
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 
 	v1 "k8s.io/api/core/v1"
 
+	checkpointsvc "github.com/raids-lab/orbit/internal/service/vcjob/checkpoint"
 	"github.com/raids-lab/orbit/pkg/config"
 )
 
@@ -33,6 +35,23 @@ func applyCheckpointAgent(podSpec *v1.PodSpec, checkpoint *CheckpointConfig) {
 
 	agentMounts := cloneVolumeMounts(podSpec.Containers[0].VolumeMounts)
 	ensureVolumeMountsContain(&agentMounts, stagingMount)
+	finalRoot := checkpointFinalRootForPod(checkpoint)
+	agentEnv := []v1.EnvVar{
+		{Name: "ORBIT_CHECKPOINT_STAGING_DIR", Value: stagingMountPath},
+		{Name: "ORBIT_CHECKPOINT_DIR", Value: checkpoint.CheckpointDir},
+		{Name: "ORBIT_CHECKPOINT_FINAL_DIR", Value: finalRoot},
+		{Name: "ORBIT_CHECKPOINT_STORAGE_PREFIX", Value: checkpointsvcStoragePrefix(finalRoot, podSpec.Containers[0].VolumeMounts)},
+		{Name: "ORBIT_CHECKPOINT_FINAL_LAYOUT", Value: checkpointFinalLayoutForPod()},
+		{Name: "ORBIT_CHECKPOINT_STORAGE_BACKEND", Value: checkpointStorageBackendForPod()},
+		{Name: "ORBIT_CHECKPOINT_UPLOAD_CONCURRENCY", Value: strconv.Itoa(checkpointUploadConcurrencyForPod())},
+		{Name: "ORBIT_CHECKPOINT_BANDWIDTH_LIMIT", Value: config.GetConfig().Checkpoint.Agent.BandwidthLimit},
+		{Name: "ORBIT_CHECKPOINT_SCANNER_MODE", Value: checkpointScannerModeForPod()},
+		{Name: "ORBIT_INTERNAL_API_BASE", Value: checkpointAgentBackendEndpoint()},
+		{Name: "ORBIT_RESUME_FROM", Value: checkpoint.ResumeFrom},
+		{Name: "ORBIT_RESUME_LOCAL_PATH", Value: filepath.ToSlash(filepath.Join(stagingMountPath, "resume"))},
+		{Name: "ORBIT_CHECKPOINT_PREFETCH", Value: strconv.FormatBool(strings.TrimSpace(checkpoint.ResumeFrom) != "")},
+	}
+	agentEnv = append(agentEnv, checkpointAgentInternalTokenEnv())
 	restartAlways := v1.ContainerRestartPolicyAlways
 	podSpec.InitContainers = append(podSpec.InitContainers, v1.Container{
 		Name:            checkpointAgentContainerName,
@@ -40,21 +59,8 @@ func applyCheckpointAgent(podSpec *v1.PodSpec, checkpoint *CheckpointConfig) {
 		Command:         []string{"/checkpoint-agent"},
 		ImagePullPolicy: v1.PullIfNotPresent,
 		RestartPolicy:   &restartAlways,
-		Env: []v1.EnvVar{
-			{Name: "ORBIT_CHECKPOINT_STAGING_DIR", Value: stagingMountPath},
-			{Name: "ORBIT_CHECKPOINT_DIR", Value: checkpoint.CheckpointDir},
-			{Name: "ORBIT_CHECKPOINT_FINAL_DIR", Value: checkpointFinalRootForPod(checkpoint)},
-			{Name: "ORBIT_CHECKPOINT_FINAL_LAYOUT", Value: checkpointFinalLayoutForPod()},
-			{Name: "ORBIT_CHECKPOINT_STORAGE_BACKEND", Value: checkpointStorageBackendForPod()},
-			{Name: "ORBIT_CHECKPOINT_UPLOAD_CONCURRENCY", Value: strconv.Itoa(checkpointUploadConcurrencyForPod())},
-			{Name: "ORBIT_CHECKPOINT_BANDWIDTH_LIMIT", Value: config.GetConfig().Checkpoint.Agent.BandwidthLimit},
-			{Name: "ORBIT_CHECKPOINT_SCANNER_MODE", Value: checkpointScannerModeForPod()},
-			{Name: "ORBIT_INTERNAL_API_BASE", Value: checkpointAgentBackendEndpoint()},
-			{Name: "ORBIT_RESUME_FROM", Value: checkpoint.ResumeFrom},
-			{Name: "ORBIT_RESUME_LOCAL_PATH", Value: filepath.ToSlash(filepath.Join(stagingMountPath, "resume"))},
-			{Name: "ORBIT_CHECKPOINT_PREFETCH", Value: strconv.FormatBool(strings.TrimSpace(checkpoint.ResumeFrom) != "")},
-		},
-		VolumeMounts: agentMounts,
+		Env:             agentEnv,
+		VolumeMounts:    agentMounts,
 	})
 }
 
@@ -164,6 +170,31 @@ func checkpointUploadConcurrencyForPod() int {
 		return concurrency
 	}
 	return 4
+}
+
+func checkpointsvcStoragePrefix(finalRoot string, mounts []v1.VolumeMount) string {
+	return checkpointsvc.ResolveStoragePathFromMounts(finalRoot, mounts)
+}
+
+func checkpointAgentInternalTokenEnv() v1.EnvVar {
+	agent := config.GetConfig().Checkpoint.Agent
+	name := strings.TrimSpace(agent.InternalTokenSecretName)
+	key := strings.TrimSpace(agent.InternalTokenSecretKey)
+	if name != "" && key != "" {
+		return v1.EnvVar{
+			Name: "ORBIT_CHECKPOINT_INTERNAL_TOKEN",
+			ValueFrom: &v1.EnvVarSource{
+				SecretKeyRef: &v1.SecretKeySelector{
+					LocalObjectReference: v1.LocalObjectReference{Name: name},
+					Key:                  key,
+				},
+			},
+		}
+	}
+	if token := strings.TrimSpace(agent.InternalToken); token != "" {
+		return v1.EnvVar{Name: "ORBIT_CHECKPOINT_INTERNAL_TOKEN", Value: token}
+	}
+	return v1.EnvVar{Name: "ORBIT_CHECKPOINT_INTERNAL_TOKEN", Value: strings.TrimSpace(os.Getenv("ORBIT_CHECKPOINT_INTERNAL_TOKEN"))}
 }
 
 func checkpointScannerModeForPod() string {

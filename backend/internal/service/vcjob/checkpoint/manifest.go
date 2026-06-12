@@ -100,6 +100,9 @@ func validateManifestBasics(manifest *checkpointManifest) []string {
 	if manifest.Status != "" && !isValidManifestCheckpointStatus(manifest.Status) {
 		issues = append(issues, fmt.Sprintf("unsupported checkpoint status %q", manifest.Status))
 	}
+	if storagePath := strings.TrimSpace(manifest.StoragePath); storagePath != "" && filepath.IsAbs(storagePath) {
+		issues = append(issues, "storagePath must be relative to checkpoint storage root")
+	}
 	if schemaIssue := validateFrameworkCheckpointSchema(manifest); schemaIssue != "" {
 		issues = append(issues, schemaIssue)
 	}

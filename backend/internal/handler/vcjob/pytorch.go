@@ -100,7 +100,7 @@ func (mgr *VolcanojobMgr) CreatePytorchJob(c *gin.Context) {
 	baseAffinity := GenerateNodeAffinity(req.Selectors, jobResources)
 	baseTolerations := GenerateTaintTolerationsForAccount(token)
 	envs := AppendExperimentEnvs(
-		AppendCheckpointEnvs(GenerateEnvs(c, token, req.Envs), checkpoint, jobName),
+		AppendCheckpointEnvs(GenerateEnvs(c, token, req.Envs), checkpoint, jobName, volumeMounts),
 		experimentRuntime,
 		jobName,
 		volumeMounts,

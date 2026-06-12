@@ -192,7 +192,7 @@ func GenerateCustomPodSpec(
 	affinity := GenerateArchitectureNodeAffinity(custom.Image, baseAffinity)
 	tolerations := GenerateTaintTolerationsForAccount(token)
 	envs := AppendExperimentEnvs(
-		AppendCheckpointEnvs(GenerateEnvs(ctx, token, custom.Envs), checkpoint, jobName),
+		AppendCheckpointEnvs(GenerateEnvs(ctx, token, custom.Envs), checkpoint, jobName, volumeMounts),
 		experimentRuntime,
 		jobName,
 		volumeMounts,

@@ -22,6 +22,7 @@ checkpoint:
     enabled: true
     image: orbit-checkpoint-agent
     backendEndpoint: http://backend:8088
+    internalToken: local-compose-checkpoint-internal-token
     uploadConcurrency: 4
     bandwidthLimit: ""
   storage:

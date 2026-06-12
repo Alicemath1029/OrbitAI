@@ -771,7 +771,7 @@ func generateInteractivePodSpec(
 
 	// 2. Env Vars
 	envs := AppendExperimentEnvs(
-		AppendCheckpointEnvs(GenerateEnvs(c, token, req.Envs), checkpoint, jobName),
+		AppendCheckpointEnvs(GenerateEnvs(c, token, req.Envs), checkpoint, jobName, volumeMounts),
 		experimentRuntime,
 		jobName,
 		volumeMounts,

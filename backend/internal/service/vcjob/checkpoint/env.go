@@ -10,9 +10,9 @@ import (
 	"github.com/raids-lab/orbit/pkg/config"
 )
 
-const checkpointEnvCapacity = 20
+const checkpointEnvCapacity = 24
 
-func AppendEnvs(envs []v1.EnvVar, cfg *Config, jobName string) []v1.EnvVar {
+func AppendEnvs(envs []v1.EnvVar, cfg *Config, jobName string, volumeMounts []v1.VolumeMount) []v1.EnvVar {
 	if cfg == nil || !cfg.Enabled {
 		return envs
 	}
@@ -25,6 +25,8 @@ func AppendEnvs(envs []v1.EnvVar, cfg *Config, jobName string) []v1.EnvVar {
 		filtered = append(filtered, env)
 	}
 
+	finalRoot := checkpointFinalRoot(cfg)
+	storagePrefix := ResolveStoragePathFromMounts(finalRoot, volumeMounts)
 	return append(filtered,
 		v1.EnvVar{Name: "ORBIT_CHECKPOINT_ENABLED", Value: strconv.FormatBool(cfg.Enabled)},
 		v1.EnvVar{Name: "ORBIT_CHECKPOINT_FRAMEWORK", Value: cfg.Framework},
@@ -33,6 +35,7 @@ func AppendEnvs(envs []v1.EnvVar, cfg *Config, jobName string) []v1.EnvVar {
 		v1.EnvVar{Name: "ORBIT_JOB_NAME", Value: jobName},
 		v1.EnvVar{Name: "ORBIT_OUTPUT_DIR", Value: cfg.OutputDir},
 		v1.EnvVar{Name: "ORBIT_CHECKPOINT_DIR", Value: cfg.CheckpointDir},
+		v1.EnvVar{Name: "ORBIT_CHECKPOINT_STORAGE_PREFIX", Value: storagePrefix},
 		v1.EnvVar{Name: "ORBIT_RESUME_MODE", Value: cfg.ResumeMode},
 		v1.EnvVar{Name: "ORBIT_RESUME_FROM", Value: cfg.ResumeFrom},
 		v1.EnvVar{Name: "ORBIT_SAVE_STEPS", Value: strconv.Itoa(cfg.SaveSteps)},
@@ -40,7 +43,7 @@ func AppendEnvs(envs []v1.EnvVar, cfg *Config, jobName string) []v1.EnvVar {
 		v1.EnvVar{Name: "ORBIT_CHECKPOINT_MAX_BYTES", Value: strconv.FormatInt(cfg.MaxBytes, 10)},
 		v1.EnvVar{Name: "ORBIT_LATEST_CHECKPOINT", Value: cfg.LatestCheckpoint},
 		v1.EnvVar{Name: "ORBIT_CHECKPOINT_STAGING_DIR", Value: checkpointStagingMountPath()},
-		v1.EnvVar{Name: "ORBIT_CHECKPOINT_FINAL_DIR", Value: checkpointFinalRoot(cfg)},
+		v1.EnvVar{Name: "ORBIT_CHECKPOINT_FINAL_DIR", Value: finalRoot},
 		v1.EnvVar{Name: "ORBIT_CHECKPOINT_FINAL_LAYOUT", Value: checkpointFinalLayout()},
 		v1.EnvVar{Name: "ORBIT_CHECKPOINT_STORAGE_BACKEND", Value: checkpointStorageBackend()},
 		v1.EnvVar{Name: "ORBIT_CHECKPOINT_AGENT_ENABLED", Value: strconv.FormatBool(checkpointAgentEnabled())},
@@ -49,6 +52,38 @@ func AppendEnvs(envs []v1.EnvVar, cfg *Config, jobName string) []v1.EnvVar {
 		v1.EnvVar{Name: "ORBIT_CHECKPOINT_PREFETCH", Value: strconv.FormatBool(strings.TrimSpace(cfg.ResumeFrom) != "")},
 		v1.EnvVar{Name: "ORBIT_RESUME_LOCAL_PATH", Value: filepath.ToSlash(filepath.Join(checkpointStagingMountPath(), "resume"))},
 	)
+}
+
+func ResolveStoragePathFromMounts(containerPath string, volumeMounts []v1.VolumeMount) string {
+	containerPath = filepath.Clean(strings.TrimSpace(containerPath))
+	if containerPath == "." || !filepath.IsAbs(containerPath) {
+		return ""
+	}
+	bestMountPath := ""
+	bestSubPath := ""
+	for i := range volumeMounts {
+		mount := &volumeMounts[i]
+		mountPath := filepath.Clean(strings.TrimSpace(mount.MountPath))
+		subPath := strings.TrimSpace(mount.SubPath)
+		if mountPath == "." || subPath == "" || mount.ReadOnly {
+			continue
+		}
+		if !isPathUnderOrEqual(containerPath, mountPath) {
+			continue
+		}
+		if len(mountPath) > len(bestMountPath) {
+			bestMountPath = mountPath
+			bestSubPath = subPath
+		}
+	}
+	if bestMountPath == "" {
+		return ""
+	}
+	rel, err := filepath.Rel(bestMountPath, containerPath)
+	if err != nil || rel == "." {
+		return filepath.ToSlash(filepath.Clean(bestSubPath))
+	}
+	return filepath.ToSlash(filepath.Clean(filepath.Join(bestSubPath, rel)))
 }
 
 func checkpointStagingMountPath() string {

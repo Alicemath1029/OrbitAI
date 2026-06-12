@@ -90,6 +90,9 @@ Generate backend config with images from top-level images section
 {{- if not $agent.backendEndpoint -}}
   {{- $_ := set $agent "backendEndpoint" (printf "http://orbit-backend-svc.%s.svc.cluster.local:%s" .Release.Namespace (trimPrefix ":" .Values.backendConfig.port)) -}}
 {{- end -}}
+{{- $_ := set $agent "internalTokenSecretName" "orbit-checkpoint-internal-secret" -}}
+{{- $_ := set $agent "internalTokenSecretKey" "token" -}}
+{{- $_ := set $agent "internalToken" "" -}}
 {{- $_ := set $checkpoint "agent" $agent -}}
 {{- $_ := set $config "checkpoint" $checkpoint -}}
 {{- $config | toYaml -}}

@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -24,6 +25,11 @@ const (
 	manifestSchemaV2    = "orbit.checkpoint.manifest.v2"
 	finalLayoutFlat     = "flat"
 	finalLayoutJob      = "job"
+	statusStaged        = "staged"
+	statusUploading     = "uploading"
+	statusCommitted     = "committed"
+	statusFailed        = "failed"
+	internalTokenHeader = "X-Orbit-Internal-Token"
 )
 
 type manifest struct {
@@ -37,10 +43,15 @@ type manifest struct {
 	Path           string         `json:"path"`
 	Step           int64          `json:"step"`
 	Status         string         `json:"status"`
+	Distributed    bool           `json:"distributed"`
+	WorldSize      int            `json:"worldSize"`
 	StorageBackend string         `json:"storageBackend"`
 	StoragePath    string         `json:"storagePath"`
 	StagingPath    string         `json:"stagingPath"`
 	SizeBytes      int64          `json:"sizeBytes"`
+	SHA256         string         `json:"sha256"`
+	CreatedAt      string         `json:"createdAt"`
+	CommittedAt    string         `json:"committedAt"`
 	Metadata       map[string]any `json:"metadata"`
 }
 
@@ -64,8 +75,10 @@ func main() {
 
 	stagingDir := firstEnv("ORBIT_CHECKPOINT_STAGING_DIR", "/checkpoint-staging")
 	finalDir := firstEnv("ORBIT_CHECKPOINT_FINAL_DIR", "/orbit/checkpoints")
+	storagePrefix := firstEnv("ORBIT_CHECKPOINT_STORAGE_PREFIX", "")
 	finalLayout := firstEnv("ORBIT_CHECKPOINT_FINAL_LAYOUT", finalLayoutJob)
 	backendURL := strings.TrimRight(firstEnv("ORBIT_INTERNAL_API_BASE", ""), "/")
+	internalToken := firstEnv("ORBIT_CHECKPOINT_INTERNAL_TOKEN", "")
 	resumeFrom := firstEnv("ORBIT_RESUME_FROM", "")
 	resumeLocalPath := firstEnv("ORBIT_RESUME_LOCAL_PATH", filepath.Join(stagingDir, "resume"))
 	prefetchResume := boolEnv("ORBIT_CHECKPOINT_PREFETCH") && resumeFrom != ""
@@ -83,7 +96,7 @@ func main() {
 				resumePrefetched = true
 			}
 		}
-		if err := processStaging(ctx, stagingDir, finalDir, finalLayout, backendURL, processed); err != nil {
+		if err := processStaging(ctx, stagingDir, finalDir, storagePrefix, finalLayout, backendURL, internalToken, processed); err != nil {
 			fmt.Fprintf(os.Stderr, "checkpoint-agent: %v\n", err)
 		}
 		select {
@@ -98,8 +111,10 @@ func processStaging(
 	ctx context.Context,
 	stagingDir string,
 	finalDir string,
+	storagePrefix string,
 	finalLayout string,
 	backendURL string,
+	internalToken string,
 	processed map[string]time.Time,
 ) error {
 	return filepath.WalkDir(stagingDir, func(path string, entry os.DirEntry, err error) error {
@@ -116,7 +131,7 @@ func processStaging(
 		if last, ok := processed[path]; ok && !info.ModTime().After(last) {
 			return nil
 		}
-		if err := processManifest(ctx, path, stagingDir, finalDir, finalLayout, backendURL); err != nil {
+		if err := processManifest(ctx, path, stagingDir, finalDir, storagePrefix, finalLayout, backendURL, internalToken); err != nil {
 			return err
 		}
 		processed[path] = info.ModTime()
@@ -129,8 +144,10 @@ func processManifest(
 	manifestPath string,
 	stagingDir string,
 	finalDir string,
+	storagePrefix string,
 	finalLayout string,
 	backendURL string,
+	internalToken string,
 ) error {
 	data, err := os.ReadFile(manifestPath)
 	if err != nil {
@@ -140,7 +157,7 @@ func processManifest(
 	if err := json.Unmarshal(data, &item); err != nil {
 		return err
 	}
-	if item.SchemaVersion != manifestSchemaV2 || item.Status != "committed" {
+	if item.SchemaVersion != manifestSchemaV2 || (item.Status != statusStaged && item.Status != statusCommitted) {
 		return nil
 	}
 	source := strings.TrimSuffix(manifestPath, manifestSuffix)
@@ -153,31 +170,56 @@ func processManifest(
 	}
 
 	dest := finalPath(finalDir, finalLayout, item, source, stagingDir)
-	finalManifest := finalManifestForDestination(item, source, dest)
+	finalStoragePath := finalStoragePath(storagePrefix, finalDir, dest, item.StoragePath)
+	finalManifest := finalManifestForDestination(item, source, dest, finalStoragePath)
+	if backendURL != "" {
+		step := item.Step
+		size := item.SizeBytes
+		if err := postEvent(ctx, backendURL, internalToken, checkpointEvent{
+			JobName:     item.JobName,
+			RunID:       item.RunID,
+			Path:        finalManifest.Path,
+			StoragePath: finalManifest.StoragePath,
+			Status:      statusUploading,
+			Step:        &step,
+			SizeBytes:   &size,
+			Framework:   item.Framework,
+			Format:      item.Format,
+			Metadata: map[string]any{
+				"checkpointID": item.CheckpointID,
+			},
+		}); err != nil {
+			return err
+		}
+	}
 	if filepath.Clean(source) != filepath.Clean(dest) {
-		if err := copyPath(source, dest); err != nil {
+		if err := copyPathAtomically(source, dest); err != nil {
+			postFailedEvent(ctx, backendURL, internalToken, item, finalManifest, err)
 			return err
 		}
 		if err := writeManifest(dest+manifestSuffix, finalManifest); err != nil {
+			postFailedEvent(ctx, backendURL, internalToken, item, finalManifest, err)
 			return err
 		}
 		if err := writeSuccessMarker(dest, sourceInfo.IsDir()); err != nil {
+			postFailedEvent(ctx, backendURL, internalToken, item, finalManifest, err)
 			return err
 		}
 	} else if item.Path != finalManifest.Path || item.StoragePath != finalManifest.StoragePath || item.StagingPath != finalManifest.StagingPath {
 		if err := writeManifest(manifestPath, finalManifest); err != nil {
+			postFailedEvent(ctx, backendURL, internalToken, item, finalManifest, err)
 			return err
 		}
 	}
 	if backendURL != "" {
 		size := item.SizeBytes
 		step := item.Step
-		if err := postEvent(ctx, backendURL, checkpointEvent{
+		if err := postEvent(ctx, backendURL, internalToken, checkpointEvent{
 			JobName:     item.JobName,
 			RunID:       item.RunID,
 			Path:        finalManifest.Path,
-			StoragePath: filepath.ToSlash(dest),
-			Status:      "committed",
+			StoragePath: finalManifest.StoragePath,
+			Status:      statusCommitted,
 			Step:        &step,
 			SizeBytes:   &size,
 			Framework:   item.Framework,
@@ -194,12 +236,6 @@ func processManifest(
 }
 
 func finalPath(finalDir string, finalLayout string, item manifest, source string, stagingDir string) string {
-	if item.StoragePath != "" && filepath.IsAbs(item.StoragePath) {
-		cleanedStoragePath := filepath.Clean(item.StoragePath)
-		if cleanedStoragePath != filepath.Clean(source) && !isPathUnderOrEqual(cleanedStoragePath, filepath.Clean(stagingDir)) {
-			return cleanedStoragePath
-		}
-	}
 	name := item.Name
 	if name == "" {
 		name = filepath.Base(source)
@@ -214,15 +250,42 @@ func finalPath(finalDir string, finalLayout string, item manifest, source string
 	return filepath.Join(finalDir, name)
 }
 
-func finalManifestForDestination(item manifest, source string, dest string) manifest {
+func finalStoragePath(storagePrefix string, finalDir string, dest string, fallback string) string {
+	storagePrefix = cleanRelativePath(storagePrefix)
+	if storagePrefix != "" {
+		if rel, err := filepath.Rel(filepath.Clean(finalDir), filepath.Clean(dest)); err == nil && rel != "." {
+			return filepath.ToSlash(filepath.Join(storagePrefix, rel))
+		}
+		return storagePrefix
+	}
+	if cleaned := cleanRelativePath(fallback); cleaned != "" {
+		return cleaned
+	}
+	return filepath.ToSlash(dest)
+}
+
+func cleanRelativePath(path string) string {
+	path = strings.TrimSpace(strings.ReplaceAll(path, "\\", "/"))
+	if path == "" || filepath.IsAbs(path) {
+		return ""
+	}
+	cleaned := filepath.ToSlash(filepath.Clean(path))
+	if cleaned == "." || strings.HasPrefix(cleaned, "../") || cleaned == ".." {
+		return ""
+	}
+	return strings.TrimLeft(cleaned, "/")
+}
+
+func finalManifestForDestination(item manifest, source string, dest string, storagePath string) manifest {
 	next := item
 	if next.Metadata == nil {
 		next.Metadata = map[string]any{}
 	}
 	next.Path = filepath.ToSlash(dest)
-	next.StoragePath = filepath.ToSlash(dest)
+	next.StoragePath = filepath.ToSlash(storagePath)
 	next.StagingPath = filepath.ToSlash(source)
-	next.Status = "committed"
+	next.Status = statusCommitted
+	next.CommittedAt = time.Now().UTC().Format(time.RFC3339)
 	next.Metadata["agentCopied"] = true
 	return next
 }
@@ -258,19 +321,6 @@ func copyResumeCheckpoint(ctx context.Context, source string, dest string) error
 		return err
 	}
 	return writeSuccessMarker(dest, info.IsDir())
-}
-
-func isPathUnderOrEqual(path string, root string) bool {
-	path = filepath.Clean(path)
-	root = filepath.Clean(root)
-	if path == root {
-		return true
-	}
-	rel, err := filepath.Rel(root, path)
-	if err != nil {
-		return false
-	}
-	return rel != "." && rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator))
 }
 
 func boolEnv(key string) bool {
@@ -313,6 +363,30 @@ func copyPath(source string, dest string) error {
 	return copyFile(source, dest)
 }
 
+func copyPathAtomically(source string, dest string) error {
+	tmp := dest + ".tmp." + strconv.Itoa(os.Getpid())
+	if err := os.RemoveAll(tmp); err != nil {
+		return err
+	}
+	if err := copyPath(source, tmp); err != nil {
+		_ = os.RemoveAll(tmp)
+		return err
+	}
+	if err := os.RemoveAll(dest); err != nil {
+		_ = os.RemoveAll(tmp)
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(dest), 0o755); err != nil {
+		_ = os.RemoveAll(tmp)
+		return err
+	}
+	if err := os.Rename(tmp, dest); err != nil {
+		_ = os.RemoveAll(tmp)
+		return err
+	}
+	return nil
+}
+
 func copyDir(source string, dest string) error {
 	if err := os.MkdirAll(dest, 0o755); err != nil {
 		return err
@@ -351,7 +425,33 @@ func copyFile(source string, dest string) error {
 	return err
 }
 
-func postEvent(ctx context.Context, backendURL string, event checkpointEvent) error {
+func postFailedEvent(ctx context.Context, backendURL string, internalToken string, item manifest, finalManifest manifest, cause error) {
+	if backendURL == "" || cause == nil {
+		return
+	}
+	step := item.Step
+	size := item.SizeBytes
+	err := postEvent(ctx, backendURL, internalToken, checkpointEvent{
+		JobName:     item.JobName,
+		RunID:       item.RunID,
+		Path:        finalManifest.Path,
+		StoragePath: finalManifest.StoragePath,
+		Status:      statusFailed,
+		Step:        &step,
+		SizeBytes:   &size,
+		Framework:   item.Framework,
+		Format:      item.Format,
+		Metadata: map[string]any{
+			"checkpointID": item.CheckpointID,
+			"error":        cause.Error(),
+		},
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "checkpoint-agent: failed to post failure event: %v\n", err)
+	}
+}
+
+func postEvent(ctx context.Context, backendURL string, internalToken string, event checkpointEvent) error {
 	payload, err := json.Marshal(event)
 	if err != nil {
 		return err
@@ -361,6 +461,9 @@ func postEvent(ctx context.Context, backendURL string, event checkpointEvent) er
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
+	if strings.TrimSpace(internalToken) != "" {
+		req.Header.Set(internalTokenHeader, strings.TrimSpace(internalToken))
+	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err

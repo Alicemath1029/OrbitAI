@@ -11,6 +11,30 @@ data:
   username: {{ .Values.firstUser.username | b64enc }}
   password: {{ .Values.firstUser.password | b64enc }}
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: orbit-checkpoint-internal-secret
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: orbit-backend
+type: Opaque
+data:
+  token: {{ .Values.backendConfig.checkpoint.agent.internalToken | b64enc }}
+---
+{{- if ne .Values.namespaces.job .Release.Namespace }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: orbit-checkpoint-internal-secret
+  namespace: {{ .Values.namespaces.job }}
+  labels:
+    app: orbit-backend
+type: Opaque
+data:
+  token: {{ .Values.backendConfig.checkpoint.agent.internalToken | b64enc }}
+---
+{{- end }}
 # deployment
 apiVersion: apps/v1
 kind: Deployment
@@ -30,6 +54,7 @@ spec:
         app: orbit-backend
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/orbit-backend/configmap.yaml") . | sha256sum }}
+        checksum/checkpoint-internal-token: {{ .Values.backendConfig.checkpoint.agent.internalToken | sha256sum }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -59,6 +84,12 @@ spec:
         - name: orbit-backend-container
           image: {{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
+          env:
+            - name: ORBIT_CHECKPOINT_INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: orbit-checkpoint-internal-secret
+                  key: token
           command:
             - /controller
             - --config-file=/etc/config/config.yaml

@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -59,6 +60,22 @@ def load_checkpoint_if_available(model: Any, optimizer: Any = None, map_location
         return None
     target = Path(resume)
     if target.is_dir():
+        manifest = _load_manifest(target)
+        if manifest.get("format") == "pytorch-dcp":
+            dcp = _distributed_checkpoint_module()
+            if dcp is None:
+                return None
+            state: Dict[str, Any] = {
+                "model": model.state_dict(),
+                "metadata": {},
+            }
+            if optimizer is not None:
+                state["optimizer"] = optimizer.state_dict()
+            dcp.load(state, checkpoint_id=str(target))
+            model.load_state_dict(state["model"])
+            if optimizer is not None and state.get("optimizer") is not None:
+                optimizer.load_state_dict(state["optimizer"])
+            return state
         candidates = sorted(target.glob("*.pt")) + sorted(target.glob("*.pth"))
         if not candidates:
             return None
@@ -95,3 +112,14 @@ def _distributed_checkpoint_module() -> Any:
         return dcp
     except Exception:
         return None
+
+
+def _load_manifest(target: Path) -> Dict[str, Any]:
+    manifest_path = target.with_name(target.name + ".orbit.json")
+    try:
+        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    return data

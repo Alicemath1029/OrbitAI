@@ -36,6 +36,9 @@ checkpoint:
     enabled: true
     image: orbit-checkpoint-agent
     backendEndpoint: http://orbit-backend-svc.orbit.svc.cluster.local:8088
+    # Shared secret required by /internal/checkpoints APIs.
+    # Prefer ORBIT_CHECKPOINT_INTERNAL_TOKEN or a Kubernetes Secret in production.
+    internalToken: <MUSTEDIT>
     uploadConcurrency: 4
     bandwidthLimit: ""
   storage:

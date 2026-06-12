@@ -156,11 +156,14 @@ type Config struct {
 			Medium    string `json:"medium"`
 		} `json:"staging"`
 		Agent struct {
-			Enabled           bool   `json:"enabled"`
-			Image             string `json:"image"`
-			BackendEndpoint   string `json:"backendEndpoint"`
-			UploadConcurrency int    `json:"uploadConcurrency"`
-			BandwidthLimit    string `json:"bandwidthLimit"`
+			Enabled                 bool   `json:"enabled"`
+			Image                   string `json:"image"`
+			BackendEndpoint         string `json:"backendEndpoint"`
+			InternalToken           string `json:"internalToken"`
+			InternalTokenSecretName string `json:"internalTokenSecretName"`
+			InternalTokenSecretKey  string `json:"internalTokenSecretKey"`
+			UploadConcurrency       int    `json:"uploadConcurrency"`
+			BandwidthLimit          string `json:"bandwidthLimit"`
 		} `json:"agent"`
 		Storage struct {
 			Backend   string `json:"backend"`
@@ -634,10 +637,11 @@ func (c *Config) PrintConfig() {
 		klog.Info("Model Download Image: <default: orbit-harbor.act.buaa.edu.cn/orbit/base/python:3.11-slim>")
 	}
 	klog.Infof(
-		"Checkpoint: agent=%t image=%s backend=%s staging=%s storage=%s:%s scannerMode=%s",
+		"Checkpoint: agent=%t image=%s backend=%s token=%t staging=%s storage=%s:%s scannerMode=%s",
 		c.Checkpoint.Agent.Enabled,
 		c.Checkpoint.Agent.Image,
 		c.Checkpoint.Agent.BackendEndpoint,
+		c.Checkpoint.Agent.InternalToken != "" || c.Checkpoint.Agent.InternalTokenSecretName != "",
 		c.Checkpoint.Staging.MountPath,
 		c.Checkpoint.Storage.Backend,
 		c.Checkpoint.Storage.FinalRoot,

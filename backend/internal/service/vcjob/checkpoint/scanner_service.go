@@ -115,6 +115,8 @@ func (s FileSystemScanner) Delete(ctx context.Context, req ServiceDeleteRequest)
 	if err != nil {
 		return ServiceDeleteResponse{}, err
 	}
+	info, statErr := os.Stat(targetPath)
+	isDir := statErr == nil && info.IsDir()
 	markerItem := deleteMarkerItem(req, storagePath)
 	applyManifestToDeleteMarkerItem(&markerItem, targetPath)
 
@@ -133,6 +135,16 @@ func (s FileSystemScanner) Delete(ctx context.Context, req ServiceDeleteRequest)
 		return ServiceDeleteResponse{}, err
 	}
 	deleted = append(deleted, manifestStoragePath)
+
+	successMarkerStoragePath := successMarkerPathForCheckpoint(storagePath, isDir)
+	successMarkerPath, _, err := s.resolveStoragePath(successMarkerStoragePath)
+	if err != nil {
+		return ServiceDeleteResponse{}, err
+	}
+	if err := removeLocalPath(successMarkerPath); err != nil {
+		return ServiceDeleteResponse{}, err
+	}
+	deleted = append(deleted, successMarkerStoragePath)
 
 	if err := s.removeMatchingLatestMarker(storagePath, &markerItem); err != nil {
 		return ServiceDeleteResponse{}, err

@@ -7,7 +7,7 @@ import time
 import uuid
 import atexit
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from .client import log_artifact
 
@@ -124,7 +124,7 @@ def record(
     checkpoint_format = format or manifest_metadata.get("format") or ("file" if target.is_file() else "directory")
     size = _size_bytes(target)
     created_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    storage_path = _final_storage_path(target, final_dir)
+    final_path, storage_path = _final_paths(target, final_dir)
     staging_path = str(target)
     manifest = {
         "schemaVersion": MANIFEST_SCHEMA_V2,
@@ -134,9 +134,9 @@ def record(
         "framework": manifest_metadata.get("framework", "custom"),
         "format": checkpoint_format,
         "name": target.name,
-        "path": storage_path,
+        "path": final_path,
         "step": int(step),
-        "status": "committed",
+        "status": "staged",
         "distributed": bool(manifest_metadata.get("distributed", False)),
         "worldSize": int(manifest_metadata.get("worldSize") or os.getenv("WORLD_SIZE") or 1),
         "storageBackend": os.getenv("ORBIT_CHECKPOINT_STORAGE_BACKEND", "pvc"),
@@ -145,7 +145,7 @@ def record(
         "sizeBytes": size,
         "sha256": _sha256(target) if target.is_file() else "",
         "createdAt": created_at,
-        "committedAt": created_at,
+        "committedAt": "",
         "metadata": manifest_metadata,
     }
     manifest_path = target.with_name(target.name + ".orbit.json")
@@ -185,23 +185,37 @@ def _write_success_marker(target: Path) -> None:
     marker.write_text(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), encoding="utf-8")
 
 
-def _final_storage_path(target: Path, final_dir: Optional[str] = None) -> str:
+def _final_paths(target: Path, final_dir: Optional[str] = None) -> Tuple[str, str]:
     configured_final_dir = final_dir or os.getenv("ORBIT_CHECKPOINT_FINAL_DIR")
     staging_dir = os.getenv("ORBIT_CHECKPOINT_STAGING_DIR")
     if not configured_final_dir:
-        return str(target)
+        return str(target), _storage_path_from_prefix("", target.name, str(target))
     if not staging_dir and final_dir is None:
-        return str(target)
+        return str(target), _storage_path_from_prefix("", target.name, str(target))
     if final_dir is None and not _is_under(target, Path(staging_dir)):
-        return str(target)
+        return str(target), _storage_path_from_prefix("", target.name, str(target))
 
     final_root = Path(configured_final_dir)
     layout = (os.getenv("ORBIT_CHECKPOINT_FINAL_LAYOUT") or "flat").strip().lower()
+    relative_parts = [target.name]
     if layout == "job":
         job_name = os.getenv("ORBIT_JOB_NAME", "").strip()
         if job_name:
-            return str(final_root / job_name / target.name)
-    return str(final_root / target.name)
+            relative_parts = [job_name, target.name]
+    final_path = final_root.joinpath(*relative_parts)
+    return str(final_path), _storage_path_from_prefix(
+        os.getenv("ORBIT_CHECKPOINT_STORAGE_PREFIX", ""),
+        "/".join(relative_parts),
+        str(final_path),
+    )
+
+
+def _storage_path_from_prefix(prefix: str, relative_path: str, fallback: str) -> str:
+    prefix = prefix.strip().strip("/")
+    relative_path = relative_path.strip().strip("/")
+    if prefix:
+        return f"{prefix}/{relative_path}" if relative_path else prefix
+    return fallback
 
 
 def _checkpoint_path_ready(path: Path) -> bool:

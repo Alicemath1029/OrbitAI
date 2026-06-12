@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from orbit import checkpoint  # noqa: E402
 from orbit import deepspeed as orbit_deepspeed  # noqa: E402
+from orbit import fsdp as orbit_fsdp  # noqa: E402
 from orbit import pytorch as orbit_torch  # noqa: E402
 import orbit.client as client_module  # noqa: E402
 from orbit.client import OrbitClient, main  # noqa: E402
@@ -131,7 +132,7 @@ class OrbitClientTest(unittest.TestCase):
             persisted = json.loads(manifest_path.read_text(encoding="utf-8"))
             success_path = Path(str(target) + "._SUCCESS")
             self.assertEqual(manifest["schemaVersion"], "orbit.checkpoint.manifest.v2")
-            self.assertEqual(manifest["status"], "committed")
+            self.assertEqual(manifest["status"], "staged")
             self.assertEqual(persisted["format"], "file")
             self.assertTrue(success_path.exists())
             self.assertEqual(latest_path.read_text(encoding="utf-8"), "global_step_3")
@@ -142,6 +143,7 @@ class OrbitClientTest(unittest.TestCase):
             os.environ["ORBIT_CHECKPOINT_STAGING_DIR"] = staging_dir
             os.environ["ORBIT_CHECKPOINT_FINAL_DIR"] = final_dir
             os.environ["ORBIT_CHECKPOINT_FINAL_LAYOUT"] = "flat"
+            os.environ["ORBIT_CHECKPOINT_STORAGE_PREFIX"] = "users/u/checkpoints"
             target = Path(staging_dir) / "checkpoint-4.pt"
             target.write_text("checkpoint", encoding="utf-8")
 
@@ -149,7 +151,7 @@ class OrbitClientTest(unittest.TestCase):
 
             final_path = str(Path(final_dir) / "checkpoint-4.pt")
             self.assertEqual(manifest["path"], final_path)
-            self.assertEqual(manifest["storagePath"], final_path)
+            self.assertEqual(manifest["storagePath"], "users/u/checkpoints/checkpoint-4.pt")
             self.assertEqual(manifest["stagingPath"], str(target))
 
     def test_resume_from_ignores_empty_local_prefetch_dir(self):
@@ -279,6 +281,69 @@ class OrbitClientTest(unittest.TestCase):
         self.assertEqual(engine.saved[1], "global_step6")
         self.assertEqual(len(records), 1)
         self.assertEqual(records[0][1]["format"], "zero-sharded")
+
+    def test_fsdp_dcp_directory_restore_uses_distributed_checkpoint(self):
+        class FakeStateful:
+            def __init__(self, state):
+                self._state = state
+                self.loaded = None
+
+            def state_dict(self):
+                return dict(self._state)
+
+            def load_state_dict(self, state):
+                self.loaded = dict(state)
+
+        class FakeDCP(types.ModuleType):
+            def __init__(self):
+                super().__init__("torch.distributed.checkpoint")
+                self.loaded_checkpoint_id = None
+
+            def load(self, state, checkpoint_id=None):
+                self.loaded_checkpoint_id = checkpoint_id
+                state["model"] = {"weight": 7}
+                state["optimizer"] = {"lr": 0.01}
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            os.environ.clear()
+            target = Path(tmpdir) / "checkpoint-7"
+            target.mkdir()
+            manifest = target.with_name(target.name + ".orbit.json")
+            manifest.write_text(
+                json.dumps({"schemaVersion": "orbit.checkpoint.manifest.v2", "format": "pytorch-dcp"}),
+                encoding="utf-8",
+            )
+            os.environ["ORBIT_RESUME_FROM"] = str(target)
+
+            previous_torch = sys.modules.get("torch")
+            previous_distributed = sys.modules.get("torch.distributed")
+            previous_checkpoint = sys.modules.get("torch.distributed.checkpoint")
+            fake_distributed = types.ModuleType("torch.distributed")
+            fake_checkpoint = FakeDCP()
+            fake_distributed.checkpoint = fake_checkpoint
+            sys.modules["torch"] = types.SimpleNamespace(distributed=fake_distributed)
+            sys.modules["torch.distributed"] = fake_distributed
+            sys.modules["torch.distributed.checkpoint"] = fake_checkpoint
+            try:
+                model = FakeStateful({"weight": 0})
+                optimizer = FakeStateful({"lr": 1.0})
+                loaded = orbit_fsdp.load_checkpoint_if_available(model, optimizer)
+            finally:
+                for name, previous in (
+                    ("torch", previous_torch),
+                    ("torch.distributed", previous_distributed),
+                    ("torch.distributed.checkpoint", previous_checkpoint),
+                ):
+                    if previous is None:
+                        sys.modules.pop(name, None)
+                    else:
+                        sys.modules[name] = previous
+
+        self.assertEqual(fake_checkpoint.loaded_checkpoint_id, str(target))
+        self.assertEqual(model.loaded, {"weight": 7})
+        self.assertEqual(optimizer.loaded, {"lr": 0.01})
+        self.assertEqual(loaded["metadata"], {})
+
 
 if __name__ == "__main__":
     unittest.main()

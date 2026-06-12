@@ -373,6 +373,7 @@ export interface CheckpointCleanupReq {
 
 export interface CheckpointCleanupResp {
   deleted: JobCheckpoint[]
+  failed?: JobCheckpoint[]
   reclaimedBytes: number
   dryRun: boolean
 }

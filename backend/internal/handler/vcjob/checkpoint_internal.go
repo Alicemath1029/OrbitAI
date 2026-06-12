@@ -1,9 +1,12 @@
 package vcjob
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -16,7 +19,10 @@ import (
 	"github.com/raids-lab/orbit/dao/model"
 	"github.com/raids-lab/orbit/dao/query"
 	"github.com/raids-lab/orbit/internal/resputil"
+	"github.com/raids-lab/orbit/pkg/config"
 )
+
+const checkpointInternalTokenHeader = "X-Orbit-Internal-Token"
 
 type checkpointInternalIDReq struct {
 	CheckpointID uint `uri:"id" binding:"required"`
@@ -46,9 +52,33 @@ type checkpointInternalEventsResp struct {
 }
 
 func RegisterCheckpointInternalRoutes(g *gin.RouterGroup) {
+	g.Use(requireCheckpointInternalToken)
 	g.POST("events", handleCheckpointInternalEvents)
 	g.POST(":id/commit", handleCheckpointInternalCommit)
 	g.POST(":id/fail", handleCheckpointInternalFail)
+}
+
+func requireCheckpointInternalToken(c *gin.Context) {
+	expected := checkpointInternalToken()
+	if expected == "" {
+		resputil.HTTPError(c, http.StatusForbidden, "checkpoint internal token is not configured", resputil.TokenInvalid)
+		c.Abort()
+		return
+	}
+	got := strings.TrimSpace(c.GetHeader(checkpointInternalTokenHeader))
+	if got == "" || subtle.ConstantTimeCompare([]byte(got), []byte(expected)) != 1 {
+		resputil.HTTPError(c, http.StatusUnauthorized, "invalid checkpoint internal token", resputil.TokenInvalid)
+		c.Abort()
+		return
+	}
+	c.Next()
+}
+
+func checkpointInternalToken() string {
+	if token := strings.TrimSpace(os.Getenv("ORBIT_CHECKPOINT_INTERNAL_TOKEN")); token != "" {
+		return token
+	}
+	return strings.TrimSpace(config.GetConfig().Checkpoint.Agent.InternalToken)
 }
 
 func handleCheckpointInternalEvents(c *gin.Context) {
@@ -128,6 +158,13 @@ func updateCheckpointFromInternalEvent(c *gin.Context, req checkpointInternalEve
 	if !validCheckpointInternalStatus(status) {
 		return nil, fmt.Errorf("unsupported checkpoint status %q", status)
 	}
+	if strings.TrimSpace(req.StoragePath) != "" {
+		storagePath, err := cleanCheckpointInternalStoragePath(req.StoragePath)
+		if err != nil {
+			return nil, err
+		}
+		req.StoragePath = storagePath
+	}
 
 	db := query.GetDB().WithContext(c)
 	checkpoint, err := findOrCreateInternalCheckpoint(c, req)
@@ -191,6 +228,21 @@ func updateCheckpointFromInternalEvent(c *gin.Context, req checkpointInternalEve
 		return nil, err
 	}
 	return checkpoint, nil
+}
+
+func cleanCheckpointInternalStoragePath(raw string) (string, error) {
+	normalized := strings.ReplaceAll(strings.TrimSpace(raw), "\\", "/")
+	if normalized == "" {
+		return "", nil
+	}
+	if filepath.IsAbs(normalized) {
+		return "", fmt.Errorf("storagePath must be relative to checkpoint storage root")
+	}
+	cleaned := filepath.ToSlash(filepath.Clean(normalized))
+	if cleaned == "." || cleaned == ".." || strings.HasPrefix(cleaned, "../") {
+		return "", fmt.Errorf("storagePath must stay under checkpoint storage root")
+	}
+	return strings.TrimLeft(cleaned, "/"), nil
 }
 
 func findOrCreateInternalCheckpoint(c *gin.Context, req checkpointInternalEventReq) (*model.JobCheckpoint, error) {

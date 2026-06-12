@@ -27,21 +27,26 @@ func TestProcessManifestCopiesToFinalAndPostsFinalPath(t *testing.T) {
 		Name:          "checkpoint-1.pt",
 		Path:          source,
 		Step:          1,
-		Status:        "committed",
-		StoragePath:   source,
+		Status:        "staged",
+		StoragePath:   "users/u/job/checkpoints/checkpoint-1.pt",
 		StagingPath:   source,
 		SizeBytes:     int64(len("checkpoint")),
 	})
 
-	var event checkpointEvent
+	var events []checkpointEvent
 	oldTransport := http.DefaultClient.Transport
 	http.DefaultClient.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
 		if r.URL.Path != "/internal/checkpoints/events" {
 			t.Fatalf("unexpected event path: %s", r.URL.Path)
 		}
+		if r.Header.Get(internalTokenHeader) != "token-1" {
+			t.Fatalf("%s = %q, want token-1", internalTokenHeader, r.Header.Get(internalTokenHeader))
+		}
+		var event checkpointEvent
 		if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
 			t.Fatalf("decode event: %v", err)
 		}
+		events = append(events, event)
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Status:     "200 OK",
@@ -53,7 +58,16 @@ func TestProcessManifestCopiesToFinalAndPostsFinalPath(t *testing.T) {
 		http.DefaultClient.Transport = oldTransport
 	})
 
-	if err := processManifest(context.Background(), source+manifestSuffix, stagingDir, finalDir, finalLayoutFlat, "http://checkpoint-agent.test"); err != nil {
+	if err := processManifest(
+		context.Background(),
+		source+manifestSuffix,
+		stagingDir,
+		finalDir,
+		"users/u/job/checkpoints",
+		finalLayoutFlat,
+		"http://checkpoint-agent.test",
+		"token-1",
+	); err != nil {
 		t.Fatalf("processManifest() error = %v", err)
 	}
 
@@ -66,11 +80,24 @@ func TestProcessManifestCopiesToFinalAndPostsFinalPath(t *testing.T) {
 	if err := json.Unmarshal([]byte(data), &finalManifest); err != nil {
 		t.Fatalf("decode final manifest: %v", err)
 	}
-	if finalManifest.Path != dest || finalManifest.StoragePath != dest || finalManifest.StagingPath != source {
-		t.Fatalf("final manifest paths = %#v, want dest/storagePath=%q staging=%q", finalManifest, dest, source)
+	if finalManifest.Path != dest ||
+		finalManifest.StoragePath != "users/u/job/checkpoints/checkpoint-1.pt" ||
+		finalManifest.StagingPath != source ||
+		finalManifest.Status != statusCommitted {
+		t.Fatalf("final manifest = %#v, want dest=%q storagePath=users/u/job/checkpoints/checkpoint-1.pt staging=%q committed", finalManifest, dest, source)
 	}
-	if event.Path != dest || event.StoragePath != dest || event.JobName != "job-a" || event.RunID != "7" {
-		t.Fatalf("event = %#v, want final path %q", event, dest)
+	if len(events) != 2 {
+		t.Fatalf("events = %#v, want uploading and committed", events)
+	}
+	if events[0].Status != statusUploading || events[1].Status != statusCommitted {
+		t.Fatalf("event statuses = %q, %q; want uploading, committed", events[0].Status, events[1].Status)
+	}
+	committed := events[1]
+	if committed.Path != dest ||
+		committed.StoragePath != "users/u/job/checkpoints/checkpoint-1.pt" ||
+		committed.JobName != "job-a" ||
+		committed.RunID != "7" {
+		t.Fatalf("committed event = %#v, want final path %q", committed, dest)
 	}
 }
 

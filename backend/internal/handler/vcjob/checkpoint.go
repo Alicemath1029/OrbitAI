@@ -31,8 +31,8 @@ func prepareCheckpointConfig(
 	return cfg, nil
 }
 
-func AppendCheckpointEnvs(envs []v1.EnvVar, cfg *CheckpointConfig, jobName string) []v1.EnvVar {
-	return checkpointsvc.AppendEnvs(envs, cfg, jobName)
+func AppendCheckpointEnvs(envs []v1.EnvVar, cfg *CheckpointConfig, jobName string, volumeMounts []v1.VolumeMount) []v1.EnvVar {
+	return checkpointsvc.AppendEnvs(envs, cfg, jobName, volumeMounts)
 }
 
 func ApplyCheckpointAnnotations(annotations map[string]string, cfg *CheckpointConfig) error {

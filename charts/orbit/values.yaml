@@ -223,6 +223,8 @@ backendConfig:
       image: ""
       # -- Backend internal endpoint used by checkpoint-agent sidecars. If empty, helper templates fill the in-cluster service endpoint.
       backendEndpoint: ""
+      # -- Shared token for checkpoint-agent to call backend /internal/checkpoints APIs. Rendered into a Secret.
+      internalToken: "change-me-checkpoint-internal-token"
       uploadConcurrency: 4
       bandwidthLimit: ""
     storage:

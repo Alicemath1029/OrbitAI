@@ -76,6 +76,7 @@ type checkpointQuotaResp struct {
 
 type cleanupCheckpointResp struct {
 	Deleted        []model.JobCheckpoint `json:"deleted"`
+	Failed         []model.JobCheckpoint `json:"failed,omitempty"`
 	ReclaimedBytes int64                 `json:"reclaimedBytes"`
 	DryRun         bool                  `json:"dryRun"`
 }
@@ -270,6 +271,21 @@ func (mgr *VolcanojobMgr) DeleteJobCheckpoint(c *gin.Context) {
 		resputil.Error(c, err.Error(), resputil.NotSpecified)
 		return
 	}
+	if err := deleteCheckpointDataPlane(c, checkpoint); err != nil {
+		if updateErr := markCheckpointDeleteFailed(c, checkpoint, err); updateErr != nil {
+			klog.Warningf("failed to mark checkpoint %d delete failure: %v", checkpoint.ID, updateErr)
+		}
+		details := checkpointOpDetails(job, checkpoint, nil)
+		recordCheckpointOperation(c, constants.OpTypeDeleteCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
+		resputil.Error(c, err.Error(), resputil.NotSpecified)
+		return
+	}
+	if err := markCheckpointDeleted(c, checkpoint); err != nil {
+		details := checkpointOpDetails(job, checkpoint, nil)
+		recordCheckpointOperation(c, constants.OpTypeDeleteCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
+		resputil.Error(c, err.Error(), resputil.NotSpecified)
+		return
+	}
 	if err := refreshLatestAfterMutation(c, job); err != nil {
 		klog.Warningf("failed to refresh latest checkpoint for job %s: %v", job.JobName, err)
 	}
@@ -280,6 +296,8 @@ func (mgr *VolcanojobMgr) DeleteJobCheckpoint(c *gin.Context) {
 		"sizeBytes": checkpoint.SizeBytes,
 	})
 	recordCheckpointOperation(c, constants.OpTypeDeleteCheckpoint, req.JobName, constants.OpStatusSuccess, "", details)
+	checkpoint.Status = model.JobCheckpointStatusDeleted
+	checkpoint.Latest = false
 	resputil.Success(c, checkpoint)
 }
 
@@ -315,13 +333,40 @@ func (mgr *VolcanojobMgr) CleanupJobCheckpoints(c *gin.Context) {
 		reclaimed += candidates[i].SizeBytes
 	}
 	if !bodyReq.DryRun {
+		deleted := make([]model.JobCheckpoint, 0, len(candidates))
+		failed := make([]model.JobCheckpoint, 0)
 		for i := range candidates {
 			if err := markCheckpointDeleting(c, &candidates[i]); err != nil {
 				details := checkpointOpDetails(job, &candidates[i], nil)
+				klog.Warningf("failed to mark checkpoint %d deleting: %v", candidates[i].ID, err)
 				recordCheckpointOperation(c, constants.OpTypeCleanupCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
-				resputil.Error(c, err.Error(), resputil.NotSpecified)
-				return
+				candidates[i].Metadata = checkpointMetadataWithDeleteError(candidates[i].Metadata, err)
+				candidates[i].Status = model.JobCheckpointStatusFailed
+				failed = append(failed, candidates[i])
+				continue
 			}
+			if err := deleteCheckpointDataPlane(c, &candidates[i]); err != nil {
+				if updateErr := markCheckpointDeleteFailed(c, &candidates[i], err); updateErr != nil {
+					klog.Warningf("failed to mark checkpoint %d delete failure: %v", candidates[i].ID, updateErr)
+				}
+				details := checkpointOpDetails(job, &candidates[i], nil)
+				recordCheckpointOperation(c, constants.OpTypeCleanupCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
+				candidates[i].Metadata = checkpointMetadataWithDeleteError(candidates[i].Metadata, err)
+				candidates[i].Status = model.JobCheckpointStatusFailed
+				failed = append(failed, candidates[i])
+				continue
+			}
+			if err := markCheckpointDeleted(c, &candidates[i]); err != nil {
+				details := checkpointOpDetails(job, &candidates[i], nil)
+				recordCheckpointOperation(c, constants.OpTypeCleanupCheckpoint, req.JobName, constants.OpStatusFailed, err.Error(), details)
+				candidates[i].Metadata = checkpointMetadataWithDeleteError(candidates[i].Metadata, err)
+				candidates[i].Status = model.JobCheckpointStatusFailed
+				failed = append(failed, candidates[i])
+				continue
+			}
+			candidates[i].Status = model.JobCheckpointStatusDeleted
+			candidates[i].Latest = false
+			deleted = append(deleted, candidates[i])
 		}
 		if err := refreshLatestAfterMutation(c, job); err != nil {
 			klog.Warningf("failed to refresh latest checkpoint for job %s: %v", job.JobName, err)
@@ -329,6 +374,28 @@ func (mgr *VolcanojobMgr) CleanupJobCheckpoints(c *gin.Context) {
 		if err := checkpointsvc.SyncCheckpointArtifacts(c.Request.Context(), query.GetDB().WithContext(c), job.ID); err != nil {
 			klog.Warningf("failed to sync checkpoint artifacts for job %s: %v", job.JobName, err)
 		}
+		candidates = deleted
+		deletedBytes := checkpointTotalBytes(deleted)
+		details := checkpointOpDetails(job, nil, map[string]any{
+			"deletedCount":   len(deleted),
+			"failedCount":    len(failed),
+			"reclaimedBytes": deletedBytes,
+			"dryRun":         bodyReq.DryRun,
+		})
+		status := constants.OpStatusSuccess
+		message := ""
+		if len(failed) > 0 {
+			status = constants.OpStatusFailed
+			message = "some checkpoints failed to delete"
+		}
+		recordCheckpointOperation(c, constants.OpTypeCleanupCheckpoint, req.JobName, status, message, details)
+		resputil.Success(c, cleanupCheckpointResp{
+			Deleted:        deleted,
+			Failed:         failed,
+			ReclaimedBytes: deletedBytes,
+			DryRun:         bodyReq.DryRun,
+		})
+		return
 	}
 
 	details := checkpointOpDetails(job, nil, map[string]any{
@@ -434,6 +501,44 @@ func markCheckpointDeleting(c *gin.Context, checkpoint *model.JobCheckpoint) err
 			"latest":     false,
 			"updated_at": time.Now(),
 		}).Error
+}
+
+func deleteCheckpointDataPlane(c *gin.Context, checkpoint *model.JobCheckpoint) error {
+	return checkpointsvc.DeleteCheckpointStorage(c.Request.Context(), checkpoint, checkpointsvc.ServiceScannerOptions{})
+}
+
+func markCheckpointDeleted(c *gin.Context, checkpoint *model.JobCheckpoint) error {
+	return query.GetDB().WithContext(c).Model(&model.JobCheckpoint{}).
+		Where("id = ?", checkpoint.ID).
+		Updates(map[string]any{
+			"status":     model.JobCheckpointStatusDeleted,
+			"latest":     false,
+			"updated_at": time.Now(),
+		}).Error
+}
+
+func markCheckpointDeleteFailed(c *gin.Context, checkpoint *model.JobCheckpoint, cause error) error {
+	metadata := checkpointMetadataWithDeleteError(checkpoint.Metadata, cause)
+	return query.GetDB().WithContext(c).Model(&model.JobCheckpoint{}).
+		Where("id = ?", checkpoint.ID).
+		Updates(map[string]any{
+			"status":     model.JobCheckpointStatusFailed,
+			"latest":     false,
+			"metadata":   metadata,
+			"updated_at": time.Now(),
+		}).Error
+}
+
+func checkpointMetadataWithDeleteError(metadata datatypes.JSONMap, cause error) datatypes.JSONMap {
+	next := datatypes.JSONMap{}
+	for key, value := range metadata {
+		next[key] = value
+	}
+	if cause != nil {
+		next["deleteError"] = cause.Error()
+		next["deleteFailedAt"] = time.Now().UTC().Format(time.RFC3339)
+	}
+	return next
 }
 
 func selectCleanupCheckpoints(c *gin.Context, job *model.Job, req cleanupCheckpointReq) ([]model.JobCheckpoint, error) {
@@ -635,7 +740,7 @@ func buildCheckpointRestoreJob(
 		for containerIndex := range task.Template.Spec.Containers {
 			container := &task.Template.Spec.Containers[containerIndex]
 			container.Env = cleanExperimentEnvs(container.Env)
-			container.Env = checkpointsvc.AppendEnvs(container.Env, cfg, newJobName)
+			container.Env = checkpointsvc.AppendEnvs(container.Env, cfg, newJobName, container.VolumeMounts)
 			container.Env = AppendExperimentEnvs(container.Env, experimentRuntime, newJobName, container.VolumeMounts)
 		}
 		applyCheckpointAgent(&task.Template.Spec, cfg)
